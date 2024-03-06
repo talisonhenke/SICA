@@ -1,0 +1,130 @@
+body{
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+.main{
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    background-color: #063559;
+}
+p, h1, h2, h3, span{
+    color: white;
+}
+
+/* Titles color -------------------------- */
+
+.contentTitle, .myWorksTitle, .aboutMeTitle, .contactMeTitle, .contactMeSubTitle, .personalSitetitle, .companySitetitle{
+    color: #62ff88;
+}
+
+.form-label{
+    color: #62ff88;
+}
+
+.personalSiteText, .companySiteText{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    text-align: justify;
+}
+
+.aboutMeText{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.work-title{
+    color: #62ff88;
+    font-size: 1.2rem;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.work-description{
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.work-div:hover{
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.aboutMeImage{
+    /* filter: invert(10%) sepia(50%) saturate(50%) hue-rotate(80deg) brightness(100%) contrast(110%); */
+}
+
+.navbarDiv{
+    margin: 0;
+    padding: 0;
+    background: rgb(6, 53, 89);
+    background: linear-gradient(rgba(0,0,0,1) 0%, rgba(6, 53, 89, 1) 100%);
+}
+  
+.nav-item .nav-link{
+    color: white;
+    /* font-size: 20px; */
+    text-decoration: none;
+}
+.nav-item .nav-link:hover{
+    font-weight: bold;
+    color: rgb(0, 0, 0);
+    background-color: rgb(0, 255, 0);
+}
+
+.menu-button{
+	animation: pulse 2s infinite;
+    color: rgb(59, 255, 102);
+    font-size: 2rem;
+}
+
+@keyframes pulse {
+	0% {
+		    color: rgb(59, 255, 102);
+	}
+
+	70% {
+		color: rgba(255, 255, 255);
+	}
+
+	100% {
+		   color: rgba(59, 255, 102);
+	}
+}
+
+/* Content ........................................ */
+
+/* .content{
+    background-color: yellow;
+    overflow: hidden;
+    margin: 0;
+}
+
+.myWorks{
+    background-color: red;
+    overflow: hidden;
+    margin: 0;
+}
+.aboutMe{
+    background-color: green;
+}
+
+.contactMe{
+    background-color: pink;
+}
+.myFooter{
+    background-color: purple
+} */
+/* section divs ............................... */
+.introText{
+    width: 100%;
+}
+img{
+    padding: 0;
+    margin: 0 0 20px 0;
+}
+
+.social-icons-style{
+    font-size: 30px;
+    color: white;
+}
+
+.social-icons-list{
+    /* margin: 0 auto; */
+}
