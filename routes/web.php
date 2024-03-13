@@ -16,3 +16,5 @@ use App\Http\Controllers\PlantController;
 */
 
 Route::get('/', [PlantController::class, 'index']);
+Route::get('/plants_list', 'PlantController@index')->name('plants.index');
+

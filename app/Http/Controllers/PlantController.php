@@ -10,7 +10,7 @@ class PlantController extends Controller
 {
     public function index(){
         $plants = Plant::all();
-        return view('welcome',['plants' => $plants]);
+        return view('plants_list',['plants' => $plants]);
     }
 
     public function create() {
