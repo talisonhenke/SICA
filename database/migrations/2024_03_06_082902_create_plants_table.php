@@ -20,14 +20,13 @@ return new class extends Migration
             $table->string('habitat', 255);
             $table->text('useful_parts');
             $table->text('characteristics');
-            $table->text('article');
             $table->text('observations');
+            $table->text('popular_use');
             $table->text('chemical_composition');
             $table->text('contraindications');
             $table->text('mode_of_use');
-            $table->text('pharmacological_actions');
             $table->text('images');
-            $table->text('references');
+            $table->text('info_references');
             $table->string('tags', 255)->nullable();
             $table->timestamps();
         });

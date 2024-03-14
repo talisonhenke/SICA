@@ -16,5 +16,10 @@ use App\Http\Controllers\PlantController;
 */
 
 Route::get('/', [PlantController::class, 'index']);
-Route::get('/plants_list', 'PlantController@index')->name('plants.index');
+// Route::get('/', function(){
+//     return view('welcome');
+// });
+// Route::get('/plants_list', 'PlantController@index')->name('plants.index');
+Route::get('/plants_list', [PlantController::class, 'index']);
+Route::get('/plant_article', [PlantController::class, 'find']);
 
