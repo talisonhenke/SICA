@@ -21,5 +21,5 @@ Route::get('/', [PlantController::class, 'index']);
 // });
 // Route::get('/plants_list', 'PlantController@index')->name('plants.index');
 Route::get('/plants_list', [PlantController::class, 'index']);
-Route::get('/plant_article', [PlantController::class, 'find']);
+Route::get('/plant/{id}/{popular_name}', [PlantController::class, 'find']);
 

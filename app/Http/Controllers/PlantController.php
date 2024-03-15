@@ -14,9 +14,8 @@ class PlantController extends Controller
         return view('plants_list',['plants' => $plants]);
     }
 
-    public function find(){
-        $plants = Plant::where('id', 2)->get();
-        // echo $plant;
+    public function find($currentId){
+        $plants = Plant::where('id', $currentId)->get();
         return view('plant_article',['plants' => $plants]);
     }
 

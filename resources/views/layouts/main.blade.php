@@ -12,6 +12,6 @@
 			@include('includes.footer')
 		</div>
 	</div>
-	@include('includes.scripts')
 <body>
+	@include('includes.scripts')
 </html>

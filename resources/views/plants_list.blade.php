@@ -5,7 +5,7 @@
     <div class="mx-auto col-sm-12 col-md-12 col-lg-12 col-xl-10 border-top border-white py-4 overflow-hidden">
         <div class="list-group" id="plantList">
             @foreach ($plants as $plant)
-                <a href="#" class="list-group-item list-group-item-action text-center">{{ $plant->popular_name }} ({{ $plant->scientific_name }})</a>
+                <a href="/plant/{{ $plant->id }}/{{ $plant->popular_name }}" class="list-group-item list-group-item-action text-center">{{ $plant->popular_name }} ({{ $plant->scientific_name }})</a>
             @endforeach
         </div>
     </div>
