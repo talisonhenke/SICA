@@ -1,40 +1,5 @@
-<!DOCTYPE html>
-<html>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<head>
-	<link rel="stylesheet" href="styles/bootstrap-5.3.2-dist/css/bootstrap.css">
-	<link rel="stylesheet" href="styles/styles.css">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-</head>
-<body>
-	<div class="main">
-		<div class="navbarDiv d-sm-block d-md-block d-lg-flex d-xl-flex border-bottom border-white">
-			<nav class="navbarMy navbar navbar-expand-lg col-sm-12 col-md-12 col-lg-12 col-xl-12">
-				<p class="ms-3 mt-3 text-white navbar-brand">
-					Fitolib
-				</p>
-				  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
-					<!-- <span class="open-menu-button" id="my-toggler-icon"></span> -->
-					<i class="bi bi-list menu-button"></i>
-				  </button>
-				  <div class="collapse navbar-collapse text-xs-center text-sm-center text-lg-end mx-sm-0 mx-lg-3" id="navbarTogglerDemo01">
-					<ul class="navbar-nav me-auto mb-2 mb-lg-0 col-12 justify-content-end">
-					  <li class="nav-item text-center">
-						<a class="nav-link" href="#content">O que é fitoterapia?</a>
-					  </li>
-					  <li class="nav-item text-center">
-						<a class="nav-link" href="#myWorks">Mais populares</a>
-					  </li>
-					  <li class="nav-item text-center">
-						<a class="nav-link" href="#aboutMe">Sobre nós</a>
-					  </li>
-					  <li class="nav-item text-center">
-						<a class="nav-link" href="#contactMe">Contato</a>
-					  </li>
-					</ul>
-				  </div>
-			  </nav>
-		</div>
+@extends('layouts.main')
+@section('content')
 		<div id="content" class="content mx-auto col-sm-12 col-md-12 col-lg-12 col-xl-10 row mb-3 border-bottom border-white">
 			<h2 class="contentTitle text-center mt-4 mb-4">Entenda os benefícios da Fitoterapia.</h2>
 			<div class="personalSite col-sm-12 col-md-6 col-lg-6 col-xl-6">
@@ -51,6 +16,7 @@
 				</div>
 			</div>
 		</div>
+		{{-- TODO: Inserir fotos e links de ervas nessa seção --}}
 		<div id="myWorks" class="myWorks justify-content-center mx-auto col-sm-12 col-md-12 col-lg-12 col-xl-10 row mb-3 border-bottom border-white pb-4">
 			<h2 class="myWorksTitle">Mais populares</h2>
 			<div class="myWorksImages row row-cols-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2">
@@ -120,46 +86,4 @@
 				</div>
 			  </form>
 		</div>
-		<div id="myFooter" class="myFooter mx-auto col-sm-12 col-md-12 col-lg-12 col-xl-10 border-top border-white py-4 overflow-hidden">
-			<div class="row align-items-center d-block">
-			  <div class="col-12">
-				<ul class="nav justify-content-center list-unstyled">
-					<li class="mx-2"><a class="text-body-secondary" href="#"><i class="bi bi-whatsapp social-icons-style"></i></a></li>
-					<li class="mx-2"><a class="text-body-secondary" href="#"><i class="bi bi-instagram social-icons-style"></i></a></li>
-					<li class="mx-2"><a class="text-body-secondary" href="#"><i class="bi bi-linkedin social-icons-style"></i></a></li>
-					<li class="mx-2"><a class="text-body-secondary" href="#"><i class="bi bi-github social-icons-style"></i></a></li>
-					<li class="mx-2"><a class="text-body-secondary" href="#"><i class="bi bi-facebook social-icons-style"></i></a></li>
-				  </ul>
-			  </div>
-			  <div class="col-12 text-center">
-				<span class="text-white">&copy; 2024 Fitolib</span>
-			  </div>
-			</div>
-		</div>
-	</div>
-<body>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
-<script>
-	document.querySelector('.navbar-toggler').addEventListener('click', function(){ 
-	if(this.getAttribute('aria-expanded')) {
-		// document.querySelector('.navbar-nav').classList.toggle('bg-primary'); //troca cor quando menu aberto
-		document.querySelector('.navbar-toggler .menu-button').classList.toggle('bi-list');
-		document.querySelector('.navbar-toggler .menu-button').classList.toggle('bi-x-circle');
-	};
-	});
-</script>
-</html>
-{{-- @if (Route::has('login'))
-    <div class="hidden fixed top-0 right-0 px-6 py-4 sm:block">
-        @auth
-            <a href="{{ url('/home') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">Home</a>
-        @else
-            <a href="{{ route('login') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">Log in</a>
-
-            @if (Route::has('register'))
-                <a href="{{ route('register') }}" class="ml-4 text-sm text-gray-700 dark:text-gray-500 underline">Register</a>
-            @endif
-        @endauth
-    </div>
-@endif --}}
+@endsection

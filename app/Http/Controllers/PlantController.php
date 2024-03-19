@@ -11,15 +11,21 @@ class PlantController extends Controller
     public function index(){
         // $plants = Plant::all();
         $plants = Plant::query()->orderBy('popular_name', 'asc')->get();
-        return view('plants_list',['plants' => $plants]);
+        return view('plants.plants_list',['plants' => $plants]);
     }
 
-    public function find($currentId){
+    public function show($currentId){
         $plants = Plant::where('id', $currentId)->get();
-        return view('plant_article',['plants' => $plants]);
+        return view('plants.plant_article',['plants' => $plants]);
     }
 
     public function create() {
         return view('plants.create');
+    }
+
+    public function store(Request $request) {
+        $plant = new Plant;
+
+        $plant->popular_name = $request->popular_name;
     }
 }

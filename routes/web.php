@@ -15,11 +15,11 @@ use App\Http\Controllers\PlantController;
 |
 */
 
-Route::get('/', [PlantController::class, 'index']);
-// Route::get('/', function(){
-//     return view('welcome');
-// });
-// Route::get('/plants_list', 'PlantController@index')->name('plants.index');
-Route::get('/plants_list', [PlantController::class, 'index']);
-Route::get('/plant/{id}/{popular_name}', [PlantController::class, 'find']);
+Route::get('/', function(){
+    return view('welcome');
+});
 
+Route::get('/plants_list', [PlantController::class, 'index'])->name('plants.index');
+Route::get('/plant/{id}/{popular_name}', [PlantController::class, 'show'])->name('plants.show');
+Route::get('/add_plant', [PlantController::class, 'create'])->name('plants.create');
+Route::post('/add', [PlantController::class, 'store'])->name('plants.store');
