@@ -21,24 +21,24 @@
 			<h2 class="myWorksTitle">Mais populares</h2>
 			<div class="myWorksImages row row-cols-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2">
 				<div class="col mt-4 work-div">
-					<img class="img-fluid my-2" src="https://talisonhenkewp.files.wordpress.com/2023/11/corretor-vesao1.png?w=1024" alt="Corretor Rafael">
-					<span class="work-title d-block">Corretor Rafael</span>
-					<span class="work-description">Página de captura e contato.</span>
+					<img class="img-fluid my-2 w-100 popular-images" src="images/popular_plants/BOLDO-DO-CHILE.jpg" alt="Corretor Rafael">
+					<span class="work-title d-block">Boldo do Chile</span>
+					<span class="work-description">Digestivo, Calmante...</span>
 				</div>
 				<div class="col mt-4 work-div">
-					<img class="img-fluid my-2" src="https://talisonhenkewp.files.wordpress.com/2023/11/animepage.png?w=1024" alt="">
-					<span class="work-title d-block">Animes World</span>
-					<span class="work-description">Página de animes e entreterimento.</span>
+					<img class="img-fluid my-2 w-100 popular-images" src="images/popular_plants/QUEBRA-PEDRA1.jpg" alt="">
+					<span class="work-title d-block">Quebra Pedra</span>
+					<span class="work-description">Cólica, Depurativo, Diurético...</span>
 				</div>
 				<div class="col mt-4 work-div">
-					<img class="img-fluid my-2" src="https://talisonhenkewp.files.wordpress.com/2023/11/layout-alternativo-site.png?w=1024" alt="">
-					<span class="work-title d-block">Site CEEE</span>
-					<span class="work-description">Layout alternativo projetado para o antigo site da CEEE.</span>
+					<img class="img-fluid my-2 w-100 popular-images" src="images/popular_plants/ESPINHEIRA-SANTA3.jpg" alt="">
+					<span class="work-title d-block">Espinheira Santa</span>
+					<span class="work-description">Analgésico, Cicatrizante, Digestivo...</span>
 				</div>
 				<div class="col mt-4 work-div">
-					<img class="img-fluid my-2" src="https://talisonhenkewp.files.wordpress.com/2023/11/layout-email.png?w=1024" alt="">
-					<span class="work-title d-block">Codemail</span>
-					<span class="work-description">Layout serviço de email com HTML & CSS.</span>
+					<img class="img-fluid my-2 w-100 popular-images" src="images/popular_plants/MARCELA.jpg" alt="">
+					<span class="work-title d-block">Marcela</span>
+					<span class="work-description">Anti-inflamatório, Digestivo, Congestão...</span>
 				</div>
 			</div>
 		</div>

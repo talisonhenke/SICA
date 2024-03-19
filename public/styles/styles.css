@@ -43,6 +43,10 @@ p, h1, h2, h3, span{
     font-family: Arial, Helvetica, sans-serif;
 }
 
+.popular-images{
+    height: 350px;
+}
+
 .work-div:hover{
     background-color: rgba(255, 255, 255, 0.2);
 }
