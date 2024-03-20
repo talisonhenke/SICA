@@ -12,7 +12,7 @@
                     <strong class="mx-2">Nome Científico:</strong> {{ $plant->scientific_name }} <br>
                     <strong class="mx-2">Nome Popular:</strong> {{ $plant->popular_name }} <br>
                     <div class="article-img mx-auto col-sm-10 col-lg-6">
-                        <img src="" class="">
+                        <img src="/images/plants/{{ $plant->images }}" class="img-fluid article-image">
                     </div>
                     <div class="article-content mx-auto col-sm-10 col-lg-10">
                         <p class="article-text m-0">{{ $plant->popular_use }}</p>

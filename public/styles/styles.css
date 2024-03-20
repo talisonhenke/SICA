@@ -14,6 +14,13 @@ p, h1, h2, h3, span{
     color: white;
 }
 
+#success-alert{
+    position: absolute;
+    top: 90%;
+    right: 0;
+    z-index: 99;
+}
+
 /* Titles color -------------------------- */
 
 .contentTitle, .myWorksTitle, .aboutMeTitle, .contactMeTitle, .contactMeSubTitle, .personalSitetitle, .companySitetitle{
@@ -47,12 +54,21 @@ p, h1, h2, h3, span{
     height: 350px;
 }
 
+.article-image{
+    height: 100%;
+    width: 100%;
+}
+
 .work-div:hover{
     background-color: rgba(255, 255, 255, 0.2);
 }
 
 .aboutMeImage{
     /* filter: invert(10%) sepia(50%) saturate(50%) hue-rotate(80deg) brightness(100%) contrast(110%); */
+}
+
+.myFooter{
+    /* TODO: Posicionar o rodapé no fim de qualquer página */
 }
 
 .navbarDiv{
@@ -113,9 +129,7 @@ p, h1, h2, h3, span{
 .contactMe{
     background-color: pink;
 }
-.myFooter{
-    background-color: purple
-} */
+ */
 /* section divs ............................... */
 .introText{
     width: 100%;

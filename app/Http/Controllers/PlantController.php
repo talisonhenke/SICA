@@ -26,6 +26,30 @@ class PlantController extends Controller
     public function store(Request $request) {
         $plant = new Plant;
 
+        $plant->scientific_name = $request->scientific_name;
         $plant->popular_name = $request->popular_name;
+        $plant->habitat = $request->habitat;
+        $plant->useful_parts = $request->useful_parts;
+        $plant->characteristics = $request->characteristics;
+        $plant->observations = $request->observations;
+        $plant->popular_use = $request->popular_use;
+        $plant->chemical_composition = $request->chemical_composition;
+        $plant->contraindications = $request->contraindications;
+        $plant->mode_of_use = $request->mode_of_use;
+        $plant->info_references = $request->info_references;
+        $plant->tags = $request->tags;
+
+        // Image upload
+        if($request->hasFile('images') && $request->file('images')->isValid()){
+            $requestImage = $request->images;
+            $extension = $requestImage->extension();
+            $imageName = md5($requestImage->getClientOriginalName() . strtotime("now")) . "." . $extension;
+            $requestImage->move(public_path('images/plants'), $imageName);
+            $plant->images = $imageName;
+        }
+
+        $plant->save();
+
+        return redirect()->route('plants.index')->with('msg', 'Registro adicionado com sucesso!');
     }
 }
