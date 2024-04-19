@@ -23,7 +23,21 @@
                             </div>
                             <div class="form-group">
                                 <label for="useful_parts">Partes utilizadas</label>
-                                <input type="text" class="form-control" id="useful_parts" name="useful_parts">
+                                <div class="form-group">
+                                    <input type="checkbox" name="useful_parts[]" value="Folhas"> Folhas
+                                </div>
+                                <div class="form-group">
+                                    <input type="checkbox" name="useful_parts[]" value="Raízes"> Raízes
+                                </div>
+                                <div class="form-group">
+                                    <input type="checkbox" name="useful_parts[]" value="Sementes"> Sementes
+                                </div>
+                                <div class="form-group">
+                                    <input type="checkbox" name="useful_parts[]" value="Flores"> Flores
+                                </div>
+                                <div class="form-group">
+                                    <input type="checkbox" name="useful_parts[]" value="Ramos"> Ramos
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label for="characteristics">Características</label>

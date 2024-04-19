@@ -21,7 +21,13 @@
                 <div class="extra-info bg-white mb-2">
                     <div class="extra-info-style mx-2">
                         <div><strong>Habitat:</strong> {{ $plant->habitat }}</div>
-                        <div><strong>Partes Utilizadas:</strong> {{ $plant->useful_parts }}</div>
+                        <div><strong>Partes Utilizadas:</strong>
+                            <ul class="items-list">
+                                @foreach ($plant->useful_parts as $part)
+                                    <li><span class="uselful_parts_text">{{ $part }}</span></li>
+                                @endforeach
+                            </ul>
+                        </div>
                         <div><strong>Características:</strong> {{ $plant->characteristics }}</div>
                         <div><strong>Observações:</strong> {{ $plant->observations }}</div>
                         <div><strong>Composição Química:</strong> {{ $plant->chemical_composition }}</div>
