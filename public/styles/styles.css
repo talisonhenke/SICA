@@ -10,6 +10,11 @@ body{
     margin: 0;
     background-color: #063559;
 }
+/* .logo_colors{
+    color: #62ff88;
+    color: #ffe572;
+    color: #77d4ff;
+} */
 p, h1, h2, h3, span{
     color: white;
 }
@@ -42,6 +47,8 @@ p, h1, h2, h3, span{
 
 .work-title{
     color: #62ff88;
+    color: #ffe572;
+    color: #77d4ff;
     font-size: 1.2rem;
     font-family: Arial, Helvetica, sans-serif;
 }
@@ -87,6 +94,10 @@ p, h1, h2, h3, span{
     font-weight: bold;
     color: rgb(0, 0, 0);
     background-color: rgb(0, 255, 0);
+}
+
+.navbar-brand{
+    align-items: center;
 }
 
 .menu-button{
@@ -166,3 +177,51 @@ img{
 .uselful_parts_text{
 color: #000;
 }
+
+/* ---------------------------LOGIN PAGE--------------------------- */
+
+.gradient-custom-2 {
+    /* fallback for old browsers */
+    background: #fccb90;
+    
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: -webkit-linear-gradient(to right, #20532d , #665c2d, #39677c);
+    
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: linear-gradient(to right, #20532d , #665c2d, #39677c);
+    }
+    
+    /* Linha separando opção de login */
+    
+    .separator {
+      display: flex;
+      align-items: center;
+      text-align: center;
+    }
+    
+    .separator::before,
+    .separator::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid #000;
+    }
+    
+    .separator:not(:empty)::before {
+      margin-right: .25em;
+    }
+    
+    .separator:not(:empty)::after {
+      margin-left: .25em;
+    }
+    
+    @media (min-width: 768px) {
+    .gradient-form {
+    height: 100vh !important;
+    }
+    }
+    @media (min-width: 769px) {
+    .gradient-custom-2 {
+    border-top-right-radius: .3rem;
+    border-bottom-right-radius: .3rem;
+    }
+    }

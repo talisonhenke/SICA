@@ -18,7 +18,9 @@ use App\Http\Controllers\PlantController;
 Route::get('/', function(){
     return view('welcome');
 });
-
+Route::get('/login', function(){
+    return view('login');
+});
 Route::get('/plants_list', [PlantController::class, 'index'])->name('plants.index');
 Route::get('/plant/{id}/{popular_name}', [PlantController::class, 'show'])->name('plants.show');
 Route::get('/add_plant', [PlantController::class, 'create'])->name('plants.create');
