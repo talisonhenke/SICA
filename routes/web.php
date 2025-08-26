@@ -35,6 +35,8 @@ Route::get('/add_plant', [PlantController::class, 'create'])->name('plants.creat
 Route::post('/add', [PlantController::class, 'store'])->name('plants.store');
 Route::get('/edit_plant/{id}', [PlantController::class, 'edit'])->name('plants.edit');
 Route::post('/update/{id}', [PlantController::class, 'update'])->name('plants.update');
+Route::delete('/plant/{id}', [PlantController::class, 'destroy'])->name('plants.destroy');
+
 
 //Login routes
 

@@ -88,4 +88,18 @@ class PlantController extends Controller
     return redirect()->route('plants.index')->with('msg', 'Registro atualizado com sucesso!');
 }
 
+public function destroy($id)
+{
+    $plant = Plant::findOrFail($id);
+
+    // Se quiser, pode apagar a imagem associada
+    if ($plant->images && file_exists(public_path('images/plants/' . $plant->images))) {
+        unlink(public_path('images/plants/' . $plant->images));
+    }
+
+    $plant->delete();
+
+    return redirect()->route('plants.index')->with('msg', 'Registro apagado com sucesso!');
+}
+
 }
