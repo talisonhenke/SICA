@@ -9,7 +9,7 @@
                 <div class="card-body">
                     <form method="POST" action="{{ route('plants.update', $plant->id) }}" enctype="multipart/form-data">
                         @csrf
-                        @method('PUT')
+                        @method('POST')
 
                         <div class="form-group">
                             <label for="scientific_name">Nome Científico</label>
@@ -28,7 +28,7 @@
 
                         <div class="form-group">
                             <label for="useful_parts">Partes utilizadas</label>
-                            @php $useful_parts = json_decode($plant->useful_parts, true); @endphp
+                            @php $useful_parts = $plant->useful_parts; @endphp
                             <div class="form-group">
                                 <input type="checkbox" name="useful_parts[]" value="Folhas" {{ in_array('Folhas', $useful_parts) ? 'checked' : '' }}> Folhas
                             </div>
