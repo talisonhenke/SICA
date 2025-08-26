@@ -9,6 +9,6 @@
         </ul>
     </div> --}}
     <div class="col-12 text-center">
-      <span class="text-white">&copy; 2024 Fitolib</span>
+      <span class="text-white">&copy; 2025 S.I.C.A</span>
     </div>
 </div>
