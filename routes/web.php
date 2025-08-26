@@ -33,6 +33,8 @@ Route::get('/plants_list', [PlantController::class, 'index'])->name('plants.inde
 Route::get('/plant/{id}/{popular_name}', [PlantController::class, 'show'])->name('plants.show');
 Route::get('/add_plant', [PlantController::class, 'create'])->name('plants.create');
 Route::post('/add', [PlantController::class, 'store'])->name('plants.store');
+Route::get('/edit_plant/{id}', [PlantController::class, 'edit'])->name('plants.edit');
+Route::post('/update', [PlantController::class, 'update'])->name('plants.update');
 
 //Login routes
 

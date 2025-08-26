@@ -28,7 +28,7 @@ class LoginController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            return redirect()->intended('/'); // Redireciona para o dashboard
+            return redirect()->intended('/'); // Redireciona para o HOMEPAGE
         }
 
         return back()->withErrors([
@@ -47,9 +47,6 @@ class LoginController extends Controller
     public function redirectToGoogle()
     {
         return Socialite::driver('google')->redirect(); // Versão produção
-        // return Socialite::driver('google')->stateless()->with([
-        //     'verify' => false
-        // ])->redirect();
     }
 
     // Lida com a resposta da autenticação do Google
@@ -57,10 +54,6 @@ class LoginController extends Controller
     {
         try {
             $user = Socialite::driver('google')->stateless()->user();// Versão proodução
-
-            // $user = Socialite::driver('google')->stateless()->with([
-            //     'verify' => false
-            // ])->user();
 
             $findUser = User::where('email', $user->getEmail())->first();
 
@@ -71,6 +64,7 @@ class LoginController extends Controller
                 $newUser = User::create([
                     'name' => $user->getName(),
                     'email' => $user->getEmail(),
+                    'user_lvl' => 'member',
                     'permissions' => 'user',
                     'password' => Hash::make(uniqid()), // Senha gerada aleatoriamente
                 ]);

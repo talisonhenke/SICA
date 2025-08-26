@@ -15,11 +15,14 @@
                         <img src="/images/plants/{{ $plant->images }}" class="img-fluid article-image">
                     </div>
                     <div class="article-content mx-auto col-sm-10 col-lg-10">
-                        <p class="article-text m-0">{{ $plant->popular_use }}</p>
+                        {{-- <p class="article-text m-0">{{ $plant->popular_use }}</p> --}}
+                        <p class="article-text mx-0 mt-4">{!! nl2br(e($plant->popular_use)) !!}</p>
+                        <br>
                     </div>
                 </div>
                 <div class="extra-info bg-white mb-2">
-                    <div class="extra-info-style mx-2">
+                    <div class="extra-info-style mx-2 py-2">
+                        <div class="text-center"><h2 class="text-primary">Informações adicionais</h2></div>
                         <div><strong>Habitat:</strong> {{ $plant->habitat }}</div>
                         <div><strong>Partes Utilizadas:</strong>
                             <ul class="items-list">
