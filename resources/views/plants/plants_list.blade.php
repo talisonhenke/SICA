@@ -6,22 +6,36 @@
         <div class="list-group" id="plantList">
             <div id="no-result" class="list-group-item list-group-item-action text-center">Não encontrado...</div>
             @foreach ($plants as $plant)
-                <a href="#" class="list-group-item list-group-item-action justify-content-between align-items-center">{{ $plant->popular_name }} ({{ $plant->scientific_name }})
-                    <div class="plant_actions d-flex gap-2">
-                        <form action="{{ route('plants.edit', $plant->id) }}" method="GET">
-                            <button class="btn btn-sm btn-primary" type="submit">Editar</button>
-                        </form>
-                        <form action="{{ route('plants.destroy', $plant->id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este registro?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
-                        </form>
-                    </div>
-                </a>
+                @if(Auth::check() && Auth::user()->user_lvl === 'admin')
+                    <a href="/plant/{{ $plant->id }}/{{ $plant->popular_name }}" class="list-group-item list-group-item-action justify-content-between align-items-center">{{ $plant->popular_name }} ({{ $plant->scientific_name }})
+                        <div class="plant_actions d-flex gap-2">
+                            <form action="{{ route('plants.edit', $plant->id) }}" method="GET">
+                                <button class="btn btn-sm btn-primary" type="submit">Editar</button>
+                            </form>
+                            <form action="{{ route('plants.destroy', $plant->id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este registro?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                            </form>
+                        </div>
+                    </a>
+                @else
+                    <a href="/plant/{{ $plant->id }}/{{ $plant->popular_name }}" class="list-group-item list-group-item-action justify-content-center align-items-center">{{ $plant->popular_name }} ({{ $plant->scientific_name }})</a>
+                @endif
             @endforeach
         </div>
     </div>
 </div>
+
+{{-- Floating Action Button --}}
+@if(Auth::check() && Auth::user()->user_lvl === 'admin')
+    <a href="{{ route('plants.create') }}" 
+       class="btn btn-success rounded-circle shadow-lg d-flex justify-content-center align-items-center"
+       style="position: fixed; bottom: 80px; right: 30px; width: 60px; height: 60px; font-size: 30px; z-index: 1000;">
+        +
+    </a>
+@endif
+
 @endsection
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>

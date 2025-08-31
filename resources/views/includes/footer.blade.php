@@ -12,3 +12,10 @@
       <span class="text-white">&copy; 2025 S.I.C.A</span>
     </div>
 </div>
+<script>
+    @if(Auth::check())
+        console.log(@json(Auth::user()));
+    @else
+        console.log("Nenhum usuário logado.");
+    @endif
+</script>

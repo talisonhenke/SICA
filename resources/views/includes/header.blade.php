@@ -15,9 +15,11 @@
                 <li class="nav-item text-center">
                     <a class="nav-link" href="/plants_list">Lista de plantas</a>
                 </li>
-                <li class="nav-item text-center">
-                    <a class="nav-link" href="/add_plant">Adicionar</a>
-                </li>
+                @if(Auth::check() && Auth::user()->user_lvl === 'admin')
+                    <li class="nav-item text-center">
+                        <a class="nav-link" href="/add_plant">Adicionar</a>
+                    </li>
+                @endif
                 <li class="nav-item text-center">
                     <a class="nav-link" href="#aboutMe">Sobre nós</a>
                 </li>

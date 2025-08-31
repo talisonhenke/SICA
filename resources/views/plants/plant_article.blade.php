@@ -4,10 +4,29 @@
     <div class="row justify-content-center">
         <div class="col-md-10">
             @foreach ($plants as $plant)
-                <div class="bg-white article-header mt-3 mb-2">
-                    <p class="article-title text-black mx-2" style="text-transform:uppercase">{{ $plant->popular_name }}</p>
-                    <strong class="mx-2">Publicado em:</strong> {{ $plant->created_at}}
+                <div class="bg-white article-header mt-3 mb-2 d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="article-title text-black mx-2" style="text-transform:uppercase">{{ $plant->popular_name }}</p>
+                        <strong class="mx-2">Publicado em:</strong> {{ $plant->created_at}}
+                    </div>
+
+                    {{-- Verifica se o usuário está logado e se é admin --}}
+                    @if(Auth::check() && Auth::user()->user_lvl === 'admin')
+                        <div>
+                            {{-- Botão Editar --}}
+                            <a href="{{ route('plants.edit', $plant->id) }}" class="btn btn-sm btn-warning">Editar</a>
+
+                            {{-- Botão Excluir --}}
+                            <form action="{{ route('plants.destroy', $plant->id) }}" method="POST" style="display:inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger ms-2 me-4" onclick="return confirm('Tem certeza que deseja excluir esta planta?')">Excluir</button>
+                            </form>
+                        </div>
+                    @endif
                 </div>
+
+
                 <div class="bg-white article-body mb-2">
                     <strong class="mx-2">Nome Científico:</strong> {{ $plant->scientific_name }} <br>
                     <strong class="mx-2">Nome Popular:</strong> {{ $plant->popular_name }} <br>
@@ -15,11 +34,11 @@
                         <img src="/images/plants/{{ $plant->images }}" class="img-fluid article-image">
                     </div>
                     <div class="article-content mx-auto col-sm-10 col-lg-10">
-                        {{-- <p class="article-text m-0">{{ $plant->popular_use }}</p> --}}
                         <p class="article-text mx-0 mt-4">{!! nl2br(e($plant->popular_use)) !!}</p>
                         <br>
                     </div>
                 </div>
+
                 <div class="extra-info bg-white mb-2">
                     <div class="extra-info-style mx-2 py-2">
                         <div class="text-center"><h2 class="text-primary">Informações adicionais</h2></div>

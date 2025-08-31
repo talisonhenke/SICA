@@ -52,6 +52,9 @@ class PlantController extends Controller
             $requestImage->move(public_path('images/plants'), $imageName);
             $plant->images = $imageName;
         }
+        else{
+            $plant->images = "default.jpg";
+        }
 
         $plant->save();
 

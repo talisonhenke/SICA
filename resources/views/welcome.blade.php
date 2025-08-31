@@ -21,7 +21,7 @@
 			<h2 class="myWorksTitle">Mais populares</h2>
 			<div class="myWorksImages row row-cols-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2">
 				<div class="col mt-4 work-div">
-					<img class="img-fluid my-2 w-100 popular-images" src="images/popular_plants/BOLDO-DO-CHILE.jpg" alt="Corretor Rafael">
+					<img class="img-fluid my-2 w-100 popular-images" src="images/popular_plants/BOLDO-DO-CHILE.jpg" alt="Boldo do chile">
 					<span class="work-title d-block">Boldo do Chile</span>
 					<span class="work-description">Digestivo, Calmante...</span>
 				</div>
