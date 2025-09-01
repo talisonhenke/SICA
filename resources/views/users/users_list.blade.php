@@ -5,7 +5,8 @@
     <h1 class="text-center mb-4">Lista de Usuários</h1>
 
     @if(Auth::check() && Auth::user()->user_lvl === 'admin')
-        <table class="table table-striped table-bordered">
+        {{-- Tabela padrão (visível em md ou maior) --}}
+        <table class="table table-striped table-bordered d-none d-md-table">
             <thead class="table-dark">
                 <tr>
                     <th>ID</th>
@@ -24,7 +25,6 @@
                         <td>{{ $levels[$user->user_lvl] ?? $user->user_lvl }}</td>
                         <td class="d-flex gap-2">
                             {{-- Alterar nível de acesso --}}
-                            {{-- <form action="{{ route('users.update', $user->id) }}" method="POST" class="user-level-form"> --}}
                             <form action="{{ route('users.updateLevel', $user->id) }}" method="POST" class="user-level-form">
                                 @csrf
                                 @method('PATCH')
@@ -37,7 +37,6 @@
                                 </select>
                             </form>
                             {{-- Excluir usuário --}}
-                            {{-- <form action="{{ route('users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este usuário?');"> --}}
                             <form action="#" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este usuário?');">
                                 @csrf
                                 @method('DELETE')
@@ -48,6 +47,55 @@
                 @endforeach
             </tbody>
         </table>
+
+        {{-- Tabela alternativa (visível apenas em telas pequenas) --}}
+        <div class="d-block d-md-none">
+            @foreach($users as $user)
+                <table class="table table-bordered mb-4">
+                    <tbody>
+                        <tr>
+                            <td class="fw-bold table-dark">ID</td>
+                            <td>{{ $user->id }}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold table-dark">Nome</td>
+                            <td>{{ $user->name }}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold table-dark">Email</td>
+                            <td>{{ $user->email }}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold table-dark">Nível de Usuário</td>
+                            <td>{{ $levels[$user->user_lvl] ?? $user->user_lvl }}</td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold table-dark">Ações</td>
+                            <td class="d-flex gap-2">
+                                {{-- Alterar nível de acesso --}}
+                                <form action="{{ route('users.updateLevel', $user->id) }}" method="POST" class="user-level-form">
+                                    @csrf
+                                    @method('PATCH')
+                                    <select name="user_lvl" data-username="{{ $user->name }}" class="form-select form-select-sm">
+                                        @foreach(['member', 'moderator', 'admin'] as $level)
+                                            <option value="{{ $level }}" {{ $user->user_lvl == $level ? 'selected' : '' }}>
+                                                {{ $levels[$level] }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </form>
+                                {{-- Excluir usuário --}}
+                                <form action="#" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este usuário?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            @endforeach
+        </div>
     @else
         <div class="alert alert-danger text-center">
             Você não tem permissão para acessar esta página.
