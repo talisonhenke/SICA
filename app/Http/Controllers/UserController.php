@@ -12,7 +12,10 @@ class UserController extends Controller
     {
         if(Auth::check() && Auth::user()->user_lvl === 'admin') {
             // $users = User::all();
-            $users = User::where('id', '!=', 3)->get();
+            $users = User::where('is_owner', false)
+             ->orderBy('name')
+             ->get();
+
 
             $levels = [
                 'member' => 'Membro',

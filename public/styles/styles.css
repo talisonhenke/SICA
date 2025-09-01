@@ -106,6 +106,12 @@ p, h1, h2, h3, span{
     font-size: 2rem;
 }
 
+.menu-user-button{
+	animation: pulse 2s infinite;
+    color: rgb(59, 255, 102);
+    font-size: 1.4rem;
+}
+
 @keyframes pulse {
 	0% {
 		    color: rgb(59, 255, 102);

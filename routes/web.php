@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\LoginController;
 
 use App\Http\Controllers\PlantController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,4 +62,14 @@ Route::post('register', [RegisterController::class, 'register'])->name('register
 
 Route::get('/users_list', [UserController::class, 'index'])->name('users.index');
 Route::patch('/users/{user}/update-level', [UserController::class, 'updateLevel'])->name('users.updateLevel');
+
+// Rotas de edição de perfil
+
+    Route::middleware('auth')->group(function () {
+    Route::get('/edit_profile', [App\Http\Controllers\ProfileController::class, 'editProfile'])->name('profile.edit');
+    Route::patch('/profile/update-name', [App\Http\Controllers\ProfileController::class, 'updateName'])->name('profile.updateName');
+    Route::patch('/profile/update-password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.updatePassword');
+});
+
+
 
