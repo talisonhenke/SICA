@@ -21,8 +21,6 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'user_lvl',
-        'permissions',
     ];
 
     /**
@@ -33,6 +31,11 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+    ];
+
+    protected $attributes = [
+    'user_lvl' => '0',
+    'permissions' => 'none',
     ];
 
     /**

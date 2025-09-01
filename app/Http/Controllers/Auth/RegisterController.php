@@ -20,13 +20,15 @@ class RegisterController extends Controller
         ]);
 
         // Cria o novo usuário
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'user_lvl' => 'member',
-            'permissions' => 'user',
-            'password' => Hash::make($request->password_confirmation), //passwond_confirmation id
-        ]);
+
+        $user = new User;
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
+        $user->user_lvl = 'member';
+        $user->permissions = 'user';
+        $user->save(); // <-- Essa linha é que salva de fato no banco
+
 
         // Autentica o usuário
         Auth::login($user);

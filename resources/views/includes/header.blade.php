@@ -19,6 +19,9 @@
                     <li class="nav-item text-center">
                         <a class="nav-link" href="/add_plant">Adicionar</a>
                     </li>
+                    <li class="nav-item text-center">
+                        <a class="nav-link" href="/users_list">Lista de Usuários</a>
+                    </li>
                 @endif
                 <li class="nav-item text-center">
                     <a class="nav-link" href="#aboutMe">Sobre nós</a>

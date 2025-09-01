@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\LoginController;
 // Data Controllers
 
 use App\Http\Controllers\PlantController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,8 +51,14 @@ Route::get('auth/google/callback', [LoginController::class, 'handleGoogleCallbac
 
 // Rota para exibir o formulário de registro
 Route::get('register', function () {
-    return view('auth.register'); // Adicione a view de cadastro que vamos criar
+    return view('auth.register'); // View de cadastro
 })->name('register');
 
 // Rota para processar o cadastro
 Route::post('register', [RegisterController::class, 'register'])->name('register.post');
+
+//User routes
+
+Route::get('/users_list', [UserController::class, 'index'])->name('users.index');
+Route::patch('/users/{user}/update-level', [UserController::class, 'updateLevel'])->name('users.updateLevel');
+

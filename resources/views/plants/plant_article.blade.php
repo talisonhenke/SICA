@@ -1,8 +1,8 @@
 @extends('layouts.main')
 @section('content')
-<div class="container">
+<div class="container mx-0 px-0">
     <div class="row justify-content-center">
-        <div class="col-md-10">
+        <div class="col-md-10 col-sm-12">
             @foreach ($plants as $plant)
                 <div class="bg-white article-header mt-3 mb-2 d-flex justify-content-between align-items-center">
                     <div>
@@ -27,14 +27,27 @@
                 </div>
 
 
-                <div class="bg-white article-body mb-2">
-                    <strong class="mx-2">Nome Científico:</strong> {{ $plant->scientific_name }} <br>
-                    <strong class="mx-2">Nome Popular:</strong> {{ $plant->popular_name }} <br>
+                <div class="bg-white article-body mb-2 px-2">
+                    <strong class="mx-0">Nome Científico:</strong> {{ $plant->scientific_name }} <br>
+                    <strong class="mx-0">Nome Popular:</strong> {{ $plant->popular_name }} <br>
                     <div class="article-img mx-auto col-sm-10 col-lg-6">
                         <img src="/images/plants/{{ $plant->images }}" class="img-fluid article-image">
                     </div>
                     <div class="article-content mx-auto col-sm-10 col-lg-10">
-                        <p class="article-text mx-0 mt-4">{!! nl2br(e($plant->popular_use)) !!}</p>
+                        {{-- <p class="article-text mx-0 mt-4">{!! nl2br(e($plant->popular_use)) !!}</p> --}}
+                        @php
+                            // Quebra o texto em parágrafos
+                            $paragraphs = preg_split('/\r\n|\r|\n/', $plant->popular_use);
+
+                            // Remove linhas em branco (caso existam)
+                            $paragraphs = array_filter($paragraphs, fn($p) => trim($p) !== '');
+                        @endphp
+
+                        <div class="article-text mx-0 mt-4">
+                            @foreach ($paragraphs as $p)
+                                <p class="indent">{{ $p }}</p>
+                            @endforeach
+                        </div>
                         <br>
                     </div>
                 </div>

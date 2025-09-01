@@ -166,8 +166,18 @@ img{
     background-color: black;
 }
 /* .article-content{
-
+    color: #000;
 } */
+
+.article-text p {
+    text-indent: 0; /* recuo da primeira linha */
+    margin-bottom: 1em; /* espaço entre parágrafos */
+    color: #000;
+}
+
+.article-text p:first-of-type {
+  text-indent: 1em; /* indentação do primeiro parágrafo*/
+}
 
 .article-text{
     color: #000;

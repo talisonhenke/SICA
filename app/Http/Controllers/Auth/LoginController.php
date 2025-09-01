@@ -61,13 +61,13 @@ class LoginController extends Controller
                 Auth::login($findUser);
                 return redirect()->intended('/');
             } else {
-                $newUser = User::create([
-                    'name' => $user->getName(),
-                    'email' => $user->getEmail(),
-                    'user_lvl' => 'member',
-                    'permissions' => 'user',
-                    'password' => Hash::make(uniqid()), // Senha gerada aleatoriamente
-                ]);
+                $newUser = new User;
+                $newUser->name = $user->getName();
+                $newUser->email = $user->getEmail();
+                $newUser->user_lvl = 'member';
+                $newUser->permissions = 'user';
+                $newUser->password = Hash::make(uniqid());
+                $newUser->save();
 
                 Auth::login($newUser);
 
