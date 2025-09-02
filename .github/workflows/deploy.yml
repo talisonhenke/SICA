@@ -1,0 +1,38 @@
+name: 🚀 Deploy via FTP
+
+on:
+  push:
+    branches:
+      - main  # branch que dispara o deploy
+
+jobs:
+  ftp-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v3
+
+      # Passo 1: Envia tudo, menos a pasta public/
+      - name: Deploy do projeto (sem public)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.0
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./        # raiz local
+          server-dir: /        # raiz no FTP (ajustar se necessário)
+          exclude: |
+            **/.git*
+            **/.github*
+            node_modules/**
+            public/**
+
+      # Passo 2: Envia a pasta public → public_html
+      - name: Deploy da pasta public para public_html
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.0
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./public
+          server-dir: /public_html

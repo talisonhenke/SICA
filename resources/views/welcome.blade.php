@@ -58,7 +58,7 @@
 				<button type="button" class="btn btn-outline-light mb-4">Pesquisar</button>
 			</div>
 			<div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 text-center">
-				<img src="images/logo3.jpg" alt="" class="img-fluid aboutMeImage">
+				<img src="images/logo_sica.png" alt="" class="img-fluid aboutMeImage">
 			</div>
 		</div>
 		<div id="contactMe" class="contactMe mx-auto col-sm-12 col-md-12 col-lg-12 col-xl-10 row mb-3 justify-content-center">

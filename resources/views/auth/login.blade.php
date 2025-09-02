@@ -10,7 +10,7 @@
                 <div class="card-body mx-md-4">
   
                     <div class="text-center">
-                      <img src="../../images/logos/logo1.webp"
+                      <img src="../../images/logos/logo1.png"
                         style="width: 150px;" alt="logo">
                       <h4>S.I.C.A</h4>
                     </div>
@@ -48,7 +48,7 @@
               <div class="col-lg-6 d-flex align-items-center gradient-custom-2">
                 <div class="text-white px-3 py-1 p-md-1 mx-md-4">
                   <h4 class="mb-1">Sistema de informação sobre chás avaliados</h4>
-                  <p class="small mb-0">A melhor biblioteca online sobre plantas medicinais.</p>
+                  <p class="small mb-0">Biblioteca online de artigos sobre plantas medicinais.</p>
                 </div>
               </div>
             </div>
