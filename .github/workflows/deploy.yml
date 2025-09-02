@@ -21,7 +21,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21           # ajuste para a porta correta do seu servidor
           local-dir: ./      # raiz local
-          server-dir: ../    # uma pasta acima da raiz no FTP (ajustar se necessário)
+          server-dir: /      # raiz do FTP (ajustar se necessário)
           exclude: |
             **/.git*
             **/.github*
@@ -38,5 +38,5 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21           # ajuste para a porta correta do seu servidor
           local-dir: ./public/
-          server-dir: /
+          server-dir: /sica/
           force: true # garantir upload dos arquivos para o servidor
