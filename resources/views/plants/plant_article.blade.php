@@ -1,8 +1,8 @@
 @extends('layouts.main')
 @section('content')
 <div class="container mx-0 px-0">
-    <div class="row justify-content-center">
-        <div class="col-md-10 col-sm-12">
+    <div class="row justify-content-center p-0 m-0">
+        <div class="col-md-10 col-sm-12 overflow-hidden p-0 m-0">
             @foreach ($plants as $plant)
                 <div class="bg-white article-header mt-3 mb-2 d-flex justify-content-between align-items-center">
                     <div>
