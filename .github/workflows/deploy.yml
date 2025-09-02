@@ -20,8 +20,8 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21           # ajuste para a porta correta do seu servidor
-          local-dir: ./        # raiz local
-          server-dir: ../        # raiz no FTP (ajustar se necessário)
+          local-dir: ./      # raiz local
+          server-dir: ../    # raiz no FTP (ajustar se necessário)
           exclude: |
             **/.git*
             **/.github*
@@ -37,4 +37,4 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21           # ajuste para a porta correta do seu servidor
           local-dir: ./public/
-          server-dir: /public_html/
+          server-dir: /

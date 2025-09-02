@@ -1,6 +1,6 @@
 @extends('layouts.main')
 @section('content')
-<div class="container mx-0 px-0">
+<div class="container mx-auto px-0">
     <div class="row justify-content-center p-0 m-0">
         <div class="col-md-10 col-sm-12 overflow-hidden p-0 m-0">
             @foreach ($plants as $plant)
