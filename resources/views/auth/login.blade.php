@@ -47,6 +47,7 @@
               </div>
               <div class="col-lg-6 d-flex align-items-center gradient-custom-2">
                 <div class="text-white px-3 py-1 p-md-1 mx-md-4">
+                  {{-- Nome do sistema definido --}}
                   <h4 class="mb-1">Sistema de informação sobre chás avaliados</h4>
                   <p class="small mb-0">Biblioteca online de artigos sobre plantas medicinais.</p>
                 </div>

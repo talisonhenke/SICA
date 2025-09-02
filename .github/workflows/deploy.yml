@@ -27,7 +27,7 @@ jobs:
             **/.github*
             node_modules/**
             public/**
-        force: true
+          force: true # garantir upload dos arquivos para o servidor
 
       # Passo 2: Envia a pasta public → public_html
       - name: Deploy da pasta public para sica
@@ -39,4 +39,4 @@ jobs:
           port: 21           # ajuste para a porta correta do seu servidor
           local-dir: ./public/
           server-dir: /
-        force: true
+          force: true # garantir upload dos arquivos para o servidor
