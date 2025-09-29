@@ -4,15 +4,10 @@
     <div class="row justify-content-center p-0 m-0">
         <div class="col-md-10 col-sm-12 overflow-hidden p-0 m-0">
             @foreach ($plants as $plant)
-                <div class="bg-white article-header mt-3 mb-2 d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="article-title text-black mx-2" style="text-transform:uppercase">{{ $plant->popular_name }}</p>
-                        <strong class="mx-2">Publicado em:</strong> {{ $plant->created_at}}
-                    </div>
-
-                    {{-- Verifica se o usuário está logado e se é admin --}}
+                {{-- Verifica se o usuário está logado e se é admin --}}
                     @if(Auth::check() && Auth::user()->user_lvl === 'admin')
-                        <div>
+                        <div class="bg-light text-center py-2 mt-2">
+                            <h3 style="color: #000">Opções do administrador</h3>
                             {{-- Botão Editar --}}
                             <a href="{{ route('plants.edit', $plant->id) }}" class="btn btn-sm btn-warning">Editar</a>
 
@@ -24,6 +19,11 @@
                             </form>
                         </div>
                     @endif
+                <div class="bg-white article-header mt-3 mb-2 d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="article-title text-black mx-2" style="text-transform:uppercase">{{ $plant->popular_name }}</p>
+                        <strong class="mx-2">Publicado em:</strong> {{ $plant->created_at}}
+                    </div>
                 </div>
 
 

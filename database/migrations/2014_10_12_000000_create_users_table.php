@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('user_lvl')->default('0');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('permissions', 15);
             $table->boolean('is_owner')->default(false);
             $table->rememberToken();
             $table->timestamps();

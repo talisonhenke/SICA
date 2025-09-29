@@ -8,24 +8,25 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('plants_tags', function (Blueprint $table) {
-            $table->id();
+        Schema::create('plant_tag', function (Blueprint $table) {
+            $table->id(); // ID autoincrement
+            $table->foreignId('plant_id')->constrained('plants')->onDelete('cascade');
+            $table->foreignId('tag_id')->constrained('tags')->onDelete('cascade');
             $table->timestamps();
+
+            // Garantir que não haja duplicidade da mesma tag na mesma planta
+            $table->unique(['plant_id', 'tag_id']);
         });
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('plants_tags');
+        Schema::dropIfExists('plant_tag');
     }
 };

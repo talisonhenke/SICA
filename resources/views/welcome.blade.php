@@ -55,7 +55,7 @@
 					<li><a href=""><i class="bi bi-linkedin social-icons-style"></i></a></li>
 					<li><a href=""><i class="bi bi-facebook social-icons-style"></i></a></li>
 				</ul>
-				<button type="button" class="btn btn-outline-light mb-4">Pesquisar</button>
+				<button type="button" class="btn btn-light btn-lg mb-4 col-sm-6 col-md-6 col-lg-8 col-xl-8 fw-bold" onclick="window.location.href='/plants_list';">Lista de plantas</button>
 			</div>
 			<div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 text-center">
 				<img src="images/logo_sica.png" alt="" class="img-fluid aboutMeImage">

@@ -8,23 +8,21 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('tags', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->id(); // ID autoincrement
+            $table->string('name'); // Nome da tag (ex: "Dor de cabeça", "Calmante")
+            $table->text('description')->nullable(); // Descrição detalhada da tag (opcional)
+            $table->timestamps(); // created_at e updated_at
         });
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('tags');
     }

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('scientific_name', 255);
             $table->string('popular_name', 255);
             $table->string('habitat', 255);
-            $table->text('useful_parts');
+            $table->json('useful_parts'); // agora em formato JSON
             $table->text('characteristics');
             $table->text('observations');
             $table->text('popular_use');
@@ -27,8 +27,8 @@ return new class extends Migration
             $table->text('mode_of_use');
             $table->text('images');
             $table->text('info_references');
-            $table->string('tags', 255)->nullable();
-            $table->timestamps();
+            $table->text('qr_code')->nullable(); // pode ser link/identificador
+            $table->timestamps(); // created_at e updated_at
         });
     }
 

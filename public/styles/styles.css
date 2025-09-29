@@ -58,7 +58,8 @@ p, h1, h2, h3, span{
 }
 
 .popular-images{
-    height: 350px;
+    max-height: 350px;
+    min-height: 250px;
 }
 
 .article-image{
@@ -71,7 +72,8 @@ p, h1, h2, h3, span{
 }
 
 .aboutMeImage{
-    /* filter: invert(10%) sepia(50%) saturate(50%) hue-rotate(80deg) brightness(100%) contrast(110%); */
+    max-height: 350px;
+    min-height: 250px;
 }
 
 .myFooter{
