@@ -43,6 +43,7 @@ class PlantController extends Controller
         $plant->mode_of_use = $request->mode_of_use;
         $plant->info_references = $request->info_references;
         $plant->tags = $request->tags;
+        $plant->qr_code = $request->qr_code;
 
         // Image upload
         if($request->hasFile('images') && $request->file('images')->isValid()){
@@ -76,6 +77,7 @@ class PlantController extends Controller
     $plant->mode_of_use = $request->mode_of_use;
     $plant->info_references = $request->info_references;
     $plant->tags = $request->tags;
+    $plant->qr_code = $request->qr_code;
 
     // Image upload
     if($request->hasFile('images') && $request->file('images')->isValid()){
