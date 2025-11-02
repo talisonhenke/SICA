@@ -28,6 +28,16 @@ class PlantController extends Controller
         return view('plants.edit',['plants' => $plants]);
     }
 
+    public function search(Request $request) {
+        $query = $request->input('q');
+        $plants = Plant::where('popular_name', 'LIKE', "%{$query}%")
+                    ->orWhere('scientific_name', 'LIKE', "%{$query}%")
+                    ->get(['id', 'popular_name', 'scientific_name']);
+
+        return response()->json($plants);
+    }
+
+
     public function store(Request $request) {
         $plant = new Plant;
 

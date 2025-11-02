@@ -38,6 +38,7 @@ Route::post('/add', [PlantController::class, 'store'])->name('plants.store');
 Route::get('/edit_plant/{id}', [PlantController::class, 'edit'])->name('plants.edit');
 Route::post('/update/{id}', [PlantController::class, 'update'])->name('plants.update');
 Route::delete('/plant/{id}', [PlantController::class, 'destroy'])->name('plants.destroy');
+Route::get('/plants/search', [PlantController::class, 'search']); // busca de pantas na homepage
 
 
 //Login routes

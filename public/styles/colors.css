@@ -1,0 +1,21 @@
+:root {
+  /* Paleta principal */
+  --color-primary-dark: #063559;   /* Fundo principal – azul petróleo */
+  --color-primary: #0a4e7a;        /* Versão intermediária – menus e botões */
+  --color-primary-light: #1177b5;  /* Cor de destaque ou hover */
+  --color-accent: #f0b429;         /* Amarelo-dourado para contraste e destaques */
+  --color-secondary: #1d7874;      /* Verde-azulado natural – combina com fitoterapia */
+
+  /* Neutras */
+  --color-bg: #f8f9fa;             /* Fundo geral claro */
+  --color-surface: #ffffff;        /* Cartões, modais, painéis */
+  --color-text: #ffffff;           /* Texto sobre o fundo escuro */
+  --color-text-dark: #212529;      /* Texto sobre superfícies claras */
+  --color-muted: #adb5bd;          /* Texto secundário */
+
+  /* Estados */
+  --color-success: #28a745;
+  --color-danger: #dc3545;
+  --color-warning: #ffc107;
+  --color-info: #0dcaf0;
+}

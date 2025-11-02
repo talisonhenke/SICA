@@ -3,6 +3,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <head>
 	@include('includes.styles')
+	<title>S.I.C.A - Sistema de Informação Sobre Chás Avaliados</title>
+	<link rel="icon" type="image/png" href="{{ asset('images/logo_sica.png') }}">
+
 </head>
 <body>
 	<div class="main d-flex flex-column min-vh-100">
