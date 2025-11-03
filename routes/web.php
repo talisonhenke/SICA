@@ -13,6 +13,11 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\PlantController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TopicController;
+
+// Models
+use App\Models\Topic;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -25,12 +30,23 @@ use App\Http\Controllers\ProfileController;
 |
 */
 
-Route::get('/', function(){
-    return view('welcome');
-});
-// Route::get('/login', function(){
-//     return view('login');
+// Route::get('/', function(){
+//     return view('welcome');
 // });
+Route::get('/', function () {
+    // Pega até 2 tópicos em destaque
+    $featuredTopics = Topic::where('featured', true)
+        ->latest()
+        ->take(2)
+        ->get();
+
+    // Se não houver 2 em destaque, pega os últimos 2 criados
+    if ($featuredTopics->count() < 2) {
+        $featuredTopics = Topic::latest()->take(2)->get();
+    }
+
+    return view('welcome', compact('featuredTopics'));
+});
 Route::get('/plants_list', [PlantController::class, 'index'])->name('plants.index');
 Route::get('/plant/{id}/{slug}', [PlantController::class, 'show'])->name('plant.show');
 Route::get('/add_plant', [PlantController::class, 'create'])->name('plants.create');
@@ -71,6 +87,11 @@ Route::patch('/users/{user}/update-level', [UserController::class, 'updateLevel'
     Route::patch('/profile/update-name', [App\Http\Controllers\ProfileController::class, 'updateName'])->name('profile.updateName');
     Route::patch('/profile/update-password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.updatePassword');
 });
+
+//Topics routes
+
+Route::resource('topics', TopicController::class);
+Route::post('/topics/{topic}/toggle-featured', [TopicController::class, 'toggleFeatured'])->name('topics.toggleFeatured');
 
 
 

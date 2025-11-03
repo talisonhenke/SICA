@@ -108,6 +108,7 @@
             <ul class="navbar-nav mb-2 mb-lg-0 align-items-lg-center">
                 <li class="nav-item"><a class="nav-link" href="/">Página Inicial</a></li>
                 <li class="nav-item"><a class="nav-link" href="/plants_list">Lista de Plantas</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('topics.index') }}">Tópicos</a></li>
 
                 @if(Auth::check() && Auth::user()->user_lvl === 'admin')
                     <li class="nav-item"><a class="nav-link" href="/add_plant">Adicionar</a></li>

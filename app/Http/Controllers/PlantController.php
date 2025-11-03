@@ -251,6 +251,6 @@ if ($request->has('ordered_images')) {
 
         $plant->delete();
 
-        return redirect()->route('plants.index')->with('msg', 'Registro apagado com sucesso!');
+        return redirect()->route('plants.index')->with('msg', 'Registro excluído com sucesso!');
     }
 }

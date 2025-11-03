@@ -46,34 +46,43 @@
     </div>
 </div>
 
-{{-- Espaço para artigos (a ser preenchido futuramente) --}}
+{{-- Tópicos em Destaque --}}
 <div class="container my-5">
-    <h2 class="text-center mb-4">Artigos e Notícias</h2>
-    <div class="row">
-        {{-- Artigo 1 --}}
-        <div class="col-md-6 mb-4">
-            <div class="card h-100 shadow">
-                <img src="images/artigo1.jpg" class="card-img-top" alt="Artigo 1">
-                <div class="card-body">
-                    <h5 class="card-title">Título do Artigo 1</h5>
-                    <p class="card-text">Resumo breve do artigo. Pode falar sobre benefícios de uma planta específica ou uma novidade científica.</p>
-                    <a href="#" class="btn btn-primary">Ler mais</a>
+    <h2 class="text-center mb-4">Tópicos em Destaque</h2>
+
+    @if($featuredTopics->isEmpty())
+        <p class="text-center text-muted">Nenhum tópico disponível no momento.</p>
+    @else
+        <div class="row justify-content-center">
+            @foreach($featuredTopics as $topic)
+                <div class="col-md-6 col-lg-5 mb-4">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="ratio ratio-16x9">
+                            <img 
+                                src="{{ asset($topic->image) }}" 
+                                class="card-img-top rounded-top" 
+                                alt="{{ $topic->title }}" 
+                                style="object-fit: cover;"
+                            >
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title fw-bold">{{ $topic->title }}</h5>
+                            <p class="card-text text-muted mb-3">
+                                {{ Str::limit($topic->description, 140) }}
+                            </p>
+                            <div class="mt-auto">
+                                <a href="{{ route('topics.show', $topic->id) }}" class="btn btn-outline-success w-100">
+                                    Ler mais
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            @endforeach
         </div>
-        {{-- Artigo 2 --}}
-        <div class="col-md-6 mb-4">
-            <div class="card h-100 shadow">
-                <img src="images/artigo2.jpg" class="card-img-top" alt="Artigo 2">
-                <div class="card-body">
-                    <h5 class="card-title">Título do Artigo 2</h5>
-                    <p class="card-text">Resumo breve do artigo. Pode ser um estudo recente ou curiosidade sobre fitoterapia.</p>
-                    <a href="#" class="btn btn-primary">Ler mais</a>
-                </div>
-            </div>
-        </div>
-    </div>
+    @endif
 </div>
+
 
 @endsection
 
