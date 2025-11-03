@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('scientific_name', 255);
             $table->string('popular_name', 255);
+            $table->string('slug', 255);
             $table->string('habitat', 255);
             $table->json('useful_parts');
             $table->text('characteristics');

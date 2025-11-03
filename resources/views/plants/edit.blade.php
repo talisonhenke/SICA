@@ -93,9 +93,24 @@
                         {{-- QR Code --}}
                         <div class="form-group mb-3">
                             <label for="qr_code">QR Code (opcional)</label>
-                            <input type="text" class="form-control" id="qr_code" 
-                                   name="qr_code" value="{{ old('qr_code', $plant->qr_code) }}">
+
+                            <div class="input-group">
+                                <input type="text" 
+                                    class="form-control" 
+                                    id="qr_code" 
+                                    name="qr_code" 
+                                    value="{{ old('qr_code', $plant->qr_code) }}">
+
+                                <button type="button" class="btn btn-outline-primary" id="generateQrBtn">
+                                    Gerar QR Code Automático
+                                </button>
+                            </div>
+
+                            <small class="form-text text-muted">
+                                Clique no botão para gerar automaticamente o link de QR Code baseado na planta atual.
+                            </small>
                         </div>
+
 
                         {{-- Imagens --}}
                         <div class="form-group mb-3">
@@ -280,5 +295,28 @@ input.addEventListener('change', function(event) {
 renderPreviews();
 updateHiddenInputs();
 </script>
+
+{{-- Gerar qr-code automático --}}
+<script>
+document.getElementById('generateQrBtn').addEventListener('click', function() {
+    // Obtém os valores necessários da planta atual
+    const plantId = {{ $plant->id }};
+    const plantSlug = @json($plant->slug);
+
+    // Gera automaticamente a URL correta (seguindo o padrão do backend)
+    const baseUrl = window.location.origin; // Detecta se está em localhost ou domínio real
+    const generatedUrl = `${baseUrl}/plant/${plantId}/${plantSlug}`;
+
+    // Atualiza o campo de QR Code
+    const qrInput = document.getElementById('qr_code');
+    qrInput.value = generatedUrl;
+
+    // Feedback visual rápido
+    qrInput.classList.add('border-success');
+    qrInput.style.transition = "0.3s";
+    setTimeout(() => qrInput.classList.remove('border-success'), 1000);
+});
+</script>
+
 
 @endsection

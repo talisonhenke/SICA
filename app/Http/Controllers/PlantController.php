@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use App\Models\Plant;
 
 class PlantController extends Controller
@@ -16,11 +17,18 @@ class PlantController extends Controller
     }
 
     // Mostra uma planta específica
-    public function show($currentId)
-    {
-        $plants = Plant::where('id', $currentId)->get();
-        return view('plants.plant_article', ['plants' => $plants]);
+ public function show($id, $slug = null)
+{
+    $plant = Plant::findOrFail($id);
+
+    // Se você deseja forçar a URL canônica (com o slug atual do DB)
+    $actualSlug = $plant->slug ?? Str::slug($plant->popular_name, '-');
+    if ($slug === null || $slug !== $actualSlug) {
+        return redirect()->to(url("/plant/{$plant->id}/{$actualSlug}"));
     }
+
+    return view('plants.plant_article', ['plant' => $plant]);
+}
 
     // Formulário de criação
     public function create()
@@ -55,6 +63,7 @@ class PlantController extends Controller
 
     $plant->scientific_name = $request->scientific_name;
     $plant->popular_name = $request->popular_name;
+    
     $plant->habitat = $request->habitat;
     $plant->useful_parts = $request->useful_parts;
     $plant->characteristics = $request->characteristics;
@@ -67,8 +76,19 @@ class PlantController extends Controller
     $plant->qr_code = $request->qr_code;
     $plant->images = json_encode([]); // valor padrão temporário
 
+    $slug = Str::slug($plant->popular_name, '-');
+    $plant->slug = $slug; //padronizar links com espaços
+
     // Salva primeiro para gerar o ID
     $plant->save();
+
+    //Geração automática do qr-code
+    if($request->qr_code){
+        $plant->qr_code = $request->qr_code;
+    }
+    else{
+        $plant->qr_code = url("/plant/{$plant->id}/{$plant->slug}");
+    }
 
     $imagePaths = [];
 
@@ -127,6 +147,16 @@ class PlantController extends Controller
     $plant->mode_of_use = $request->mode_of_use;
     $plant->info_references = $request->info_references;
     $plant->qr_code = $request->qr_code;
+
+    $slug = Str::slug($plant->popular_name, '-');
+    $plant->slug = $slug; //padronizar links com espaços
+
+    if($request->qr_code){
+        $plant->qr_code = $request->qr_code;
+    }
+    else{
+        $plant->qr_code = url("/plant/{$plant->id}/{$plant->slug}");
+    }
 
     // Decodifica imagens existentes (garantindo array válido)
     $existingImages = json_decode($plant->images, true);

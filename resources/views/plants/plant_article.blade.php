@@ -3,7 +3,7 @@
 <div class="container mx-auto px-0">
     <div class="row justify-content-center p-0 m-0">
         <div class="col-md-10 col-sm-12 overflow-hidden p-0 m-0">
-            @foreach ($plants as $plant)
+            
                 {{-- Verifica se o usuário está logado e se é admin --}}
                     @if(Auth::check() && Auth::user()->user_lvl === 'admin')
                         <div class="bg-light text-center py-2 mt-2">
@@ -200,7 +200,6 @@
                         <div><strong>Tags:</strong> {{ $plant->tags }}</div>
                     </div>
                 </div>
-            @endforeach
         </div>
     </div>
 </div>

@@ -80,8 +80,18 @@
 
                         {{-- QR Code --}}
                         <div class="form-group mb-3">
-                            <label for="qr_code">QR Code (opcional)</label>
-                            <input type="text" class="form-control" id="qr_code" name="qr_code" placeholder="Link ou identificador do QR Code">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="manual_qr_toggle">
+                                <label class="form-check-label fw-semibold" for="manual_qr_toggle">
+                                    Definir QR Code manualmente
+                                </label>
+                            </div>
+
+                            <div id="qr_code_wrapper" class="d-none">
+                                <label for="qr_code">QR Code (opcional)</label>
+                                <input type="text" class="form-control" id="qr_code" name="qr_code" placeholder="Link ou identificador do QR Code manual">
+                                <small class="text-muted">Se não preencher, o QR Code será gerado automaticamente.</small>
+                            </div>
                         </div>
 
                         {{-- Imagens (até 5 arquivos) --}}
@@ -110,38 +120,91 @@
     </div>
 </div>
 
+<script>
+    //Comportamento do campo QR-code
+document.addEventListener('DOMContentLoaded', function () {
+    const toggle = document.getElementById('manual_qr_toggle');
+    const qrWrapper = document.getElementById('qr_code_wrapper');
+    const qrInput = document.getElementById('qr_code');
+
+    // Esconde inicialmente
+    qrWrapper.classList.add('d-none');
+    qrInput.disabled = true;
+
+    toggle.addEventListener('change', function () {
+        if (this.checked) {
+            qrWrapper.classList.remove('d-none');
+            qrInput.disabled = false;
+        } else {
+            qrWrapper.classList.add('d-none');
+            qrInput.disabled = true;
+            qrInput.value = ''; // limpa o valor se o usuário desmarcar
+        }
+    });
+});
+</script>
+
 {{-- Script de preview, remoção e ordenação --}}
 <script>
-let selectedImages = [];
+/* ---- Configuração inicial ---- */
+let selectedImages = []; // array de File
 const input = document.getElementById('images');
 const preview = document.getElementById('imagePreview');
 const errorMsg = document.getElementById('imageError');
+const form = document.querySelector('form');
 
-// Exibe as imagens
-// Preview sem limpar o input
-function renderPreviews(input) {
-    const previewContainer = document.getElementById('imagePreview');
-    previewContainer.innerHTML = '';
+/* ---- Renderiza previews (existente apenas em create: só selectedImages) ---- */
+function renderPreviews() {
+    preview.innerHTML = '';
 
-    for (const file of input.files) {
+    selectedImages.forEach((file, index) => {
+        const imgContainer = document.createElement('div');
+        imgContainer.className = 'position-relative d-inline-block m-1';
+        imgContainer.style.width = '120px';
+        imgContainer.style.height = '120px';
+        imgContainer.style.cursor = 'grab';
+        imgContainer.draggable = true;
+        imgContainer.dataset.index = index;
+
+        // events drag
+        imgContainer.addEventListener('dragstart', dragStart);
+        imgContainer.addEventListener('dragover', dragOver);
+        imgContainer.addEventListener('drop', drop);
+
+        const img = document.createElement('img');
+        img.className = 'rounded border';
+        img.style.width = '120px';
+        img.style.height = '120px';
+        img.style.objectFit = 'cover';
+
         const reader = new FileReader();
-        reader.onload = function (e) {
-            const img = document.createElement('img');
-            img.src = e.target.result;
-            img.classList.add('img-thumbnail', 'm-1');
-            img.style.width = '100px';
-            img.style.height = '100px';
-            previewContainer.appendChild(img);
-        };
+        reader.onload = e => img.src = e.target.result;
         reader.readAsDataURL(file);
-    }
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.innerHTML = '×';
+        removeBtn.className = 'btn btn-sm btn-danger position-absolute';
+        removeBtn.style.top = '2px';
+        removeBtn.style.right = '2px';
+        removeBtn.style.borderRadius = '50%';
+        removeBtn.addEventListener('click', () => {
+            selectedImages.splice(index, 1);
+            renderPreviews();
+        });
+
+        imgContainer.appendChild(img);
+        imgContainer.appendChild(removeBtn);
+        preview.appendChild(imgContainer);
+    });
 }
 
-// Drag and drop functions
+/* ---- Drag & Drop handlers ---- */
 let draggedIndex = null;
 
 function dragStart(e) {
-    draggedIndex = e.currentTarget.dataset.index;
+    draggedIndex = Number(e.currentTarget.dataset.index);
+    // para visual feedback
     e.dataTransfer.effectAllowed = 'move';
 }
 
@@ -152,35 +215,59 @@ function dragOver(e) {
 
 function drop(e) {
     e.preventDefault();
-    const targetIndex = e.currentTarget.dataset.index;
-    if (draggedIndex === targetIndex) return;
+    const targetIndex = Number(e.currentTarget.dataset.index);
+    if (draggedIndex === null || targetIndex === draggedIndex) return;
 
+    // Reordena selectedImages
     const draggedItem = selectedImages[draggedIndex];
     selectedImages.splice(draggedIndex, 1);
     selectedImages.splice(targetIndex, 0, draggedItem);
+
+    // Limpa draggedIndex e redesenha
+    draggedIndex = null;
     renderPreviews();
 }
 
-// Ao escolher novas imagens
+/* ---- Ao selecionar novos arquivos ---- */
 input.addEventListener('change', function(event) {
     const files = Array.from(event.target.files);
 
+    // valida limite
     if (selectedImages.length + files.length > 5) {
-        errorMsg.classList.remove('d-none');
-        input.value = '';
+        if (errorMsg) errorMsg.classList.remove('d-none');
+        // não adiciona os arquivos excedentes
         return;
     } else {
-        errorMsg.classList.add('d-none');
+        if (errorMsg) errorMsg.classList.add('d-none');
     }
 
+    // adiciona ao array
     selectedImages = selectedImages.concat(files);
     renderPreviews();
-    // input.value = ''; // reseta o input para permitir o reuso
+
+    // NÃO limpamos input aqui; vamos reconstruí-lo no submit via DataTransfer
 });
 
-// E aí, depois do envio do form:
-document.querySelector('form').addEventListener('submit', function () {
-    document.getElementById('images').value = ''; // limpa só depois de enviar
+/* ---- Antes do submit: substituir input.files pela ordem escolhida ---- */
+form.addEventListener('submit', function(e) {
+    // Se não houver imagens, nada a fazer
+    if (selectedImages.length === 0) {
+        // deixa o input como está (pode estar vazio)
+        return;
+    }
+
+    // Cria um DataTransfer e adiciona os arquivos na ordem desejada
+    const dt = new DataTransfer();
+    selectedImages.forEach(file => {
+        dt.items.add(file);
+    });
+
+    // Associa ao input (isso substituirá o filelist original)
+    input.files = dt.files;
+
+    // O formulário seguirá e enviará os arquivos na ordem definida
 });
 </script>
+
+
 @endsection
