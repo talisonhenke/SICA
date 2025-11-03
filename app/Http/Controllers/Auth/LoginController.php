@@ -66,7 +66,7 @@ class LoginController extends Controller
                 $newUser->email = $user->getEmail();
                 $newUser->user_lvl = 'member';
                 $newUser->permissions = 'user';
-                $user->is_owner = 'false';
+                $user->is_owner = false;
                 $newUser->password = Hash::make(uniqid());
                 $newUser->save();
 

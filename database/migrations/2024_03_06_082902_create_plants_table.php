@@ -18,14 +18,14 @@ return new class extends Migration
             $table->string('scientific_name', 255);
             $table->string('popular_name', 255);
             $table->string('habitat', 255);
-            $table->json('useful_parts'); // agora em formato JSON
+            $table->json('useful_parts');
             $table->text('characteristics');
             $table->text('observations');
             $table->text('popular_use');
             $table->text('chemical_composition');
             $table->text('contraindications');
             $table->text('mode_of_use');
-            $table->text('images');
+            $table->json('images');
             $table->text('info_references');
             $table->text('qr_code')->nullable(); // pode ser link/identificador
             $table->timestamps(); // created_at e updated_at

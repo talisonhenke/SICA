@@ -27,7 +27,7 @@ class RegisterController extends Controller
         $user->password = Hash::make($request->password);
         $user->user_lvl = 'member';
         $user->permissions = 'user';
-        $user->is_owner = 'false';
+        $user->is_owner = false;
         $user->save(); // <-- Essa linha é que salva de fato no banco
 
 

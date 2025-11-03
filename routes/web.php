@@ -36,9 +36,9 @@ Route::get('/plant/{id}/{popular_name}', [PlantController::class, 'show'])->name
 Route::get('/add_plant', [PlantController::class, 'create'])->name('plants.create');
 Route::post('/add', [PlantController::class, 'store'])->name('plants.store');
 Route::get('/edit_plant/{id}', [PlantController::class, 'edit'])->name('plants.edit');
-Route::post('/update/{id}', [PlantController::class, 'update'])->name('plants.update');
+Route::put('/update/{id}', [PlantController::class, 'update'])->name('plants.update');
 Route::delete('/plant/{id}', [PlantController::class, 'destroy'])->name('plants.destroy');
-Route::get('/plants/search', [PlantController::class, 'search']); // busca de pantas na homepage
+Route::get('/plants/search', [PlantController::class, 'search']); // busca de plantas na homepage
 
 
 //Login routes
