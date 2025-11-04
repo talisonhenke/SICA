@@ -185,15 +185,11 @@
 
                         {{-- Ações principais --}}
                         <div class="product-main-actions">
-                            <a href="{{ route('products.show', $product->id) }}" class="btn btn-view btn-sm">
-                                Ver produto
-                            </a>
-                            <form action="{{ route('cart.add', $product->id) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn btn-cart">
-                                    <i class="bi bi-cart-plus fs-5"></i>
-                                </button>
-                            </form>
+                            <a href="{{ route('products.show', $product->id) }}" class="btn btn-sm btn-primary">Ver Produto</a>
+                            <button class="btn btn-sm btn-success add-to-cart-btn" data-id="{{ $product->id }}">
+                                <i class="bi bi-cart"></i>
+                            </button>
+
                         </div>
 
                         {{-- Ações administrativas --}}
@@ -231,4 +227,42 @@ function toggleStatus(id) {
     .catch(error => console.error('Erro ao alterar status:', error));
 }
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const buttons = document.querySelectorAll('.add-to-cart-btn');
+
+    buttons.forEach(button => {
+        button.addEventListener('click', function () {
+            const productId = this.dataset.id;
+
+            fetch(`/cart/add/${productId}`, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Mostra uma notificação de sucesso
+                const alertBox = document.createElement('div');
+                alertBox.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 end-0 m-3';
+                alertBox.style.zIndex = '1050';
+                alertBox.innerHTML = `
+                    <strong>✔</strong> ${data.message || 'Produto adicionado ao carrinho!'}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                document.body.appendChild(alertBox);
+
+                // Remove o alerta depois de 3 segundos
+                setTimeout(() => {
+                    alertBox.classList.remove('show');
+                    alertBox.addEventListener('transitionend', () => alertBox.remove());
+                }, 3000);
+            })
+            .catch(error => console.error('Erro ao adicionar ao carrinho:', error));
+        });
+    });
+});
+</script>
+
 @endsection

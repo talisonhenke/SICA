@@ -8,7 +8,7 @@
 
         .navbar {
             transition: all 0.3s ease-in-out;
-            background-color: var(--color-primary) !important;
+            background-color: var(--color-secondary) !important;
         }
 
         /* Alinhamento perfeito do logo */
@@ -54,8 +54,8 @@
 
         .nav-link:hover,
         .nav-link:focus {
-            background-color: var(--color-primary-light);
-            color: var(--color-text) !important;
+            background-color: var(--color-accent);
+            /* color: var(--color-text) !important; */
         }
 
         .dropdown-menu {
@@ -116,8 +116,19 @@
                     <li class="nav-item"><a class="nav-link" href="/users_list">Usuários</a></li>
                 @endif
 
-                <li class="nav-item"><a class="nav-link" href="#aboutMe">Sobre Nós</a></li>
-                <li class="nav-item"><a class="nav-link" href="#contactMe">Contato</a></li>
+                {{-- <li class="nav-item"><a class="nav-link" href="#aboutMe">Sobre Nós</a></li> --}}
+                {{-- <li class="nav-item"><a class="nav-link" href="#contactMe">Contato</a></li> --}}
+
+                <li class="nav-item">
+                    <a class="nav-link position-relative" href="{{ route('cart.index') }}">
+                        <i class="bi bi-cart3"></i>
+                        @if(session('cart') && count(session('cart')) > 0)
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ count(session('cart')) }}
+                            </span>
+                        @endif
+                    </a>
+                </li>
 
                 {{-- Se o usuário estiver logado --}}
                 @if(Auth::check())

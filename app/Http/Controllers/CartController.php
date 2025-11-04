@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use App\Models\Product;
+
 class CartController extends Controller
 {
     /**
@@ -12,85 +14,67 @@ class CartController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        //
+{
+    // Recupera o carrinho da sessão, ou um array vazio se não existir
+    $cart = session()->get('cart', []);
+
+    // Calcula o total
+    $total = 0;
+    foreach ($cart as $item) {
+        $total += $item['price'] * $item['quantity'];
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+    // Retorna a view do carrinho, com as variáveis
+    return view('cart.index', compact('cart', 'total'));
+}
+
+public function add($id){
+    $product = Product::findOrFail($id);
+
+    $cart = session()->get('cart', []);
+
+    if (isset($cart[$id])) {
+        $cart[$id]['quantity']++;
+    } else {
+        $cart[$id] = [
+            "name" => $product->name,
+            "quantity" => 1,
+            "price" => $product->price,
+            "image" => $product->image,
+        ];
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+    session()->put('cart', $cart);
+
+    if (request()->ajax()) {
+        return response()->json(['message' => 'Produto adicionado ao carrinho!']);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
+    return redirect()->route('cart.index')->with('success', 'Produto adicionado ao carrinho!');
+}
+
+public function remove($id)
+{
+    // Recupera o carrinho atual da sessão
+    $cart = session()->get('cart', []);
+
+    // Se o produto existir no carrinho, remove ele
+    if (isset($cart[$id])) {
+        unset($cart[$id]);
+        session()->put('cart', $cart);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
+    // Redireciona de volta com mensagem
+    return redirect()->route('cart.index')->with('success', 'Produto removido do carrinho com sucesso!');
+}
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
+public function clear()
+{
+    // Remove completamente o carrinho da sessão
+    session()->forget('cart');
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
-    public function add(Request $request, $id)
-    {
-        $product = Product::findOrFail($id);
-        $quantity = $request->input('quantity', 1);
-
-        // Aqui você poderia integrar com o carrinho futuramente.
-        return redirect()
-            ->route('products.show', $id)
-            ->with('msg', "{$product->name} foi adicionado ao carrinho!");
-    }
-
+    // Redireciona de volta para o carrinho com mensagem de sucesso
+    return redirect()->route('cart.index')->with('success', 'Carrinho esvaziado com sucesso!');
+}
 
 }

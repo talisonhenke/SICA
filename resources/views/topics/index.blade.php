@@ -11,7 +11,7 @@
     .topics-title {
         text-align: center;
         font-weight: 700;
-        color: var(--color-primary);
+        color: var(--color-surface);
         margin-bottom: 2rem;
     }
 

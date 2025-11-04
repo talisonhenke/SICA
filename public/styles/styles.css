@@ -2,6 +2,7 @@ body{
     width: 100%;
     padding: 0;
     margin: 0;
+    font-family: 'Roboto', sans-serif;
 }
 .main{
     width: 100%;
@@ -11,11 +12,7 @@ body{
     /* background-color: #063559; */
     background-color: var(--color-primary-dark);
 }
-/* .logo_colors{
-    color: #62ff88;
-    color: #ffe572;
-    color: #77d4ff;
-} */
+
 p, h1, h2, h3, span{
     color: white;
 }
@@ -30,95 +27,21 @@ p, h1, h2, h3, span{
 /* Titles color -------------------------- */
 
 .contentTitle, .myWorksTitle, .aboutMeTitle, .contactMeTitle, .contactMeSubTitle, .personalSitetitle, .companySitetitle{
-    color: #62ff88;
+    /* color: #62ff88; */
+    color: var(--color-surface);
 }
 
 .form-label{
-    color: #62ff88;
+    /* color: #62ff88; */
+    color: var(--color-surface);
 }
 
 .personalSiteText, .companySiteText{
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
     text-align: justify;
-}
-
-.aboutMeText{
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-}
-
-.work-title{
-    color: #62ff88;
-    color: #ffe572;
-    color: #77d4ff;
-    font-size: 1.2rem;
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-.work-description{
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-.popular-images{
-    max-height: 350px;
-    min-height: 250px;
-}
-
-.article-image{
-    height: 100%;
-    width: 100%;
-}
-
-.work-div:hover{
-    background-color: rgba(255, 255, 255, 0.2);
-}
-
-.aboutMeImage{
-    max-height: 350px;
-    min-height: 250px;
 }
 
 .myFooter{
     /* TODO: Posicionar o rodapé no fim de qualquer página */
-}
-
-
-/* Content ........................................ */
-
-/* .content{
-    background-color: yellow;
-    overflow: hidden;
-    margin: 0;
-}
-
-.myWorks{
-    background-color: red;
-    overflow: hidden;
-    margin: 0;
-}
-.aboutMe{
-    background-color: green;
-}
-
-.contactMe{
-    background-color: pink;
-}
- */
-/* section divs ............................... */
-.introText{
-    width: 100%;
-}
-img{
-    padding: 0;
-    margin: 0 0 20px 0;
-}
-
-.social-icons-style{
-    font-size: 30px;
-    color: white;
-}
-
-.social-icons-list{
-    /* margin: 0 auto; */
 }
 
 /* Article styles */

@@ -169,7 +169,7 @@
         <p class="product-stock">Estoque disponível: {{ $product->stock }}</p>
 
         {{-- Adicionar ao carrinho --}}
-        <form action="{{ route('cart.add', $product->id) }}" method="POST" class="add-to-cart-form">
+        <form action="{{ route('cart.add', $product->id) }}" method="GET" class="add-to-cart-form">
             @csrf
             <input type="number" name="quantity" class="quantity-input" value="1" min="1" max="{{ $product->stock }}">
             <button type="submit" class="btn-add-cart">
