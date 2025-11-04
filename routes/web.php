@@ -14,6 +14,7 @@ use App\Http\Controllers\PlantController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TopicController;
+use App\Http\Controllers\ProductController;
 
 // Models
 use App\Models\Topic;
@@ -92,6 +93,16 @@ Route::patch('/users/{user}/update-level', [UserController::class, 'updateLevel'
 
 Route::resource('topics', TopicController::class);
 Route::post('/topics/{topic}/toggle-featured', [TopicController::class, 'toggleFeatured'])->name('topics.toggleFeatured');
+
+// Products routes
+
+Route::resource('products', ProductController::class);
+Route::post('/products/{id}/toggle-status', [ProductController::class, 'toggleStatus'])->name('products.toggleStatus');
+
+// Cart routes
+Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
+
+
 
 
 

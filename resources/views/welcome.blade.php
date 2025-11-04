@@ -29,23 +29,6 @@
   </div>
 </div>
 
-{{-- Seções originais (mantidas por enquanto) --}}
-<div id="content" class="content mx-auto col-sm-12 col-md-12 col-lg-12 col-xl-10 row mb-3 border-bottom border-white">
-    <h2 class="contentTitle text-center mt-4 mb-4">Entenda os benefícios da Fitoterapia.</h2>
-    <div class="personalSite col-sm-12 col-md-6 col-lg-6 col-xl-6">
-        <h3 class="personalSitetitle">O que é:</h3>
-        <div class="personalSiteText">
-            <p>Fitoterapia é uma técnica que estuda as funções terapêuticas das plantas e vegetais para prevenção e tratamento de doenças...</p>
-        </div>
-    </div>
-    <div class="companySite col-sm-12 col-md-6 col-lg-6 col-xl-6">
-        <h3 class="companySitetitle">Origem</h3>
-        <div class="companySiteText">
-            <p>O termo tem origem grega: “phyton”, que significa “vegetal”, e “therapeia”, que remete a “tratamento”.</p>
-        </div>
-    </div>
-</div>
-
 {{-- Tópicos em Destaque --}}
 <div class="container my-5">
     <h2 class="text-center mb-4">Tópicos em Destaque</h2>
@@ -81,6 +64,24 @@
             @endforeach
         </div>
     @endif
+</div>
+
+{{-- Seções originais (mantidas por enquanto) --}}
+<div id="content" class="content mx-auto col-sm-12 col-md-12 col-lg-12 col-xl-10 row mb-3 border-bottom border-white">
+    <h2 class="contentTitle text-center mt-4 mb-4">Entenda os benefícios da Fitoterapia.</h2>
+    <div class="personalSite col-sm-12 col-md-6 col-lg-6 col-xl-6">
+        <h3 class="personalSitetitle">O que é:</h3>
+        <div class="personalSiteText">
+            <p>Fitoterapia é uma técnica que estuda as funções terapêuticas das plantas e vegetais para prevenção e tratamento de doenças. Médicos, nutricionistas, farmacêuticos, fisioterapeutas e outros profissionais são capacitados para indicar fitoterápicos aos seus pacientes, com o objetivo de melhorar o organismo, ajudar no combate de doenças e atuar na prevenção de problemas de saúde.</p>
+        </div>
+    </div>
+    <div class="companySite col-sm-12 col-md-6 col-lg-6 col-xl-6">
+        <h3 class="companySitetitle">Origem</h3>
+        <div class="companySiteText">
+            <p>O termo tem origem grega: “phyton”, que significa “vegetal”, e “therapeia”, que remete a “tratamento”. Desta forma, a técnica tem como base uma cultura milenar de uso das plantas para cuidar da saúde.</p>
+            <p>Vale destacar que a fitoterapia é somada a estudos e análises no campo científico continuamente. Neste contexto, as pesquisas avaliam a atuação química, toxicológica e farmacológica das plantas medicinais e dos princípios ativos.</p>
+        </div>
+    </div>
 </div>
 
 
