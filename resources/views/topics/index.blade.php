@@ -39,7 +39,7 @@
     .topic-image {
         width: 100%;
         height: 200px;
-        object-fit: cover;
+        object-fit: contain;
     }
 
     .topic-body {
@@ -136,7 +136,7 @@
 
     <div class="topics-grid">
         @foreach($topics as $topic)
-            <div class="topic-card">
+            <div class="topic-card col-md-4 col-sm-12">
                 @if($topic->image)
                     <img src="{{ asset('images/topics/' . $topic->id . '/' . basename($topic->image)) }}" 
                          alt="{{ $topic->title }}" class="topic-image">
