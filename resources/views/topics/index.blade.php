@@ -16,9 +16,9 @@
     }
 
     .topics-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-        gap: 1.5rem;
+        /* display: grid; */
+        /* grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); */
+        /* gap: 1.5rem; */
     }
 
     .topic-card {
@@ -26,8 +26,8 @@
         border-radius: 1rem;
         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         overflow: hidden;
-        display: flex;
-        flex-direction: column;
+        width: 100%;
+        margin: 0 auto;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
@@ -134,9 +134,10 @@
         <div class="alert alert-success text-center">{{ session('success') }}</div>
     @endif
 
-    <div class="topics-grid">
+    <div class="topics-grid mx-auto row col-12 row-cols-sm-12 row-cols-md-4">
         @foreach($topics as $topic)
-            <div class="topic-card col-md-4 col-sm-12">
+            <div class="col-sm-12 col-md-6 col-lg-4 mb-2">
+                <div class="topic-card">
                 @if($topic->image)
                     <img src="{{ asset('images/topics/' . $topic->id . '/' . basename($topic->image)) }}" 
                          alt="{{ $topic->title }}" class="topic-image">
@@ -161,7 +162,7 @@
                             <label for="featured_{{ $topic->id }}">Destaque</label>
                         </div>
                         <div>
-                            <a href="{{ route('topics.edit', $topic->id) }}" class="btn btn-warning btn-sm me-1">
+                            <a href="{{ route('topics.edit', $topic->id) }}" class="btn btn-warning btn-sm">
                                 <i class="bi bi-pencil-square"></i> Editar
                             </a>
                             <form action="{{ route('topics.destroy', $topic->id) }}" method="POST" class="d-inline">
@@ -174,6 +175,8 @@
                     </div>
                 @endif
             </div>
+            </div>
+            
         @endforeach
     </div>
 </div>
