@@ -2,101 +2,207 @@
 
 @section('content')
 <style>
-    .edit-container {
-        max-width: 700px;
-        margin: 2rem auto;
+    .create-topic-container {
+        max-width: 800px;
+        margin: 3rem auto;
         background-color: var(--color-surface);
-        padding: 2rem;
+        padding: 2.5rem;
         border-radius: 1rem;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
     }
 
-    .edit-container h2 {
-        color: var(--color-primary);
-        font-weight: 700;
+    .create-topic-title {
         text-align: center;
-        margin-bottom: 1.5rem;
+        color: var(--color-secondary);
+        font-weight: 800;
+        font-size: 2rem;
+        margin-bottom: 2rem;
     }
 
-    .form-label {
-        font-weight: 500;
+    label {
+        font-weight: 600;
+        color: var(--color-primary-dark);
+        margin-bottom: 0.4rem;
+        display: block;
+    }
+
+    .form-control {
+        border: 1px solid var(--color-muted);
+        border-radius: 0.6rem;
+        background-color: var(--color-bg);
         color: var(--color-text);
+        transition: all 0.3s ease;
     }
 
-    .image-preview {
+    .form-control:focus {
+        border-color: var(--color-accent);
+        box-shadow: 0 0 0 0.2rem rgba(108, 139, 88, 0.25);
+        background-color: #fff;
+        color: var(--color-text-dark);
+    }
+
+    /* Campos com erro */
+    .is-invalid {
+        border-color: var(--color-danger) !important;
+        box-shadow: 0 0 0 0.2rem rgba(217, 83, 79, 0.25);
+    }
+
+    .invalid-feedback {
+        color: var(--color-danger);
+        font-size: 0.9rem;
+        margin-top: 0.3rem;
+        font-weight: 500;
+    }
+
+    textarea.form-control {
+        resize: vertical;
+    }
+
+    .btn-submit {
+        background-color: var(--color-accent);
+        color: #fff;
+        font-weight: 600;
+        border: none;
+        border-radius: 0.6rem;
+        padding: 0.75rem 1.5rem;
+        transition: background 0.3s ease, transform 0.1s ease;
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .btn-submit:hover {
+        background-color: var(--color-secondary);
+        transform: translateY(-2px);
+    }
+
+    .btn-submit:active {
+        transform: translateY(0);
+    }
+
+    .btn-cancel {
+    display: block;
+    text-align: center;
+    width: 100%;
+    margin-top: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.6rem;
+    background-color: #ccc;
+    color: #333;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.3s ease, transform 0.1s ease;
+}
+
+.btn-cancel:hover {
+    background-color: #b0b0b0;
+    transform: translateY(-2px);
+}
+
+.btn-cancel:active {
+    transform: translateY(0);
+}
+
+    .file-label {
+        display: block;
+        background-color: var(--color-primary-light);
+        color: #fff;
+        padding: 0.6rem 1rem;
+        border-radius: 0.5rem;
+        text-align: center;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        font-weight: 600;
+    }
+
+    .file-label:hover {
+        background-color: var(--color-primary);
+    }
+
+    input[type="file"] {
+        display: none;
+    }
+
+    .preview-image {
         display: block;
         margin: 1rem auto;
-        max-width: 50%;
-        height: 50%;
-        object-fit: cover;
-        border-radius: 0.75rem;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        max-width: 100%;
+        border-radius: 0.5rem;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
     }
 
-    .btn-success {
+    .text-muted {
+        font-size: 0.85rem;
+        color: var(--color-muted);
+        text-align: center;
         display: block;
-        width: 100%;
-        padding: 0.75rem;
-        font-size: 1.05rem;
-        font-weight: 600;
-        border-radius: 0.6rem;
+        margin-top: 0.5rem;
     }
 </style>
 
-<div class="edit-container">
-    <h2>Editar Tópico</h2>
+<div class="create-topic-container">
+    <h2 class="create-topic-title">📝 Editar Tópico</h2>
 
-    <form action="{{ route('topics.update', $topic->id) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('topics.update', $topic->id) }}" method="POST" enctype="multipart/form-data" novalidate>
         @csrf
         @method('PUT')
 
-        <div class="form-group mb-3">
-            <label for="title" class="form-label">Título</label>
-            <input type="text" class="form-control" name="title" value="{{ old('title', $topic->title) }}" required>
+        <div class="form-group mb-4">
+            <label for="title">Título</label>
+            <input type="text" class="form-control @error('title') is-invalid @enderror"
+                   name="title" value="{{ old('title', $topic->title) }}" placeholder="Digite o título do tópico..." required>
+            @error('title')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
 
-        <div class="form-group mb-3">
-            <label for="description" class="form-label">Descrição</label>
-            <textarea class="form-control" name="description" rows="3" required>{{ old('description', $topic->description) }}</textarea>
+        <div class="form-group mb-4">
+            <label for="description">Descrição</label>
+            <textarea class="form-control @error('description') is-invalid @enderror"
+                      name="description" rows="3" placeholder="Uma breve descrição sobre o conteúdo..." required>{{ old('description', $topic->description) }}</textarea>
+            @error('description')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
 
-        <div class="form-group mb-3">
-            <label for="content" class="form-label">Conteúdo</label>
-            <textarea class="form-control" name="content" rows="6" required>{{ old('content', $topic->content) }}</textarea>
+        <div class="form-group mb-4">
+            <label for="content">Conteúdo</label>
+            <textarea class="form-control @error('content') is-invalid @enderror"
+                      name="content" rows="5" placeholder="Escreva aqui o conteúdo completo do tópico..." required>{{ old('content', $topic->content) }}</textarea>
+            @error('content')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
 
-        <div class="form-group mb-3">
-            <label for="image" class="form-label">Imagem do Tópico</label>
-            <input type="file" class="form-control" id="image" name="image" accept="image/*">
-            
-            {{-- Preview da imagem atual --}}
+        <div class="form-group mb-4 text-center">
+            <label for="image" class="file-label">📷 Alterar Imagem do Tópico</label>
+            <input type="file" id="image" name="image" accept="image/*">
+
             @if($topic->image)
-                <img src="{{ asset($topic->image) }}" id="imagePreview" alt="Pré-visualização da Imagem" class="image-preview">
+                <img id="preview" src="{{ asset($topic->image) }}" class="preview-image" alt="Imagem atual do tópico">
+                <small class="text-muted">A imagem atual será substituída se uma nova for escolhida.</small>
             @else
-                <img id="imagePreview" alt="Pré-visualização da Imagem" class="image-preview" style="display:none;">
+                <img id="preview" class="preview-image d-none" alt="Prévia da imagem">
             @endif
 
-            <small class="text-muted d-block mt-1">
-                Selecione uma nova imagem apenas se desejar substituir a atual.
-            </small>
+            @error('image')
+                <div class="invalid-feedback d-block text-center">{{ $message }}</div>
+            @enderror
         </div>
 
-        <button type="submit" class="btn btn-success">Salvar Alterações</button>
+        <button type="submit" class="btn-submit" id="submitBtn">💾 Atualizar Tópico</button>
+        <a href="{{ route('topics.index') }}" class="btn-cancel">❌ Cancelar</a>
     </form>
 </div>
 
 <script>
-document.getElementById('image').addEventListener('change', function (event) {
-    const preview = document.getElementById('imagePreview');
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = e => {
-            preview.src = e.target.result;
-            preview.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-    }
-});
+    // Preview da nova imagem
+    document.getElementById('image').addEventListener('change', function (event) {
+        const [file] = event.target.files;
+        const preview = document.getElementById('preview');
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+            preview.classList.remove('d-none');
+        }
+    });
 </script>
 @endsection

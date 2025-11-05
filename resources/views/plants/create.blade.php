@@ -112,7 +112,7 @@
                             <input type="text" class="form-control" id="info_references" name="info_references">
                         </div>
 
-                        <button type="submit" class="btn btn-success">Salvar Planta</button>
+                        <button type="submit" class="btn btn-success" id="submitBtn">Salvar Planta</button>
                     </form>
                 </div>
             </div>

@@ -75,3 +75,32 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+{{-- Botões de submit com delay para evitar cliques fantasma --}}
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+    // Seleciona todos os botões de submit com o ID "submitBtn"
+    const buttons = document.querySelectorAll('#submitBtn');
+
+    buttons.forEach(button => {
+        const form = button.closest('form');
+        if (!form) return; // ignora se não estiver dentro de um formulário
+
+        form.addEventListener('submit', function () {
+            // Desativa o botão
+            button.disabled = true;
+            // Mostra texto com spinner (animação de carregamento)
+            button.innerHTML = `
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Salvando...
+            `;
+
+            // Reativa após 8s (caso o servidor demore ou ocorra erro)
+            setTimeout(() => {
+                button.disabled = false;
+                button.innerHTML = 'Salvar Tópico';
+            }, 8000);
+        });
+    });
+});
+</script>

@@ -74,7 +74,7 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Atualizar Produto</button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">Atualizar Produto</button>
                     </form>
                 </div>
             </div>

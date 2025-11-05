@@ -92,8 +92,13 @@ Route::patch('/users/{user}/update-level', [UserController::class, 'updateLevel'
 });
 
 //Topics routes
-
-Route::resource('topics', TopicController::class);
+Route::get('/topics', [TopicController::class, 'index'])->name('topics.index');
+Route::get('/topics/create', [TopicController::class, 'create'])->name('topics.create');
+Route::post('/topics', [TopicController::class, 'store'])->name('topics.store');
+Route::get('/topics/{topic}', [TopicController::class, 'show'])->name('topics.show');
+Route::get('/topics/{topic}/edit', [TopicController::class, 'edit'])->name('topics.edit');
+Route::put('/topics/{topic}', [TopicController::class, 'update'])->name('topics.update');
+Route::delete('/topics/{topic}', [TopicController::class, 'destroy'])->name('topics.destroy');
 Route::post('/topics/{topic}/toggle-featured', [TopicController::class, 'toggleFeatured'])->name('topics.toggleFeatured');
 
 // Products routes

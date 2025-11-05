@@ -144,7 +144,7 @@
                                    name="info_references" value="{{ old('info_references', $plant->info_references) }}">
                         </div>
 
-                        <button type="submit" class="btn btn-success">Salvar Alterações</button>
+                        <button type="submit" class="btn btn-success" id="submitBtn">Salvar Alterações</button>
                     </form>
                     @endforeach
                 </div>
