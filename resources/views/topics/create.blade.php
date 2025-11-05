@@ -151,6 +151,7 @@
         </div>
 
         <button type="submit" class="btn-submit" id="submitBtn">💾 Salvar Tópico</button>
+        <a href="{{ route('topics.index') }}" class="btn-cancel">❌ Cancelar</a>
     </form>
 </div>
 

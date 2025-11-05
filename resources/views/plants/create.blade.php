@@ -1,133 +1,311 @@
 @extends('layouts.main')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8 my-4">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white fw-bold">
-                    Adicionar Nova Planta
+<style>
+    .create-plant-container {
+        max-width: 850px;
+        margin: 3rem auto;
+        background-color: var(--color-surface);
+        padding: 2.5rem;
+        border-radius: 1rem;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .create-plant-title {
+        text-align: center;
+        color: var(--color-secondary);
+        font-weight: 800;
+        font-size: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    label {
+        font-weight: 600;
+        color: var(--color-primary-dark);
+        margin-bottom: 0.4rem;
+        display: block;
+    }
+
+    .form-control {
+        border: 1px solid var(--color-muted);
+        border-radius: 0.6rem;
+        background-color: var(--color-bg);
+        color: var(--color-text);
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: var(--color-accent);
+        box-shadow: 0 0 0 0.2rem rgba(108, 139, 88, 0.25);
+        background-color: #fff;
+        color: var(--color-text-dark);
+    }
+
+    textarea.form-control {
+        resize: vertical;
+    }
+
+    .file-label {
+        display: block;
+        background-color: var(--color-primary-light);
+        color: #fff;
+        padding: 0.6rem 1rem;
+        border-radius: 0.5rem;
+        text-align: center;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        font-weight: 600;
+    }
+
+    .file-label:hover {
+        background-color: var(--color-primary);
+    }
+
+    input[type="file"] {
+        display: none;
+    }
+
+    .btn-submit {
+        background-color: var(--color-accent);
+        color: #fff;
+        font-weight: 600;
+        border: none;
+        border-radius: 0.6rem;
+        padding: 0.75rem 1.5rem;
+        transition: background 0.3s ease, transform 0.1s ease;
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .btn-submit:hover {
+        background-color: var(--color-secondary);
+        transform: translateY(-2px);
+    }
+
+    .btn-submit:active {
+        transform: translateY(0);
+    }
+
+    .image-preview-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        margin-top: 1rem;
+        justify-content: center;
+    }
+
+    .preview-item {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        cursor: grab;
+        border: 2px solid transparent;
+        transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .preview-item.dragging {
+        opacity: 0.6;
+        transform: scale(0.95);
+    }
+
+    .preview-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 0.5rem;
+    }
+
+    .remove-btn {
+        position: absolute;
+        top: 3px;
+        right: 3px;
+        background-color: var(--color-danger);
+        border: none;
+        color: #fff;
+        font-size: 0.9rem;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+    }
+
+.is-invalid {
+    border-color: var(--color-danger) !important;
+    box-shadow: 0 0 0 0.2rem rgba(217, 83, 79, 0.25);
+}    
+.invalid-feedback {
+    color: var(--color-danger);
+    font-size: 0.9rem;
+    margin-top: 0.3rem;
+    font-weight: 500;
+}
+</style>
+
+<div class="create-plant-container">
+    <h2 class="create-plant-title">🌱 Adicionar Nova Planta</h2>
+
+    <form method="POST" action="{{ route('plants.store') }}" enctype="multipart/form-data" novalidate>
+        @csrf
+
+        {{-- Nome Científico --}}
+        <div class="form-group mb-3">
+            <label for="scientific_name">Nome Científico</label>
+            <input required type="text" class="form-control @error('scientific_name') is-invalid @enderror" id="scientific_name" name="scientific_name"
+                value="{{ old('scientific_name') }}">
+            @error('scientific_name')
+                <small class="invalid-feedback">{{ $message }}</small>
+            @enderror
+        </div>
+
+        {{-- Nome Popular --}}
+        <div class="form-group mb-3">
+            <label for="popular_name">Nome Popular</label>
+            <input type="text" class="form-control @error('popular_name') is-invalid @enderror" id="popular_name" name="popular_name"
+                value="{{ old('popular_name') }}" required>
+            @error('popular_name')
+                <small class="invalid-feedback">{{ $message }}</small>
+            @enderror
+        </div>
+
+        {{-- Habitat --}}
+        <div class="form-group mb-3">
+            <label for="habitat">Habitat</label>
+            <textarea class="form-control @error('habitat') is-invalid @enderror" id="habitat" name="habitat" rows="3" required>{{ old('habitat') }}</textarea>
+            @error('habitat')
+                <small class="invalid-feedback">{{ $message }}</small>
+            @enderror
+        </div>
+
+        {{-- Partes Utilizadas --}}
+        <div class="form-group mb-3">
+            <label>Partes Utilizadas</label><br>
+            @foreach(['Folhas', 'Raízes', 'Sementes', 'Flores', 'Ramos'] as $parte)
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="useful_parts[]" value="{{ $parte }}"
+                        id="parte_{{ $parte }}"
+                        {{ in_array($parte, old('useful_parts', [])) ? 'checked' : '' }}>
+                    <label class="form-check-label" for="parte_{{ $parte }}">{{ $parte }}</label>
                 </div>
+            @endforeach
+            @error('useful_parts')
+                <small class="invalid-feedback d-block">{{ $message }}</small>
+            @enderror
+        </div>
 
-                <div class="card-body">
-                    <form method="POST" action="{{ route('plants.store') }}" enctype="multipart/form-data">
-                        @csrf
+        {{-- Características --}}
+        <div class="form-group mb-3">
+            <label for="characteristics">Características</label>
+            <textarea class="form-control @error('characteristics') is-invalid @enderror" id="characteristics" name="characteristics" rows="3" required>{{ old('characteristics') }}</textarea>
+            @error('characteristics')
+                <small class="invalid-feedback">{{ $message }}</small>
+            @enderror
+        </div>
 
-                        {{-- Nome científico --}}
-                        <div class="form-group mb-3">
-                            <label for="scientific_name">Nome Científico</label>
-                            <input type="text" class="form-control" id="scientific_name" name="scientific_name" required>
-                        </div>
+        {{-- Observações --}}
+        <div class="form-group mb-3">
+            <label for="observations">Observações</label>
+            <textarea class="form-control @error('observations') is-invalid @enderror" id="observations" name="observations" rows="3" required>{{ old('observations') }}</textarea>
+            @error('observations')
+                <small class="invalid-feedback">{{ $message }}</small>
+            @enderror
+        </div>
 
-                        {{-- Nome popular --}}
-                        <div class="form-group mb-3">
-                            <label for="popular_name">Nome Popular</label>
-                            <input type="text" class="form-control" id="popular_name" name="popular_name" required>
-                        </div>
+        {{-- Uso Popular --}}
+        <div class="form-group mb-3">
+            <label for="popular_use">Uso Popular</label>
+            <textarea class="form-control @error('popular_use') is-invalid @enderror" id="popular_use" name="popular_use" rows="6" required>{{ old('popular_use') }}</textarea>
+            @error('popular_use')
+                <small class="invalid-feedback">{{ $message }}</small>
+            @enderror
+        </div>
 
-                        {{-- Habitat --}}
-                        <div class="form-group mb-3">
-                            <label for="habitat">Habitat</label>
-                            <textarea class="form-control" id="habitat" name="habitat" rows="3" required></textarea>
-                        </div>
+        {{-- Composição Química --}}
+        <div class="form-group mb-3">
+            <label for="chemical_composition">Composição Química</label>
+            <input type="text" class="form-control @error('chemical_composition') is-invalid @enderror" id="chemical_composition" name="chemical_composition"
+                value="{{ old('chemical_composition') }}">
+            @error('chemical_composition')
+                <small class="invalid-feedback">{{ $message }}</small>
+            @enderror
+        </div>
 
-                        {{-- Partes utilizadas --}}
-                        <div class="form-group mb-3">
-                            <label>Partes Utilizadas</label><br>
-                            @foreach(['Folhas', 'Raízes', 'Sementes', 'Flores', 'Ramos'] as $parte)
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" name="useful_parts[]" value="{{ $parte }}" id="parte_{{ $parte }}">
-                                    <label class="form-check-label" for="parte_{{ $parte }}">{{ $parte }}</label>
-                                </div>
-                            @endforeach
-                        </div>
+        {{-- Contraindicações --}}
+        <div class="form-group mb-3">
+            <label for="contraindications">Contraindicações</label>
+            <input type="text" class="form-control @error('contraindications') is-invalid @enderror" id="contraindications" name="contraindications"
+                value="{{ old('contraindications') }}">
+            @error('contraindications')
+                <small class="invalid-feedback">{{ $message }}</small>
+            @enderror
+        </div>
 
-                        {{-- Características --}}
-                        <div class="form-group mb-3">
-                            <label for="characteristics">Características</label>
-                            <textarea class="form-control" id="characteristics" name="characteristics" rows="3"></textarea>
-                        </div>
+        {{-- Modos de Uso --}}
+        <div class="form-group mb-3">
+            <label for="mode_of_use">Modos de Uso</label>
+            <input type="text" class="form-control @error('mode_of_use') is-invalid @enderror" id="mode_of_use" name="mode_of_use"
+                value="{{ old('mode_of_use') }}">
+            @error('mode_of_use')
+                <small class="invalid-feedback">{{ $message }}</small>
+            @enderror
+        </div>
 
-                        {{-- Observações --}}
-                        <div class="form-group mb-3">
-                            <label for="observations">Observações</label>
-                            <textarea class="form-control" id="observations" name="observations" rows="3"></textarea>
-                        </div>
+        {{-- QR Code manual --}}
+        <div class="form-group mb-3">
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="manual_qr_toggle">
+                <label class="form-check-label fw-semibold" for="manual_qr_toggle">
+                    Definir QR Code manualmente
+                </label>
+            </div>
 
-                        {{-- Uso popular --}}
-                        <div class="form-group mb-3">
-                            <label for="popular_use">Uso Popular</label>
-                            <textarea class="form-control" id="popular_use" name="popular_use" rows="6"></textarea>
-                        </div>
-
-                        {{-- Composição química --}}
-                        <div class="form-group mb-3">
-                            <label for="chemical_composition">Composição Química</label>
-                            <input type="text" class="form-control" id="chemical_composition" name="chemical_composition">
-                        </div>
-
-                        {{-- Contraindicações --}}
-                        <div class="form-group mb-3">
-                            <label for="contraindications">Contraindicações</label>
-                            <input type="text" class="form-control" id="contraindications" name="contraindications">
-                        </div>
-
-                        {{-- Modo de uso --}}
-                        <div class="form-group mb-3">
-                            <label for="mode_of_use">Modos de Uso</label>
-                            <input type="text" class="form-control" id="mode_of_use" name="mode_of_use">
-                        </div>
-
-                        {{-- QR Code --}}
-                        <div class="form-group mb-3">
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" id="manual_qr_toggle">
-                                <label class="form-check-label fw-semibold" for="manual_qr_toggle">
-                                    Definir QR Code manualmente
-                                </label>
-                            </div>
-
-                            <div id="qr_code_wrapper" class="d-none">
-                                <label for="qr_code">QR Code (opcional)</label>
-                                <input type="text" class="form-control" id="qr_code" name="qr_code" placeholder="Link ou identificador do QR Code manual">
-                                <small class="text-muted">Se não preencher, o QR Code será gerado automaticamente.</small>
-                            </div>
-                        </div>
-
-                        {{-- Imagens (até 5 arquivos) --}}
-                        <div class="form-group mb-3">
-                            <label for="images">Imagens (máximo 5)</label>
-                            <input type="file" class="form-control" id="images" name="images[]" accept="image/*" multiple>
-
-                            {{-- Mensagem de erro --}}
-                            <small id="imageError" class="text-danger d-none">Você pode selecionar no máximo 5 imagens.</small>
-
-                            {{-- Preview das imagens --}}
-                            <div id="imagePreview" class="d-flex flex-wrap gap-2 mt-3"></div>
-                        </div>
-
-                        {{-- Referências --}}
-                        <div class="form-group mb-4">
-                            <label for="info_references">Referências</label>
-                            <input type="text" class="form-control" id="info_references" name="info_references">
-                        </div>
-
-                        <button type="submit" class="btn btn-success" id="submitBtn">Salvar Planta</button>
-                    </form>
-                </div>
+            <div id="qr_code_wrapper" class="d-none">
+                <label for="qr_code">QR Code (opcional)</label>
+                <input type="text" class="form-control" id="qr_code" name="qr_code"
+                    placeholder="Link ou identificador do QR Code manual"
+                    value="{{ old('qr_code') }}">
+                <small class="text-muted">Se não preencher, o QR Code será gerado automaticamente.</small>
             </div>
         </div>
-    </div>
+
+        {{-- Imagens --}}
+        <div class="form-group mb-3">
+            <label for="images" class="file-label">📸 Escolher Imagens (máximo 5)</label>
+            <input type="file" id="images" name="images[]" accept="image/*" multiple required>
+            @error('images.*')
+                <small class="invalid-feedback">{{ $message }}</small>
+            @enderror
+            <small id="imageError" class="invalid-feedback d-none">Você pode selecionar no máximo 5 imagens.</small>
+            <div id="imagePreview" class="image-preview-container"></div>
+        </div>
+
+        {{-- Referências --}}
+        <div class="form-group mb-3">
+            <label for="info_references">Referências</label>
+            <input type="text" class="form-control @error('info_references') is-invalid @enderror" id="info_references" name="info_references"
+                value="{{ old('info_references') }}" required>
+            @error('info_references')
+                <small class="invalid-feedback">{{ $message }}</small>
+            @enderror
+        </div>
+
+        <button type="submit" class="btn-submit" id="submitBtn">💾 Salvar Planta</button>
+        <a href="{{ route('plants.index') }}" class="btn-cancel">❌ Cancelar</a>
+    </form>
 </div>
 
+{{-- Scripts --}}
 <script>
-    //Comportamento do campo QR-code
 document.addEventListener('DOMContentLoaded', function () {
+    // QR Code manual toggle
     const toggle = document.getElementById('manual_qr_toggle');
     const qrWrapper = document.getElementById('qr_code_wrapper');
     const qrInput = document.getElementById('qr_code');
 
-    // Esconde inicialmente
     qrWrapper.classList.add('d-none');
     qrInput.disabled = true;
 
@@ -138,136 +316,78 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             qrWrapper.classList.add('d-none');
             qrInput.disabled = true;
-            qrInput.value = ''; // limpa o valor se o usuário desmarcar
+            qrInput.value = '';
         }
     });
-});
-</script>
 
-{{-- Script de preview, remoção e ordenação --}}
-<script>
-/* ---- Configuração inicial ---- */
-let selectedImages = []; // array de File
-const input = document.getElementById('images');
-const preview = document.getElementById('imagePreview');
-const errorMsg = document.getElementById('imageError');
-const form = document.querySelector('form');
+    // Imagens com preview e limite
+    let selectedImages = [];
+    const input = document.getElementById('images');
+    const preview = document.getElementById('imagePreview');
+    const errorMsg = document.getElementById('imageError');
+    const form = document.querySelector('form');
+    let draggedIndex = null;
 
-/* ---- Renderiza previews (existente apenas em create: só selectedImages) ---- */
-function renderPreviews() {
-    preview.innerHTML = '';
+    function renderPreviews() {
+        preview.innerHTML = '';
+        selectedImages.forEach((file, index) => {
+            const div = document.createElement('div');
+            div.className = 'preview-item';
+            div.draggable = true;
+            div.dataset.index = index;
 
-    selectedImages.forEach((file, index) => {
-        const imgContainer = document.createElement('div');
-        imgContainer.className = 'position-relative d-inline-block m-1';
-        imgContainer.style.width = '120px';
-        imgContainer.style.height = '120px';
-        imgContainer.style.cursor = 'grab';
-        imgContainer.draggable = true;
-        imgContainer.dataset.index = index;
+            const img = document.createElement('img');
+            const reader = new FileReader();
+            reader.onload = e => img.src = e.target.result;
+            reader.readAsDataURL(file);
 
-        // events drag
-        imgContainer.addEventListener('dragstart', dragStart);
-        imgContainer.addEventListener('dragover', dragOver);
-        imgContainer.addEventListener('drop', drop);
+            const remove = document.createElement('button');
+            remove.className = 'remove-btn';
+            remove.innerHTML = '×';
+            remove.addEventListener('click', () => {
+                selectedImages.splice(index, 1);
+                renderPreviews();
+            });
 
-        const img = document.createElement('img');
-        img.className = 'rounded border';
-        img.style.width = '120px';
-        img.style.height = '120px';
-        img.style.objectFit = 'cover';
+            div.addEventListener('dragstart', e => {
+                draggedIndex = index;
+                div.classList.add('dragging');
+            });
+            div.addEventListener('dragend', () => div.classList.remove('dragging'));
+            div.addEventListener('dragover', e => e.preventDefault());
+            div.addEventListener('drop', e => {
+                e.preventDefault();
+                const targetIndex = Number(div.dataset.index);
+                const dragged = selectedImages[draggedIndex];
+                selectedImages.splice(draggedIndex, 1);
+                selectedImages.splice(targetIndex, 0, dragged);
+                renderPreviews();
+            });
 
-        const reader = new FileReader();
-        reader.onload = e => img.src = e.target.result;
-        reader.readAsDataURL(file);
-
-        const removeBtn = document.createElement('button');
-        removeBtn.type = 'button';
-        removeBtn.innerHTML = '×';
-        removeBtn.className = 'btn btn-sm btn-danger position-absolute';
-        removeBtn.style.top = '2px';
-        removeBtn.style.right = '2px';
-        removeBtn.style.borderRadius = '50%';
-        removeBtn.addEventListener('click', () => {
-            selectedImages.splice(index, 1);
-            renderPreviews();
+            div.appendChild(img);
+            div.appendChild(remove);
+            preview.appendChild(div);
         });
-
-        imgContainer.appendChild(img);
-        imgContainer.appendChild(removeBtn);
-        preview.appendChild(imgContainer);
-    });
-}
-
-/* ---- Drag & Drop handlers ---- */
-let draggedIndex = null;
-
-function dragStart(e) {
-    draggedIndex = Number(e.currentTarget.dataset.index);
-    // para visual feedback
-    e.dataTransfer.effectAllowed = 'move';
-}
-
-function dragOver(e) {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-}
-
-function drop(e) {
-    e.preventDefault();
-    const targetIndex = Number(e.currentTarget.dataset.index);
-    if (draggedIndex === null || targetIndex === draggedIndex) return;
-
-    // Reordena selectedImages
-    const draggedItem = selectedImages[draggedIndex];
-    selectedImages.splice(draggedIndex, 1);
-    selectedImages.splice(targetIndex, 0, draggedItem);
-
-    // Limpa draggedIndex e redesenha
-    draggedIndex = null;
-    renderPreviews();
-}
-
-/* ---- Ao selecionar novos arquivos ---- */
-input.addEventListener('change', function(event) {
-    const files = Array.from(event.target.files);
-
-    // valida limite
-    if (selectedImages.length + files.length > 5) {
-        if (errorMsg) errorMsg.classList.remove('d-none');
-        // não adiciona os arquivos excedentes
-        return;
-    } else {
-        if (errorMsg) errorMsg.classList.add('d-none');
     }
 
-    // adiciona ao array
-    selectedImages = selectedImages.concat(files);
-    renderPreviews();
-
-    // NÃO limpamos input aqui; vamos reconstruí-lo no submit via DataTransfer
-});
-
-/* ---- Antes do submit: substituir input.files pela ordem escolhida ---- */
-form.addEventListener('submit', function(e) {
-    // Se não houver imagens, nada a fazer
-    if (selectedImages.length === 0) {
-        // deixa o input como está (pode estar vazio)
-        return;
-    }
-
-    // Cria um DataTransfer e adiciona os arquivos na ordem desejada
-    const dt = new DataTransfer();
-    selectedImages.forEach(file => {
-        dt.items.add(file);
+    input.addEventListener('change', e => {
+        const files = Array.from(e.target.files);
+        if (selectedImages.length + files.length > 5) {
+            errorMsg.classList.remove('d-none');
+            return;
+        } else {
+            errorMsg.classList.add('d-none');
+        }
+        selectedImages = selectedImages.concat(files);
+        renderPreviews();
     });
 
-    // Associa ao input (isso substituirá o filelist original)
-    input.files = dt.files;
-
-    // O formulário seguirá e enviará os arquivos na ordem definida
+    form.addEventListener('submit', e => {
+        if (selectedImages.length === 0) return;
+        const dt = new DataTransfer();
+        selectedImages.forEach(f => dt.items.add(f));
+        input.files = dt.files;
+    });
 });
 </script>
-
-
 @endsection

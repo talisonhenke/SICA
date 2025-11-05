@@ -79,29 +79,6 @@
         transform: translateY(0);
     }
 
-    .btn-cancel {
-    display: block;
-    text-align: center;
-    width: 100%;
-    margin-top: 0.75rem;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.6rem;
-    background-color: #ccc;
-    color: #333;
-    font-weight: 600;
-    text-decoration: none;
-    transition: background 0.3s ease, transform 0.1s ease;
-}
-
-.btn-cancel:hover {
-    background-color: #b0b0b0;
-    transform: translateY(-2px);
-}
-
-.btn-cancel:active {
-    transform: translateY(0);
-}
-
     .file-label {
         display: block;
         background-color: var(--color-primary-light);

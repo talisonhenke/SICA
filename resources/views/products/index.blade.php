@@ -158,7 +158,7 @@
 
 <div class="container my-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold">Produtos</h2>
+        <h2 class="fw-bold primaryTitles">Produtos</h2>
         <a href="{{ route('products.create') }}" class="btn btn-success">+ Adicionar Produto</a>
     </div>
 

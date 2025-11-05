@@ -13,8 +13,14 @@ body{
     background-color: var(--color-primary-dark);
 }
 
-p, h1, h2, h3, span{
-    color: white;
+.primaryTitles{
+    color: var(--color-surface);
+}
+
+.secondaryTitles {
+    color: var(--color-primary-dark);
+    font-weight: 700;
+    margin-bottom: 1rem;
 }
 
 #success-alert{
@@ -49,28 +55,6 @@ p, h1, h2, h3, span{
 .article-img{
     height: 300px;
     background-color: black;
-}
-/* .article-content{
-    color: #000;
-} */
-
-.article-text p {
-    text-indent: 0; /* recuo da primeira linha */
-    margin-bottom: 1em; /* espaço entre parágrafos */
-    color: #000;
-}
-
-.article-text p:first-of-type {
-  text-indent: 1em; /* indentação do primeiro parágrafo*/
-}
-
-.article-text{
-    color: #000;
-    text-align: justify;
-}
-
-.uselful_parts_text{
-color: #000;
 }
 
 /* ---------------------------LOGIN PAGE--------------------------- */
@@ -120,3 +104,29 @@ color: #000;
     border-bottom-right-radius: .3rem;
     }
     }
+
+
+    /* botão cancelar estilo */
+
+.btn-cancel {
+    display: block;
+    text-align: center;
+    width: 100%;
+    margin-top: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.6rem;
+    background-color: #ccc;
+    color: #333;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.3s ease, transform 0.1s ease;
+}
+
+.btn-cancel:hover {
+    background-color: #b0b0b0;
+    transform: translateY(-2px);
+}
+
+.btn-cancel:active {
+    transform: translateY(0);
+}
