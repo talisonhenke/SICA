@@ -104,3 +104,87 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+{{-- Biblioteca para leitura de QR Code --}}
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+{{-- Script QR-CODE --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const qrBtn = document.getElementById('qrScanBtn');
+    const qrModal = document.getElementById('qrModal');
+    const closeBtn = document.getElementById('closeQrModal');
+    const scanResult = document.getElementById('scanResult');
+    let html5QrCode = null;
+
+    // 🔒 Domínio permitido — altere conforme o seu
+    const allowedDomain = window.location.origin; 
+    // Isso captura dinamicamente o domínio atual (ex: https://meusite.com)
+
+    qrBtn.addEventListener('click', () => {
+        qrModal.classList.remove('d-none');
+        startScanner();
+    });
+
+    closeBtn.addEventListener('click', () => {
+        stopScanner();
+        qrModal.classList.add('d-none');
+    });
+
+    function startScanner() {
+        html5QrCode = new Html5Qrcode("reader");
+        const config = { fps: 10, qrbox: 250 };
+
+        Html5Qrcode.getCameras().then(devices => {
+            if (devices && devices.length) {
+                html5QrCode.start(
+                    devices[0].id,
+                    config,
+                    qrCodeSuccessCallback,
+                    qrCodeErrorCallback
+                );
+            } else {
+                scanResult.textContent = "Nenhuma câmera encontrada 😕";
+            }
+        }).catch(err => {
+            scanResult.textContent = "Erro ao acessar câmera: " + err;
+        });
+    }
+
+    function stopScanner() {
+        if (html5QrCode) {
+            html5QrCode.stop().then(() => {
+                html5QrCode.clear();
+            });
+        }
+    }
+
+    function qrCodeSuccessCallback(decodedText) {
+        stopScanner();
+
+        // 🔍 Validação de link
+        if (!decodedText.startsWith("http")) {
+            scanResult.textContent = "Código inválido: não é um link.";
+            return;
+        }
+
+        // 🔒 Verifica se o domínio é o mesmo do sistema
+        if (!decodedText.startsWith(allowedDomain)) {
+            scanResult.textContent = "QR Code de outro domínio. A leitura foi bloqueada.";
+            return;
+        }
+
+        // ✅ Se for válido, redireciona
+        scanResult.textContent = "QR Code reconhecido. Redirecionando...";
+        setTimeout(() => {
+            window.location.href = decodedText;
+        }, 800);
+    }
+
+    function qrCodeErrorCallback(error) {
+        // Erros de leitura ignorados (ocorrem naturalmente)
+    }
+});
+</script>
+
+

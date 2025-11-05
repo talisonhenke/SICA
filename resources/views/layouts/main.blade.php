@@ -20,6 +20,20 @@
 			@include('includes.footer')
 		</div>
 	</div>
+{{-- Botão fixo do leitor de QR Code --}}
+<button id="qrScanBtn" class="qr-btn" title="Ler QR Code">
+    📷
+</button>
+{{-- Modal do leitor --}}
+<div id="qrModal" class="qr-modal d-none">
+    <div class="qr-modal-content">
+        <span id="closeQrModal" class="close-btn">&times;</span>
+        <h5 class="mb-2">Leitor de QR Code</h5>
+        <div id="reader" style="width: 300px; margin: auto;"></div>
+        <div id="scanResult" class="text-success mt-2 fw-semibold"></div>
+    </div>
+</div>
+
 	@include('includes.scripts')
 </body>
 </html>
