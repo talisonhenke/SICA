@@ -117,9 +117,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const scanResult = document.getElementById('scanResult');
     let html5QrCode = null;
 
-    // 🔒 Domínio permitido — altere conforme o seu
     const allowedDomain = window.location.origin; 
-    // Isso captura dinamicamente o domínio atual (ex: https://meusite.com)
+    // Isso captura dinamicamente o domínio atual para evitar ler qr codes de terceiros
 
     qrBtn.addEventListener('click', () => {
         qrModal.classList.remove('d-none');
