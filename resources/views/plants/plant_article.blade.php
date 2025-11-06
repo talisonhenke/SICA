@@ -251,9 +251,10 @@
                 <p class="indent">{{ $p }}</p>
             @endforeach
         </div>
-        <div class="col-12">
+        {{-- gera qr code com o link da planta --}}
+        {{-- <div class="col-12">
             {!! QrCode::size(200)->generate(url("/plant/{$plant->id}/{$plant->slug}")) !!}
-        </div>
+        </div> --}}
     </div>
 
     {{-- Informações adicionais --}}

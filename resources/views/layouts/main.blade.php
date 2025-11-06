@@ -21,19 +21,19 @@
 		</div>
 	</div>
 {{-- Botão fixo do leitor de QR Code --}}
-<button id="qrScanBtn" class="qr-btn" title="Ler QR Code">
+{{-- <button id="qrScanBtn" class="qr-btn" title="Ler QR Code">
     📷
-</button>
+</button> --}}
 
 {{-- Modal do leitor --}}
-<div id="qrModal" class="qr-modal d-none">
+{{-- <div id="qrModal" class="qr-modal d-none">
     <div class="qr-modal-content">
         <span id="closeQrModal" class="close-btn">&times;</span>
         <h5 class="mb-3 text-center">Leitor de QR Code</h5>
         <div id="reader" style="width: 280px; margin: auto;"></div>
         <div id="scanResult" class="text-center text-success mt-3 fw-semibold"></div>
     </div>
-</div>
+</div> --}}
 	@include('includes.scripts')
 </body>
 </html>
