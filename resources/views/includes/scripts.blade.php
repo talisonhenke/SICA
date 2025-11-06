@@ -115,7 +115,9 @@ document.addEventListener("DOMContentLoaded", function() {
     const qrModal = document.getElementById("qrModal");
     const closeModal = document.getElementById("closeQrModal");
     const scanResult = document.getElementById("scanResult");
-    const baseDomain = "{{ url('/') }}";
+    // const baseDomain = "{{ url('/') }}";
+    
+    const baseDomain = "https://sicaonline.com.br";
     let html5QrCode;
 
     qrBtn.addEventListener("click", () => {
