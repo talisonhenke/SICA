@@ -17,6 +17,10 @@ use App\Http\Controllers\TopicController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 
+// QR-Code
+
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Support\Facades\Response;
 
 // Models
 use App\Models\Topic;
@@ -117,6 +121,22 @@ Route::get('/scan', function() {
     return view('scan');
 });
 
+// qr code
+
+Route::get('/test-qr', function () {
+    $plantUrl = url('/plant/6/alcachofra');
+
+    $qrCode = QrCode::format('png')
+        ->size(400)
+        ->merge(public_path('images/logos/logo1.png'), 0.3, true) // 0.3 = 30% do tamanho do QR
+        ->errorCorrection('H') // H = alta redundância (necessário quando há logo)
+        ->generate($plantUrl);
+
+    return Response::make($qrCode, 200, [
+        'Content-Type' => 'image/png',
+        'Content-Disposition' => 'inline; filename="qr-alcachofra.png"',
+    ]);
+});
 
 
 

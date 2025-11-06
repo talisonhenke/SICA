@@ -109,6 +109,7 @@ document.addEventListener('DOMContentLoaded', function() {
 {{-- <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script> --}}
 
 <script src="https://unpkg.com/html5-qrcode"></script>
+{{-- <script src="../../js/html5_qrcode.min.js"></script> --}}
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     const qrBtn = document.getElementById("qrScanBtn");
@@ -143,6 +144,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 const cameraId = backCamera ? backCamera.id : devices[0].id;
 
                 html5QrCode.start({ deviceId: { exact: cameraId } }, { fps: 10, qrbox: { width: 250, height: 250 } }, decodedText => {
+                    console.log(decodedText);
                     if (decodedText.startsWith(baseDomain)) {
                         scanResult.innerHTML = `✅ Código reconhecido!<br>${decodedText}`;
                         setTimeout(() => window.location.href = decodedText, 1000);
