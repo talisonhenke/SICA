@@ -5,6 +5,7 @@
         max-width: 950px;
         margin: 2rem auto;
         background-color: var(--color-surface);
+        color: var(--color-text-dark);
         border-radius: 1rem;
         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         padding: 2rem;
