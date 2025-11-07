@@ -1,0 +1,48 @@
+:root {
+  /* ======================================= */
+  /* CORES PADRÃO (TEMA CLARO - DEFAULT) */
+  /* ======================================= */
+
+  /* Paleta Base do Logo */
+  --color-primary-dark: #4A3A2A;   /* Marrom escuro */
+  --color-primary: #5E4A3B;       /* Marrom intermediário */
+  --color-primary-light: #7E6B5D;  /* Marrom claro */
+  --color-accent: #6C8B58;        /* Verde claro (Interativo) */
+  --color-secondary: #4A633F;     /* Verde escuro (Fitoterapia) */
+  --color-muted: #8E8A84;         /* Cinza/Marrom secundário */
+
+  /* Esquema Light Theme */
+  --color-bg: #F5F1EB;            /* Fundo geral claro (Bege Suave) */
+  --color-surface: #ffffff;       /* Fundo de cartões/painéis (Branco Puro) */
+  --color-text: #000000;          /* Texto principal (Preto) */
+  --color-menu-bg: var(--color-primary-dark); /* Fundo do menu (Marrom Escuro) */
+  --color-menu-text: #ffffff;      /* Texto do menu (Branco Puro) */
+
+
+  /* Estados (Mantidos para feedback) */
+  --color-success: #5cb85c;
+  --color-danger: #d9534f;
+  --color-warning: #f0ad4e;
+  --color-info: #5bc0de;
+}
+
+/* ======================================= */
+/* ESQUEMA TEMA ESCURO (DARK MODE) */
+/* ======================================= */
+[data-theme='dark'] {
+  /* Redefine os fundos para cores escuras */
+  --color-bg: #1A1612;            /* Fundo ultra-escuro (Customizado) */
+  --color-surface: #332A21;       /* Fundo de cartões (Customizado) */
+  --color-text: #ffffff;          /* Texto principal (Branco Puro) */
+  
+  /* Redefine o Menu */
+  --color-menu-bg: #000000;       /* Fundo do menu (Preto Puro) */
+  --color-menu-text: #ffffff;      /* Texto do menu (Branco Puro) */
+  
+  /* Redefine textos secundários e muted para tons mais claros sobre fundo escuro */
+  --color-muted: #A0A0A0;         /* Cinza claro para texto secundário */
+  
+  /* As cores de destaque (accent) e primárias (primary) podem ser mantidas, 
+     ou ajustadas para uma versão menos saturada, mas mantê-las injeta cor na interface.
+     Exemplo: --color-accent: #86A770; (Verde levemente mais claro) */
+}

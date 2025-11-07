@@ -36,7 +36,7 @@ class User extends Authenticatable
     protected $attributes = [
     'user_lvl' => '0',
     'permissions' => 'none',
-    'is_owner' => 'false',
+    'is_owner' => false,
     ];
 
     /**
