@@ -4,7 +4,7 @@
     .plants-container {
         max-width: 950px;
         margin: 2rem auto;
-        background-color: var(--color-surface);
+        background-color: var(--color-surface-primary);
         border-radius: 1rem;
         box-shadow: 0 4px 10px rgba(0,0,0,0.08);
         padding: 2rem;
@@ -14,36 +14,36 @@
         text-align: center;
         font-size: 2rem;
         font-weight: 700;
-        color: var(--color-primary-dark);
+        color: var(--color-text);
         margin-bottom: 1.5rem;
     }
 
-    /* Barra de pesquisa com destaque */
+    /* Barra de pesquisa */
     #searchInput {
-        border: 2px solid var(--color-secondary);
+        border: 2px solid var(--color-border);
         border-radius: 0.75rem;
         padding: 0.75rem 1rem;
         font-size: 1.1rem;
-        background-color: var(--color-bg);
-        color: var(--color-text-dark);
+        background-color: var(--color-input-bg);
+        color: var(--color-input-text);
         transition: all 0.3s ease-in-out;
     }
 
     #searchInput:focus {
-        border-color: var(--color-accent);
-        box-shadow: 0 0 0 0.2rem rgba(108,139,88,0.25);
+        border-color: var(--color-menu-bg);
+        box-shadow: 0 0 0 0.2rem rgba(74,99,63,0.25);
         outline: none;
-        background-color: #fff;
+        background-color: var(--color-surface-primary);
     }
 
     /* Letra separadora */
     .letter-divider {
         font-size: 1.5rem;
         font-weight: 700;
-        color: var(--color-secondary);
+        color: var(--color-menu-bg);
         margin-top: 1.5rem;
         margin-bottom: 0.8rem;
-        border-bottom: 2px solid var(--color-accent);
+        border-bottom: 2px solid var(--color-bottom-nav-bg);
         padding-bottom: 0.3rem;
     }
 
@@ -52,9 +52,9 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background-color: var(--color-bg);
+        background-color: var(--color-surface-primary);
         color: var(--color-text);
-        border: 1px solid var(--color-muted);
+        border: 1px solid var(--color-border);
         border-radius: 0.75rem;
         padding: 0.9rem 1.2rem;
         margin-bottom: 0.6rem;
@@ -63,8 +63,8 @@
     }
 
     .plant-item:hover {
-        background-color: var(--color-primary-light);
-        color: var(--color-surface);
+        background-color: var(--color-surface-secondary);
+        color: var(--color-text);
         transform: translateY(-2px);
         box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
@@ -80,17 +80,17 @@
     }
 
     .plant_actions .btn-primary {
-        background-color: var(--color-secondary);
-        color: var(--color-surface);
+        background-color: var(--color-menu-bg);
+        color: var(--color-surface-primary);
     }
 
     .plant_actions .btn-primary:hover {
-        background-color: var(--color-accent);
+        background-color: var(--color-bottom-nav-bg);
     }
 
     .plant_actions .btn-danger {
         background-color: var(--color-danger);
-        color: var(--color-surface);
+        color: var(--color-surface-primary);
     }
 
     .plant_actions .btn-danger:hover {
@@ -99,9 +99,9 @@
 
     #no-result {
         background-color: var(--color-bg);
-        color: var(--color-muted);
+        color: var(--color-text);
         border-radius: 0.75rem;
-        border: 1px solid var(--color-muted);
+        border: 1px solid var(--color-border);
         padding: 1rem;
         text-align: center;
     }
@@ -114,8 +114,8 @@
         width: 60px;
         height: 60px;
         border-radius: 50%;
-        background-color: var(--color-accent);
-        color: var(--color-surface);
+        background-color: var(--color-menu-bg);
+        color: var(--color-surface-primary);
         font-size: 2rem;
         font-weight: 600;
         display: flex;
@@ -128,7 +128,7 @@
     }
 
     .fab-add:hover {
-        background-color: var(--color-secondary);
+        background-color: var(--color-bottom-nav-bg);
         transform: scale(1.05);
     }
 </style>

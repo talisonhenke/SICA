@@ -1,21 +1,96 @@
+/* ========================================================= */
+/*                      🌞 TEMA CLARO (DEFAULT)               */
+/* ========================================================= */
 :root {
-  /* Paleta principal (Verdes e Marrons do logo) */
-  --color-primary-dark: #4A3A2A;   /* Marrom escuro - para fundos de destaque, cabeçalhos, texto principal */
-  --color-primary: #5E4A3B;       /* Marrom intermediário - menus e botões secundários */
-  --color-primary-light: #7E6B5D;  /* Marrom claro - para elementos de destaque suave */
-  --color-accent: #6C8B58;        /* Verde mais claro do logo - para destaque, hover, botões primários */
-  --color-secondary: #4A633F;     /* Verde mais escuro do logo - combina com fitoterapia, ícones */
+    /* -------------------------------------- */
+    /* PALETA BASE DO LOGO (VERSÕES LIGHT)    */
+    /* -------------------------------------- */
 
-  /* Neutras (Bege do fundo do logo, branco, cinzas) */
-  --color-bg: #F5F1EB;            /* Fundo geral claro - bege suave do logo */
-  --color-surface: #ffffff;       /* Cartões, modais, painéis - branco puro */
-  --color-text: #2D2D2D;          /* Texto sobre fundos claros - marrom/cinza escuro para contraste */
-  --color-text-dark: #1A1A1A;     /* Texto principal em superfícies claras - quase preto */
-  --color-muted: #8E8A84;         /* Texto secundário, bordas sutis - cinza/marrom suave */
+    --color-primary-dark: #4A3A2A;     /* Marrom escuro */
+    --color-primary: #5E4A3B;          /* Marrom médio */
+    --color-primary-light: #7E6B5D;    /* Marrom claro */
+    
+    --color-secondary: #4A633F;        /* Verde escuro */
+    --color-accent: #6C8B58;           /* Verde claro */
 
-  /* Estados (Mantidos com variações mais orgânicas, se desejar) */
-  --color-success: #5cb85c;       /* Verde sucesso */
-  --color-danger: #d9534f;        /* Vermelho perigo */
-  --color-warning: #f0ad4e;       /* Laranja alerta */
-  --color-info: #5bc0de;          /* Azul informação */
+    --color-muted: #8E8A84;            /* Cinza/marrom suave */
+
+    /* -------------------------------------- */
+    /* ELEMENTOS GERAIS (DEFAULT THEME)         */
+    /* -------------------------------------- */
+
+    --color-bg: #4A3A2A;               /* Fundo geral */
+    --color-surface-primary: #ffffff;
+    --color-surface-secondary: #F5F1EB;          /* Cartões/painéis */
+    --color-text: #000000;             /* Texto principal */
+
+    /* Menu Superior */
+    --color-menu-bg: #4A633F;
+    --color-menu-text: #ffffff;
+
+    /* Menu Inferior (mobile) */
+    --color-bottom-nav-bg: #4A633F;
+    --color-bottom-nav-text: #ffffff;
+
+    /* Inputs e Bordas */
+    --color-border: #cfc8c0;
+    --color-input-bg: #ffffff;
+    --color-input-text: #000000;
+
+    /* -------------------------------------- */
+    /* ESTADOS (mesmos nos dois temas)        */
+    /* -------------------------------------- */
+    --color-success: #5cb85c;
+    --color-danger:  #d9534f;
+    --color-warning: #f0ad4e;
+    --color-info:    #5bc0de;
+}
+
+
+
+/* ========================================================= */
+/*                       🌙 TEMA ESCURO                      */
+/* ========================================================= */
+[data-theme="dark"] {
+
+    /* -------------------------------------- */
+    /* PALETA BASE (VERSÕES DARK)             */
+    /* -------------------------------------- */
+    --color-primary-dark: #2D241D;      /* Marrom ainda mais escuro */
+    --color-primary: #3C3027;           /* Marrom escuro suave */
+    --color-primary-light: #5A4A3D;     /* Marrom claro porém fechado */
+
+    --color-secondary: #3A4F32;         /* Verde escuro menos saturado */
+    --color-accent: #86A770;            /* Verde claro adaptado p/ dark */
+
+    --color-muted: #A0A0A0;             /* Cinza claro para texto secundário */
+
+    /* -------------------------------------- */
+    /* ELEMENTOS GERAIS (DARK THEME)          */
+    /* -------------------------------------- */
+
+    --color-bg: #1A1612;                /* Fundo principal bem escuro */
+    --color-surface: #332A21;           /* Cartões/painéis escuros */
+    --color-text: #ffffff;              /* Texto principal branco */
+
+    /* Menu Superior */
+    --color-menu-bg: #000000;
+    --color-menu-text: #ffffff;
+
+    /* Menu Inferior (mobile) */
+    --color-bottom-nav-bg: #000000;
+    --color-bottom-nav-text: #ffffff;
+
+    /* Inputs e Bordas */
+    --color-border: #4b423a;
+    --color-input-bg: #2a231c;
+    --color-input-text: #ffffff;
+
+    /* -------------------------------------- */
+    /* ESTADOS (iguais ao tema claro)         */
+    /* -------------------------------------- */
+    --color-success: #5cb85c;
+    --color-danger:  #d9534f;
+    --color-warning: #f0ad4e;
+    --color-info:    #5bc0de;
 }

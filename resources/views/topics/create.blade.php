@@ -5,7 +5,7 @@
     .create-topic-container {
         max-width: 800px;
         margin: 3rem auto;
-        background-color: var(--color-surface);
+        background-color: var(--color-surface-secondary);
         padding: 2.5rem;
         border-radius: 1rem;
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
@@ -13,7 +13,7 @@
 
     .create-topic-title {
         text-align: center;
-        color: var(--color-secondary);
+        color: var(--color-primary);
         font-weight: 800;
         font-size: 2rem;
         margin-bottom: 2rem;
@@ -29,8 +29,8 @@
     .form-control {
         border: 1px solid var(--color-muted);
         border-radius: 0.6rem;
-        background-color: var(--color-bg);
-        color: var(--color-text);
+        background-color: var(--color-input-bg);
+        color: var(--color-input-text);
         transition: all 0.3s ease;
     }
 
@@ -38,7 +38,7 @@
         border-color: var(--color-accent);
         box-shadow: 0 0 0 0.2rem rgba(108, 139, 88, 0.25);
         background-color: #fff;
-        color: var(--color-text-dark);
+        color: var(--color-text);
     }
 
     /* Quando houver erro */

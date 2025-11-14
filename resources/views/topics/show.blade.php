@@ -5,7 +5,7 @@
     .topic-container {
         max-width: 850px;
         margin: 3rem auto;
-        background-color: var(--color-surface);
+        background-color: var(--color-surface-primary);
         padding: 2.5rem;
         border-radius: 1rem;
         box-shadow: 0 6px 16px rgba(0,0,0,0.1);

@@ -5,15 +5,16 @@
     .create-plant-container {
         max-width: 850px;
         margin: 3rem auto;
-        background-color: var(--color-surface);
+        background-color: var(--color-surface-secondary);
         padding: 2.5rem;
         border-radius: 1rem;
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--color-border);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
     }
 
     .create-plant-title {
         text-align: center;
-        color: var(--color-secondary);
+        color: var(--color-menu-bg);
         font-weight: 800;
         font-size: 2rem;
         margin-bottom: 2rem;
@@ -21,33 +22,34 @@
 
     label {
         font-weight: 600;
-        color: var(--color-primary-dark);
+        color: var(--color-text);
         margin-bottom: 0.4rem;
         display: block;
     }
 
     .form-control {
-        border: 1px solid var(--color-muted);
+        border: 1px solid var(--color-border);
         border-radius: 0.6rem;
-        background-color: var(--color-bg);
-        color: var(--color-text);
+        background-color: var(--color-input-bg);
+        color: var(--color-input-text);
         transition: all 0.3s ease;
     }
 
     .form-control:focus {
-        border-color: var(--color-accent);
-        box-shadow: 0 0 0 0.2rem rgba(108, 139, 88, 0.25);
-        background-color: #fff;
-        color: var(--color-text-dark);
+        border-color: var(--color-menu-bg);
+        box-shadow: 0 0 0 0.2rem rgba(76, 99, 63, 0.25);
+        background-color: var(--color-surface-primary);
+        color: var(--color-text);
     }
 
     textarea.form-control {
         resize: vertical;
     }
 
+    /* Upload de arquivo */
     .file-label {
         display: block;
-        background-color: var(--color-primary-light);
+        background-color: var(--color-menu-bg);
         color: #fff;
         padding: 0.6rem 1rem;
         border-radius: 0.5rem;
@@ -58,15 +60,16 @@
     }
 
     .file-label:hover {
-        background-color: var(--color-primary);
+        background-color: var(--color-accent);
     }
 
     input[type="file"] {
         display: none;
     }
 
+    /* Botão principal */
     .btn-submit {
-        background-color: var(--color-accent);
+        background-color: var(--color-menu-bg);
         color: #fff;
         font-weight: 600;
         border: none;
@@ -78,7 +81,7 @@
     }
 
     .btn-submit:hover {
-        background-color: var(--color-secondary);
+        background-color: var(--color-accent);
         transform: translateY(-2px);
     }
 
@@ -86,6 +89,7 @@
         transform: translateY(0);
     }
 
+    /* Pré-visualização de imagens */
     .image-preview-container {
         display: flex;
         flex-wrap: wrap;
@@ -101,13 +105,15 @@
         border-radius: 0.5rem;
         overflow: hidden;
         cursor: grab;
-        border: 2px solid transparent;
+        border: 2px solid var(--color-border);
+        background-color: var(--color-surface-secondary);
         transition: border-color 0.2s, transform 0.2s;
     }
 
     .preview-item.dragging {
         opacity: 0.6;
         transform: scale(0.95);
+        border-color: var(--color-menu-bg);
     }
 
     .preview-item img {
@@ -117,11 +123,12 @@
         border-radius: 0.5rem;
     }
 
+    /* Botão remover imagem */
     .remove-btn {
         position: absolute;
         top: 3px;
         right: 3px;
-        background-color: var(--color-danger);
+        background-color: #c0392b; /* Vermelho elegante */
         border: none;
         color: #fff;
         font-size: 0.9rem;
@@ -132,18 +139,21 @@
         justify-content: center;
         align-items: center;
         cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.25);
     }
 
-.is-invalid {
-    border-color: var(--color-danger) !important;
-    box-shadow: 0 0 0 0.2rem rgba(217, 83, 79, 0.25);
-}    
-.invalid-feedback {
-    color: var(--color-danger);
-    font-size: 0.9rem;
-    margin-top: 0.3rem;
-    font-weight: 500;
-}
+    /* Erros */
+    .is-invalid {
+        border-color: #c0392b !important;
+        box-shadow: 0 0 0 0.2rem rgba(192, 57, 43, 0.25);
+    }
+
+    .invalid-feedback {
+        color: #c0392b;
+        font-size: 0.9rem;
+        margin-top: 0.3rem;
+        font-weight: 500;
+    }
 </style>
 
 <div class="create-plant-container">

@@ -1,13 +1,15 @@
 @extends('layouts.main')
 
 @section('content')
-<div class="container my-4">
-    <h1 class="text-center mb-4">Lista de Usuários</h1>
+<div class="container my-4 users-container">
+
+    <h1 class="text-center mb-4 users-title">Lista de Usuários</h1>
 
     @if(Auth::check() && Auth::user()->user_lvl === 'admin')
-        {{-- Tabela padrão (visível em md ou maior) --}}
-        <table class="table table-striped table-bordered d-none d-md-table">
-            <thead class="table-dark">
+
+        {{-- TABELA DESKTOP --}}
+        <table class="table table-bordered table-custom d-none d-md-table">
+            <thead>
                 <tr>
                     <th>ID</th>
                     <th>Nome</th>
@@ -18,13 +20,61 @@
             </thead>
             <tbody>
                 @foreach($users as $user)
+                <tr>
+                    <td>{{ $user->id }}</td>
+                    <td>{{ $user->name }}</td>
+                    <td>{{ $user->email }}</td>
+                    <td>{{ $levels[$user->user_lvl] ?? $user->user_lvl }}</td>
+                    <td class="d-flex gap-2">
+                        {{-- Alterar nível --}}
+                        <form action="{{ route('users.updateLevel', $user->id) }}" method="POST" class="user-level-form">
+                            @csrf
+                            @method('PATCH')
+                            <select name="user_lvl" data-username="{{ $user->name }}" class="form-select form-select-sm">
+                                @foreach(['member', 'moderator', 'admin'] as $level)
+                                    <option value="{{ $level }}" {{ $user->user_lvl == $level ? 'selected' : '' }}>
+                                        {{ $levels[$level] }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </form>
+
+                        {{-- Excluir --}}
+                        <form action="#" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este usuário?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-custom-delete">Excluir</button>
+                        </form>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+
+        {{-- TABELA MOBILE --}}
+        <div class="d-block d-md-none">
+            @foreach($users as $user)
+            <table class="table table-bordered mb-4 table-mobile">
+                <tbody>
                     <tr>
+                        <td>ID</td>
                         <td>{{ $user->id }}</td>
+                    </tr>
+                    <tr>
+                        <td>Nome</td>
                         <td>{{ $user->name }}</td>
+                    </tr>
+                    <tr>
+                        <td>Email</td>
                         <td>{{ $user->email }}</td>
+                    </tr>
+                    <tr>
+                        <td>Nível de Usuário</td>
                         <td>{{ $levels[$user->user_lvl] ?? $user->user_lvl }}</td>
+                    </tr>
+                    <tr>
+                        <td>Ações</td>
                         <td class="d-flex gap-2">
-                            {{-- Alterar nível de acesso --}}
                             <form action="{{ route('users.updateLevel', $user->id) }}" method="POST" class="user-level-form">
                                 @csrf
                                 @method('PATCH')
@@ -36,98 +86,24 @@
                                     @endforeach
                                 </select>
                             </form>
-                            {{-- Excluir usuário --}}
+
                             <form action="#" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este usuário?');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                                <button type="submit" class="btn btn-sm btn-custom-delete">Excluir</button>
                             </form>
                         </td>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
-
-        {{-- Tabela alternativa (visível apenas em telas pequenas) --}}
-        <div class="d-block d-md-none">
-            @foreach($users as $user)
-                <table class="table table-bordered mb-4">
-                    <tbody>
-                        <tr>
-                            <td class="fw-bold table-dark">ID</td>
-                            <td>{{ $user->id }}</td>
-                        </tr>
-                        <tr>
-                            <td class="fw-bold table-dark">Nome</td>
-                            <td>{{ $user->name }}</td>
-                        </tr>
-                        <tr>
-                            <td class="fw-bold table-dark">Email</td>
-                            <td>{{ $user->email }}</td>
-                        </tr>
-                        <tr>
-                            <td class="fw-bold table-dark">Nível de Usuário</td>
-                            <td>{{ $levels[$user->user_lvl] ?? $user->user_lvl }}</td>
-                        </tr>
-                        <tr>
-                            <td class="fw-bold table-dark">Ações</td>
-                            <td class="d-flex gap-2">
-                                {{-- Alterar nível de acesso --}}
-                                <form action="{{ route('users.updateLevel', $user->id) }}" method="POST" class="user-level-form">
-                                    @csrf
-                                    @method('PATCH')
-                                    <select name="user_lvl" data-username="{{ $user->name }}" class="form-select form-select-sm">
-                                        @foreach(['member', 'moderator', 'admin'] as $level)
-                                            <option value="{{ $level }}" {{ $user->user_lvl == $level ? 'selected' : '' }}>
-                                                {{ $levels[$level] }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </form>
-                                {{-- Excluir usuário --}}
-                                <form action="#" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este usuário?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
-                                </form>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                </tbody>
+            </table>
             @endforeach
         </div>
+
     @else
-        <div class="alert alert-danger text-center">
+        <div class="alert alert-custom text-center">
             Você não tem permissão para acessar esta página.
         </div>
     @endif
+
 </div>
 @endsection
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Array de traduções em JS
-    const levels = @json($levels);
-
-    document.querySelectorAll('.user-level-form select').forEach(select => {
-        let previousValue = select.value; // valor inicial
-
-        select.addEventListener('change', function() {
-            const userName = select.getAttribute('data-username');
-            const newValue = select.value;
-
-            // traduz o valor do select
-            const translatedValue = levels[newValue] ?? newValue;
-
-            const confirmed = confirm(`Deseja mudar o cargo do usuário ${userName} para ${translatedValue}?`);
-
-            if (confirmed) {
-                previousValue = newValue; // atualiza valor anterior
-                select.form.submit();
-            } else {
-                select.value = previousValue; // restaura valor antigo
-            }
-        });
-    });
-});
-</script>

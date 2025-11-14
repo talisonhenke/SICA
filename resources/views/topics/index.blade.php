@@ -4,12 +4,12 @@
 <style>
     .topic-card {
         position: relative;
-        border: 1px solid #e0e0e0;
+        border: 1px solid var(--color-border);
         border-radius: 0.75rem;
         overflow: hidden;
         box-shadow: 0 3px 6px rgba(0,0,0,0.1);
         transition: all 0.2s ease-in-out;
-        background-color: var(--color-surface);
+        background-color: var(--color-surface-secondary);
         height: 100%;
     }
 
@@ -22,8 +22,8 @@
         width: 100%;
         height: 200px;
         object-fit: cover;
-        background-color: #fafafa;
-        border-bottom: 1px solid #ddd;
+        background-color: var(--color-surface-primary);
+        border-bottom: 1px solid var(--color-border);
     }
 
     /* 🔘 Switch de destaque */
@@ -33,7 +33,7 @@
         right: 10px;
         width: 44px;
         height: 24px;
-        background-color: #ccc;
+        background-color: var(--color-border);
         border-radius: 12px;
         cursor: pointer;
         transition: background-color 0.3s;
@@ -47,13 +47,13 @@
         left: 2px;
         width: 20px;
         height: 20px;
-        background-color: white;
+        background-color: var(--color-surface-primary);
         border-radius: 50%;
         transition: transform 0.3s;
     }
 
     .featured-switch.active {
-        background-color: var(--color-success);
+        background-color: var(--color-menu-bg);
     }
 
     .featured-switch.active::after {
@@ -66,10 +66,11 @@
         right: 10px;
         font-size: 0.8rem;
         font-weight: 600;
-        color: #333;
-        background: rgba(255,255,255,0.9);
+        color: var(--color-text);
+        background: var(--color-surface-primary);
         padding: 2px 6px;
         border-radius: 8px;
+        border: 1px solid var(--color-border);
     }
 
     .topic-body {
@@ -83,13 +84,14 @@
     .topic-title {
         font-weight: 700;
         font-size: 1.3rem;
-        color: var(--color-primary);
+        color: var(--color-menu-bg);
         margin-bottom: 0.5rem;
         text-align: center;
     }
 
     .topic-description {
-        color: var(--color-text-secondary);
+        color: var(--color-text);
+        opacity: 0.8;
         font-size: 0.95rem;
         text-align: center;
         margin-bottom: 1rem;
@@ -118,10 +120,11 @@
     }
 </style>
 
+
 <div class="container my-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold primaryTitles">Tópicos</h2>
-        <a href="{{ route('topics.create') }}" class="btn btn-success">+ Adicionar Tópico</a>
+        <a href="{{ route('topics.create') }}" class="btn secondaryButton">+ Adicionar Tópico</a>
     </div>
 
     @if(session('success'))

@@ -2,6 +2,26 @@
 
 @section('content')
 <style>
+    :root {
+        --color-bg: #4A3A2A;
+        --color-surface: var(--color-surface-secondary); /* fundo dos formulários */
+        --color-text: #000000;
+
+        --color-primary: #4A633F;
+        --color-primary-dark: #3B5132;
+        --color-primary-light: #6B8A55;
+
+        --color-accent: #4A633F;
+        --color-secondary: #6B8A55;
+
+        --color-muted: var(--color-border);
+
+        --color-input-bg: #ffffff;
+        --color-input-text: #000000;
+
+        --color-danger: #d9534f;
+    }
+
     /* Reuso do estilo do Create */
     .create-plant-container {
         max-width: 850px;
@@ -14,7 +34,7 @@
 
     .create-plant-title {
         text-align: center;
-        color: var(--color-secondary);
+        color: var(--color-primary);
         font-weight: 800;
         font-size: 2rem;
         margin-bottom: 2rem;
@@ -30,8 +50,8 @@
     .form-control {
         border: 1px solid var(--color-muted);
         border-radius: 0.6rem;
-        background-color: var(--color-bg);
-        color: var(--color-text);
+        background-color: var(--color-input-bg);
+        color: var(--color-input-text);
         transition: all 0.3s ease;
     }
 
@@ -39,7 +59,7 @@
         border-color: var(--color-accent);
         box-shadow: 0 0 0 0.2rem rgba(108, 139, 88, 0.25);
         background-color: #fff;
-        color: var(--color-text-dark);
+        color: var(--color-text);
     }
 
     .is-invalid {

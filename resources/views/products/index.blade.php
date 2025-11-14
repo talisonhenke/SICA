@@ -4,12 +4,12 @@
 <style>
     .product-card {
         position: relative;
-        border: 1px solid #e0e0e0;
+        border: 1px solid var(--color-border);
         border-radius: 0.75rem;
         overflow: hidden;
         box-shadow: 0 3px 6px rgba(0,0,0,0.1);
         transition: all 0.2s ease-in-out;
-        background-color: var(--color-surface);
+        background-color: var(--color-surface-secondary);
         height: 100%;
     }
 
@@ -22,18 +22,18 @@
         width: 100%;
         height: 200px;
         object-fit: cover;
-        background-color: #fafafa;
-        border-bottom: 1px solid #ddd;
+        background-color: var(--color-surface-primary);
+        border-bottom: 1px solid var(--color-border);
     }
 
-    /* Switch de status no canto superior direito */
+    /* Switch de status */
     .status-switch {
         position: absolute;
         top: 10px;
         right: 10px;
         width: 44px;
         height: 24px;
-        background-color: #ccc;
+        background-color: var(--color-border);
         border-radius: 12px;
         cursor: pointer;
         transition: background-color 0.3s;
@@ -47,7 +47,7 @@
         left: 2px;
         width: 20px;
         height: 20px;
-        background-color: white;
+        background-color: var(--color-surface-primary);
         border-radius: 50%;
         transition: transform 0.3s;
     }
@@ -66,10 +66,11 @@
         right: 10px;
         font-size: 0.8rem;
         font-weight: 600;
-        color: #333;
-        background: rgba(255,255,255,0.9);
+        color: var(--color-text);
+        background: var(--color-surface-primary);
         padding: 2px 6px;
         border-radius: 8px;
+        border: 1px solid var(--color-border);
     }
 
     .product-body {
@@ -83,7 +84,7 @@
     .product-name {
         font-weight: 700;
         font-size: 1.4rem;
-        color: var(--color-primary);
+        color: var(--color-menu-bg);
         margin-bottom: 0.5rem;
         text-align: center;
     }
@@ -97,35 +98,36 @@
     }
 
     .product-stock {
-        color: var(--color-text-secondary);
+        color: var(--color-text);
+        opacity: 0.8;
         font-size: 1rem;
         margin-bottom: 1rem;
         text-align: center;
     }
 
-    /* Ações principais visíveis e bem proporcionadas */
     .product-main-actions {
         display: flex;
         justify-content: center;
         align-items: center;
         gap: 0.5rem;
-        margin-top: none;
         margin-bottom: 1rem;
     }
 
+    /* Botão visualizar */
     .btn-view {
         flex: 1;
         background-color: var(--color-primary);
-        color: #fff;
+        color: var(--color-menu-text);
         border: none;
         transition: background 0.2s;
     }
 
     .btn-view:hover {
         background-color: var(--color-primary-dark);
-        color: #fff;
+        color: var(--color-menu-text);
     }
 
+    /* Botão carrinho */
     .btn-cart {
         width: 40px;
         height: 40px;
@@ -143,7 +145,6 @@
         background-color: #157347;
     }
 
-    /* Ações de admin (editar/excluir) */
     .product-admin-actions {
         display: flex;
         justify-content: center;
@@ -156,10 +157,11 @@
     }
 </style>
 
+
 <div class="container my-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold primaryTitles">Produtos</h2>
-        <a href="{{ route('products.create') }}" class="btn btn-success">+ Adicionar Produto</a>
+        <a href="{{ route('products.create') }}" class="btn secondaryButton">+ Adicionar Produto</a>
     </div>
 
     <div class="row g-4">

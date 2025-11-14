@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
 {{-- <script src="../../js/html5_qrcode.min.js"></script> --}}
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    const qrBtn = document.getElementById("qrScanBtn");
+    const qrBtn = document.getElementById("openQrModal"); // <-- Agora usa o menu
     const qrModal = document.getElementById("qrModal");
     const closeModal = document.getElementById("closeQrModal");
     const scanResult = document.getElementById("scanResult");
@@ -121,7 +121,8 @@ document.addEventListener("DOMContentLoaded", function() {
     
     let html5QrCode;
 
-    qrBtn.addEventListener("click", () => {
+    qrBtn.addEventListener("click", (e) => {
+        e.preventDefault(); // Evita scroll ao topo do site
         qrModal.classList.remove("d-none");
         startScanner();
     });
@@ -143,15 +144,19 @@ document.addEventListener("DOMContentLoaded", function() {
                 );
                 const cameraId = backCamera ? backCamera.id : devices[0].id;
 
-                html5QrCode.start({ deviceId: { exact: cameraId } }, { fps: 10, qrbox: { width: 250, height: 250 } }, decodedText => {
-                    console.log(decodedText);
-                    if (decodedText.startsWith(baseDomain)) {
-                        scanResult.innerHTML = `✅ Código reconhecido!<br>${decodedText}`;
-                        setTimeout(() => window.location.href = decodedText, 1000);
-                    } else {
-                        scanResult.innerHTML = `⚠️ QR Code inválido para este sistema.`;
+                html5QrCode.start(
+                    { deviceId: { exact: cameraId } },
+                    { fps: 10, qrbox: { width: 250, height: 250 } },
+                    decodedText => {
+                        console.log(decodedText);
+                        if (decodedText.startsWith(baseDomain)) {
+                            scanResult.innerHTML = `✅ Código reconhecido!<br>${decodedText}`;
+                            setTimeout(() => window.location.href = decodedText, 1000);
+                        } else {
+                            scanResult.innerHTML = `⚠️ QR Code inválido para este sistema.`;
+                        }
                     }
-                });
+                );
             }
         }).catch(err => {
             scanResult.innerHTML = `<span style="color:red;">❌ Erro ao acessar câmera: ${err}</span>`;
@@ -164,4 +169,48 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 });
+</script>
+
+
+{{-- Troca de cores tema claro e escuro --}}
+
+<script>
+function updateThemeIcon(theme) {
+    const themeIcon = document.getElementById("themeIcon");
+    if (!themeIcon) return;
+
+    if (theme === "dark") {
+        themeIcon.classList.remove("bi-sun-fill");
+        themeIcon.classList.add("bi-moon-fill");
+    } else {
+        themeIcon.classList.remove("bi-moon-fill");
+        themeIcon.classList.add("bi-sun-fill");
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const html = document.documentElement;
+    const toggleBtn = document.getElementById("theme-toggle");
+
+    // 1️⃣ Verifica tema salvo anteriormente
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+        html.setAttribute("data-theme", savedTheme);
+    }
+
+    // 2️⃣ Alterna o tema ao clicar no botão
+    if (toggleBtn) {
+        toggleBtn.addEventListener("click", () => {
+            const current = html.getAttribute("data-theme");
+
+            const newTheme = current === "dark" ? "light" : "dark";
+            updateThemeIcon(newTheme);
+            html.setAttribute("data-theme", newTheme);
+
+            // 3️⃣ Salva o tema no navegador
+            localStorage.setItem("theme", newTheme);
+        });
+    }
+});
+
 </script>

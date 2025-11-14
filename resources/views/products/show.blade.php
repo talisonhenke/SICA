@@ -9,7 +9,7 @@
         grid-template-columns: 1fr 1fr;
         gap: 3rem;
         align-items: start;
-        background-color: var(--color-surface);
+        background-color: var(--color-surface-secondary);
         padding: 2rem;
         border-radius: 1rem;
         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
@@ -20,7 +20,8 @@
         height: 420px;
         object-fit: contain;
         border-radius: 0.75rem;
-        background-color: #fafafa;
+        background-color: var(--color-surface-primary);
+        border: 1px solid var(--color-border);
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
@@ -33,13 +34,14 @@
     .product-title {
         font-size: 2rem;
         font-weight: 700;
-        color: var(--color-primary);
+        color: var(--color-menu-bg);
         margin-bottom: 0.5rem;
     }
 
     .product-plant {
         font-size: 1.1rem;
-        color: var(--color-text-secondary);
+        color: var(--color-text);
+        opacity: 0.8;
         margin-bottom: 0.75rem;
     }
 
@@ -58,7 +60,8 @@
     }
 
     .product-stock {
-        color: var(--color-text-secondary);
+        color: var(--color-text);
+        opacity: 0.8;
         font-size: 1rem;
     }
 
@@ -72,15 +75,17 @@
     .quantity-input {
         width: 80px;
         text-align: center;
-        border: 1px solid #ccc;
+        border: 1px solid var(--color-border);
         border-radius: 0.5rem;
         padding: 0.4rem;
         font-size: 1rem;
+        background-color: var(--color-input-bg);
+        color: var(--color-input-text);
     }
 
     .btn-add-cart {
-        background-color: var(--color-primary);
-        color: var(--color-surface);
+        background-color: var(--color-menu-bg);
+        color: var(--color-menu-text);
         border: none;
         border-radius: 0.5rem;
         padding: 0.7rem 1.5rem;
@@ -89,16 +94,16 @@
     }
 
     .btn-add-cart:hover {
-        background-color: var(--color-primary-light);
-        color: var(--color-text);
+        background-color: var(--color-secondary);
+        color: var(--color-surface-primary);
     }
 
     .back-button {
         display: inline-block;
         margin-top: 2rem;
         text-decoration: none;
-        background-color: var(--color-primary);
-        color: var(--color-surface);
+        background-color: var(--color-menu-bg);
+        color: var(--color-menu-text);
         padding: 0.6rem 1.2rem;
         border-radius: 0.5rem;
         font-weight: 500;
@@ -106,8 +111,8 @@
     }
 
     .back-button:hover {
-        background-color: var(--color-primary-light);
-        color: var(--color-text);
+        background-color: var(--color-secondary);
+        color: var(--color-surface-primary);
     }
 
     @media (max-width: 900px) {

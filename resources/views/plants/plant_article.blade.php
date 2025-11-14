@@ -4,7 +4,7 @@
     .article-container {
         max-width: 950px;
         margin: 2rem auto;
-        background-color: var(--color-surface);
+        background-color: var(--color-surface-primary);
         color: var(--color-text-dark);
         border-radius: 1rem;
         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -12,7 +12,7 @@
     }
 
     .admin-options {
-        background-color: var(--color-bg);
+        background-color: var(--color-surface-secondary);
         border-radius: 0.75rem;
         padding: 1rem;
         text-align: center;
@@ -137,7 +137,7 @@
     /* Seção de informações adicionais */
     .extra-info {
         margin-top: 2rem;
-        background-color: var(--color-bg);
+        background-color: var(--color-surface-secondary);
         border-radius: 0.75rem;
         padding: 1.5rem;
         box-shadow: 0 2px 8px rgba(0,0,0,0.05);
@@ -253,9 +253,9 @@
             @endforeach
         </div>
         {{-- gera qr code com o link da planta --}}
-        {{-- <div class="col-12">
+        <div class="col-12">
             {!! QrCode::size(200)->generate(url("/plant/{$plant->id}/{$plant->slug}")) !!}
-        </div> --}}
+        </div>
     </div>
 
     {{-- Informações adicionais --}}

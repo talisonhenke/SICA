@@ -19,7 +19,7 @@
             padding-top: 0 !important;
             padding-bottom: 0 !important;
             line-height: 1;
-            color: var(--color-surface);
+            color: var(--color-menu-text);
         }
 
         .navbar-brand img {
@@ -41,7 +41,11 @@
             line-height: 1;
             position: relative;
             top: 1px; /* ajuste fino */
-            color: var(--color-surface);
+            color: var(--color-menu-text);
+        }
+
+        .themeIcon{
+            color: var(--color-menu-text) !important;
         }
 
         .nav-link {
@@ -49,7 +53,7 @@
             transition: color 0.2s, background-color 0.2s;
             border-radius: 0.375rem;
             margin: 0 3px;
-            color: var(--color-surface) !important;
+            color: var(--color-menu-text) !important;
         }
 
         .nav-link:hover,
@@ -118,6 +122,15 @@
 
                 {{-- <li class="nav-item"><a class="nav-link" href="#aboutMe">Sobre Nós</a></li> --}}
                 {{-- <li class="nav-item"><a class="nav-link" href="#contactMe">Contato</a></li> --}}
+                {{-- Troca de temas --}}
+                {{-- <li class="nav-item ms-2">
+                    <div class="form-check form-switch d-flex align-items-center">
+                        <input class="form-check-input" type="checkbox" id="theme-toggle" style="cursor:pointer;">
+                        <label class="form-check-label ms-2" for="theme-toggle">
+                            <i class="bi bi-sun-fill themeIcon" id="themeIcon"></i>
+                        </label>
+                    </div>
+                </li> --}}
 
                 <li class="nav-item">
                     <a class="nav-link position-relative" href="{{ route('cart.index') }}">

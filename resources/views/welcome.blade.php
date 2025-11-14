@@ -9,29 +9,33 @@
 
     /* Campo de busca */
     #homeSearchInput {
-        border: 1px solid var(--color-muted);
-        background-color: var(--color-surface);
-        color: var(--color-text-dark);
+        border: 1px solid var(--color-border);
+        background-color: var(--color-input-bg);
+        color: var(--color-input-text);
         border-radius: 0.6rem;
         transition: all 0.3s ease;
     }
 
+    #homeSearchInput::placeholder {
+        color: var(--color-muted);
+    }
+
     #homeSearchInput:focus {
-        border-color: var(--color-accent);
-        box-shadow: 0 0 0 0.2rem rgba(108, 139, 88, 0.25);
+        border-color: var(--color-secondary);
+        box-shadow: 0 0 0 0.2rem rgba(76, 99, 63, 0.25);
         outline: none;
     }
 
     /* Botão de busca */
     #searchButton {
-        background-color: var(--color-accent);
+        background-color: var(--color-secondary);
         border: none;
         color: #fff;
         transition: background-color 0.3s ease, transform 0.1s ease;
     }
 
     #searchButton:hover {
-        background-color: var(--color-secondary);
+        background-color: var(--color-accent);
         transform: translateY(-1px);
     }
 
@@ -44,11 +48,11 @@
         background-color: var(--color-surface) !important;
         color: var(--color-text);
         border-radius: 1rem;
-        border: 1px solid var(--color-muted);
+        border: 1px solid var(--color-border);
     }
 
     .modal-header {
-        background-color: var(--color-primary-light);
+        background-color: var(--color-secondary);
         color: #fff;
         border-bottom: none;
     }
@@ -59,29 +63,29 @@
 
     .list-group-item {
         background-color: var(--color-surface);
-        border-color: var(--color-muted);
-        color: var(--color-text-dark);
+        border-color: var(--color-border);
+        color: var(--color-text);
     }
 
     .list-group-item:hover {
-        background-color: var(--color-bg);
+        background-color: var(--color-surface-secondary);
     }
 
     /* Cards dos tópicos */
     .card {
-        background-color: var(--color-surface);
-        border: 1px solid var(--color-muted);
+        background-color: var(--color-surface-primary);
+        border: 1px solid var(--color-border);
         border-radius: 1rem;
         transition: transform 0.2s ease, box-shadow 0.3s ease;
     }
 
     .card:hover {
         transform: translateY(-4px);
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
     }
 
     .card-title {
-        color: var(--color-primary-dark);
+        color: var(--color-secondary);
     }
 
     .card-text {
@@ -90,25 +94,25 @@
 
     /* Botão "Ler mais" */
     .btn-outline-success {
-        color: var(--color-accent);
-        border-color: var(--color-accent);
+        color: var(--color-secondary);
+        border-color: var(--color-secondary);
         transition: all 0.3s ease;
         font-weight: 600;
         border-radius: 0.6rem;
     }
 
     .btn-outline-success:hover {
-        background-color: var(--color-accent);
+        background-color: var(--color-secondary);
         color: #fff;
-        border-color: var(--color-accent);
+        border-color: var(--color-secondary);
     }
 
     /* Seção informativa (Fitoterapia) */
     .content {
-        background-color: var(--color-surface);
+        background-color: var(--color-surface-primary);
         padding: 2rem;
         border-radius: 1rem;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.10);
     }
 
     .contentTitle {
@@ -121,9 +125,9 @@
         line-height: 1.7;
     }
 
-    /* Links dentro da busca */
+    /* Links da lista */
     a.text-dark {
-        color: var(--color-text-dark) !important;
+        color: var(--color-text) !important;
     }
 
     a.text-dark:hover {
