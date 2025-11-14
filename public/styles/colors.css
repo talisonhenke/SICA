@@ -69,22 +69,23 @@
     /* ELEMENTOS GERAIS (DARK THEME)          */
     /* -------------------------------------- */
 
-    --color-bg: #1A1612;                /* Fundo principal bem escuro */
-    --color-surface: #332A21;           /* Cartões/painéis escuros */
-    --color-text: #ffffff;              /* Texto principal branco */
+     --color-bg: #4A3A2A;               /* Fundo geral */
+    --color-surface-primary: #ffffff;
+    --color-surface-secondary: #F5F1EB;          /* Cartões/painéis */
+    --color-text: #000000;             /* Texto principal */
 
     /* Menu Superior */
-    --color-menu-bg: #000000;
+    --color-menu-bg: #4A633F;
     --color-menu-text: #ffffff;
 
     /* Menu Inferior (mobile) */
-    --color-bottom-nav-bg: #000000;
+    --color-bottom-nav-bg: #4A633F;
     --color-bottom-nav-text: #ffffff;
 
     /* Inputs e Bordas */
-    --color-border: #4b423a;
-    --color-input-bg: #2a231c;
-    --color-input-text: #ffffff;
+    --color-border: #cfc8c0;
+    --color-input-bg: #ffffff;
+    --color-input-text: #000000;
 
     /* -------------------------------------- */
     /* ESTADOS (iguais ao tema claro)         */

@@ -65,8 +65,8 @@
         .dropdown-menu {
             border-radius: 0.5rem;
             overflow: hidden;
-            background-color: var(--color-surface);
-            color: var(--color-text);
+            background-color: var(--color-surface-primary);
+            color: var(--color-menu-text);
         }
 
         .dropdown-item:hover {
@@ -75,13 +75,13 @@
 
         .btn-outline-light {
             transition: all 0.2s ease-in-out;
-            border-color: var(--color-surface);
-            color: var(--color-surface);
+            border-color: var(--color-menu-text);
+            color: var(--color-menu-text);
         }
 
         .btn-outline-light:hover {
-            background-color: var(--color-surface) !important;
-            color: var(--color-primary) !important;
+            background-color: var(--color-surface-primary) !important;
+            color: var(--color-text) !important;
         }
 
         /* Botão do usuário (logado) */
@@ -123,14 +123,14 @@
                 {{-- <li class="nav-item"><a class="nav-link" href="#aboutMe">Sobre Nós</a></li> --}}
                 {{-- <li class="nav-item"><a class="nav-link" href="#contactMe">Contato</a></li> --}}
                 {{-- Troca de temas --}}
-                {{-- <li class="nav-item ms-2">
+                <li class="nav-item ms-2">
                     <div class="form-check form-switch d-flex align-items-center">
                         <input class="form-check-input" type="checkbox" id="theme-toggle" style="cursor:pointer;">
                         <label class="form-check-label ms-2" for="theme-toggle">
                             <i class="bi bi-sun-fill themeIcon" id="themeIcon"></i>
                         </label>
                     </div>
-                </li> --}}
+                </li>
 
                 <li class="nav-item">
                     <a class="nav-link position-relative" href="{{ route('cart.index') }}">
