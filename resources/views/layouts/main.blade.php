@@ -26,10 +26,7 @@
 			@include('includes.footer')
 		</div>
 	</div>
-{{-- Botão fixo do leitor de QR Code --}}
-{{-- <button id="qrScanBtn" class="qr-btn" title="Ler QR Code">
-    📷
-</button> --}}
+
 
 {{-- Modal do leitor --}}
 <div id="qrModal" class="qr-modal d-none">

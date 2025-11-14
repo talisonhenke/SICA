@@ -1,4 +1,3 @@
-@if(Auth::check())
 <nav class="mobile-bottom-nav d-lg-none">
     <a href="/" class="nav-item">
         <i class="bi bi-house-door"></i>
@@ -21,4 +20,3 @@
         <span>QR Code</span>
     </a>
 </nav>
-@endif
