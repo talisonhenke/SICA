@@ -43,8 +43,18 @@
             top: 1px; /* ajuste fino */
             color: var(--color-menu-text);
         }
-
+        .menu-icon {
+            color: var(--color-menu-text);
+            font-size: 30px;
+        }
+        .menu-icon:hover {
+            color: var(--color-warning);
+        }
         .themeIcon{
+            color: var(--color-menu-text) !important;
+        }
+
+        .spanItems {
             color: var(--color-menu-text) !important;
         }
 
@@ -104,12 +114,13 @@
 
         {{-- Botão do menu mobile --}}
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
-            <span class="navbar-toggler-icon"></span>
+            {{-- <span class="navbar-toggler-icon"></span> --}}
+            <i class="bi bi-list menu-icon"></i>
         </button>
 
         {{-- Menu --}}
         <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
-            <ul class="navbar-nav mb-2 mb-lg-0 align-items-lg-center">
+            <ul class="navbar-nav mb-2 mb-lg-0 align-items-center">
                 <li class="nav-item"><a class="nav-link" href="/">Página Inicial</a></li>
                 <li class="nav-item"><a class="nav-link" href="/plants_list">Lista de Plantas</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('topics.index') }}">Tópicos</a></li>
@@ -123,7 +134,7 @@
                 {{-- <li class="nav-item"><a class="nav-link" href="#aboutMe">Sobre Nós</a></li> --}}
                 {{-- <li class="nav-item"><a class="nav-link" href="#contactMe">Contato</a></li> --}}
                 {{-- Troca de temas --}}
-                <li class="nav-item ms-2">
+                <li class="nav-item ms-2 d-sm-none d-lg-block">
                     <div class="form-check form-switch d-flex align-items-center">
                         <input class="form-check-input" type="checkbox" id="theme-toggle" style="cursor:pointer;">
                         <label class="form-check-label ms-2" for="theme-toggle">
@@ -131,9 +142,35 @@
                         </label>
                     </div>
                 </li>
+                <li class="nav-item ms-2 d-sm-block d-lg-none">
+                    <label class="theme-toggle-wrapper form-check form-switch d-flex align-items-center">
+                        
+                        <!-- Texto -->
+                        <span class="me-1 spanItems">Mudar tema</span>
 
-                <li class="nav-item">
+                        <!-- Switch -->
+                        <input class="form-check-input ms-1" type="checkbox" id="theme-toggle" style="cursor:pointer;">
+
+                        <!-- Ícone -->
+                        <i class="bi bi-sun-fill themeIcon ms-2" id="themeIcon"></i>
+
+                    </label>
+                </li>
+
+
+                <li class="nav-item d-sm-none d-lg-block">
                     <a class="nav-link position-relative" href="{{ route('cart.index') }}">
+                        <i class="bi bi-cart3"></i>
+                        @if(session('cart') && count(session('cart')) > 0)
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ count(session('cart')) }}
+                            </span>
+                        @endif
+                    </a>
+                </li>
+                <li class="nav-item d-sm-block d-lg-none">
+                    <a class="nav-link position-relative" href="{{ route('cart.index') }}">
+                        <span class="spanItems">Ver carrinho</span>
                         <i class="bi bi-cart3"></i>
                         @if(session('cart') && count(session('cart')) > 0)
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -161,7 +198,7 @@
                     </li>
                 @else
                     <li class="nav-item ms-lg-3">
-                        <a class="btn btn-outline-light px-3 py-1 rounded-pill" href="{{ route('login') }}">Entrar</a>
+                        <a class="btn btn-outline-light px-3 py-1 rounded-pill mt-lg-0 mt-sm-2" href="{{ route('login') }}">Entrar</a>
                     </li>
                 @endif
             </ul>
