@@ -135,7 +135,7 @@
         <div class="form-group mb-4">
             <label for="content">Conteúdo</label>
             <textarea class="form-control @error('content') is-invalid @enderror"
-                      name="content" rows="5" placeholder="Escreva aqui o conteúdo completo do tópico..." required>{{ old('content') }}</textarea>
+                      name="content" id="content" rows="5" placeholder="Escreva aqui o conteúdo completo do tópico..." required>{{ old('content') }}</textarea>
             @error('content')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -166,4 +166,33 @@
         }
     });
 </script>
+
+{{-- Menções --}}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const plants = @json(
+        $plants->map(fn($p) => [
+            'key'   => $p->popular_name,
+            'value' => "@[{$p->popular_name}]({$p->id})"
+        ])
+    );
+
+    const tribute = new Tribute({
+        trigger: "@",
+        values: plants,
+        selectTemplate: function (item) {
+            return item.original.value;
+        },
+        menuItemTemplate: function (item) {
+            return item.original.key;
+        }
+    });
+
+    const textarea = document.getElementById("content");
+    tribute.attach(textarea);
+
+});
+</script>
+
 @endsection

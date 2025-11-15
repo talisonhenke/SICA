@@ -50,6 +50,20 @@
         white-space: pre-line;
     }
 
+    .plant-ref {
+        color: var(--color-accent);
+        font-weight: 600;
+        text-decoration: none;
+        /* border-bottom: 1px dashed var(--color-accent); */
+        transition: color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .plant-ref:hover {
+        color: var(--color-secondary);
+        /* border-color: var(--color-secondary); */
+        text-decoration: none;
+    }
+
     .button-group {
         display: flex;
         flex-wrap: wrap;
@@ -125,7 +139,8 @@
     @endif
 
     <div class="topic-content">
-        {!! nl2br(e($topic->content)) !!}
+        {{-- {!! nl2br(e($topic->content)) !!} --}}
+        {!! $topic->content_html !!}
     </div>
 </div>
 @endsection

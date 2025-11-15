@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Topic;
+use App\Models\Plant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
@@ -21,7 +22,8 @@ class TopicController extends Controller
     // Mostra o formulário de criação
     public function create()
     {
-        return view('topics.create');
+        $plants = Plant::orderBy('popular_name', 'asc')->get();
+        return view('topics.create', ['plants' => $plants]);
     }
 
     // Armazena um novo tópico
@@ -107,10 +109,16 @@ class TopicController extends Controller
 
 
     // Exibe um único tópico
-    public function show(Topic $topic)
-    {
-        return view('topics.show', compact('topic'));
-    }
+    public function show($id)
+{
+    $topic = Topic::findOrFail($id);
+
+    // Aplica o processamento aqui
+    $topic->content_html = $this->convertMentions($topic->content);
+
+    return view('topics.show', compact('topic'));
+}
+
 
     // Formulário de edição
     public function edit(Topic $topic)
@@ -238,5 +246,21 @@ class TopicController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    // Converte menções
+    private function convertMentions(string $text): string
+    {
+        return preg_replace_callback(
+            '/@\[([^\]]+)\]\((\d+)\)/',
+            function ($m) {
+                $name = $m[1];
+                $id   = $m[2];
+                $url  = url("/plant/{$id}/" . \Illuminate\Support\Str::slug($name, '-'));
+                return "<a href=\"{$url}\" class=\"plant-ref\">{$name}</a>";
+            },
+            $text
+        );
+    }
+
 
 }

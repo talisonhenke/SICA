@@ -189,28 +189,40 @@ function updateThemeIcon(theme) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+
     const html = document.documentElement;
-    const toggleBtn = document.getElementById("theme-toggle");
+    const toggle = document.getElementById("theme-toggle");
 
-    // 1️⃣ Verifica tema salvo anteriormente
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme) {
-        html.setAttribute("data-theme", savedTheme);
+    // 1️⃣ Ler tema salvo ou usar LIGHT como padrão
+    let savedTheme = localStorage.getItem("theme") || "light";
+
+    // Garante que o valor seja apenas "light" ou "dark"
+    if (savedTheme !== "light" && savedTheme !== "dark") {
+        savedTheme = "light";
     }
 
-    // 2️⃣ Alterna o tema ao clicar no botão
-    if (toggleBtn) {
-        toggleBtn.addEventListener("click", () => {
-            const current = html.getAttribute("data-theme");
+    // 2️⃣ Aplicar o tema no HTML
+    html.setAttribute("data-theme", savedTheme);
 
-            const newTheme = current === "dark" ? "light" : "dark";
-            updateThemeIcon(newTheme);
-            html.setAttribute("data-theme", newTheme);
+    // 3️⃣ Posicionar o toggle:
+    // light => toggle desligado (unchecked)
+    // dark  => toggle ligado (checked)
+    toggle.checked = savedTheme === "dark";
 
-            // 3️⃣ Salva o tema no navegador
-            localStorage.setItem("theme", newTheme);
-        });
-    }
+    // 4️⃣ Atualizar o ícone no carregamento
+    updateThemeIcon(savedTheme);
+
+    // 5️⃣ Evento para alternar o tema
+    toggle.addEventListener("change", () => {
+        const newTheme = toggle.checked ? "dark" : "light";
+
+        html.setAttribute("data-theme", newTheme);
+        updateThemeIcon(newTheme);
+        localStorage.setItem("theme", newTheme);
+    });
+
 });
-
 </script>
+
+{{-- tribute (menções) --}}
+<script src="{{ asset('vendor/tribute/tribute.min.js') }}"></script>
