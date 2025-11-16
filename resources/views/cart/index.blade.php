@@ -125,9 +125,12 @@
                     <a href="{{ route('cart.clear') }}" class="btn btn-outline-danger me-2">
                         <i class="bi bi-x-circle"></i> Esvaziar
                     </a>
-                    <button class="btn btn-success" disabled>
+                    {{-- <button class="btn btn-success" disabled>
                         <i class="bi bi-credit-card"></i> Finalizar Compra
-                    </button>
+                    </button> --}}
+                    <a href="{{ route('checkout.pix') }}" class="btn btn-success btn-lg">
+                        Finalizar compra
+                    </a>
                 </div>
             </div>
         @else
