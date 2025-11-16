@@ -114,12 +114,48 @@
         display: block;
         margin-top: 0.5rem;
     }
+
+    .mention-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--color-secondary);
+    color: var(--color-surface-primary);
+    padding: 3px 8px;
+    border-radius: 12px;
+    margin: 0 4px;
+    font-weight: 600;
+    font-size: .95rem;
+}
+
+.mention-chip .chip-remove {
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.9);
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+#content-editor {
+    min-height: 150px; /* altura aproximada de rows="5" */
+    padding: 10px;
+    border-radius: 6px;
+    overflow-y: auto;
+}
+
+#content-editor:empty::before {
+    content: attr(data-placeholder);
+    color: #999;
+    pointer-events: none;
+}
 </style>
 
 <div class="create-topic-container">
     <h2 class="create-topic-title">📝 Editar Tópico</h2>
 
-    <form action="{{ route('topics.update', $topic->id) }}" method="POST" enctype="multipart/form-data" novalidate>
+    <form action="{{ route('topics.update', $topic->id) }}" method="POST" enctype="multipart/form-data" onsubmit="serializeEditorContent()" novalidate>
         @csrf
         @method('PUT')
 
@@ -143,8 +179,11 @@
 
         <div class="form-group mb-4">
             <label for="content">Conteúdo</label>
-            <textarea class="form-control @error('content') is-invalid @enderror"
-                      name="content" rows="5" placeholder="Escreva aqui o conteúdo completo do tópico..." required>{{ old('content', $topic->content) }}</textarea>
+            <input type="hidden" name="content" id="content-hidden">
+            <div id="content-editor" name="content-editor" data-placeholder="Digite o conteúdo do tópico aqui..." class="form-control @error('content') is-invalid @enderror" contenteditable="true" rows="5" placeholder="Escreva aqui o conteúdo completo do tópico..." required>{{ old('content', $topic->content) }}</div>
+            {{-- <textarea class="form-control @error('content') is-invalid @enderror"
+                      name="content" rows="5" placeholder="Escreva aqui o conteúdo completo do tópico..." required>{{ old('content', $topic->content) }}</textarea> --}}
+
             @error('content')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -182,4 +221,172 @@
         }
     });
 </script>
+
+<script>
+const plants = @json(
+    $plants->map(fn($p) => [
+        'key' => $p->popular_name,
+        'id'  => $p->id,
+    ])
+);
+</script>
+
+
+<!-- certifique-se de ter Tribute.js carregado -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const editor = document.getElementById('content-editor');
+
+    // seu array de plantas (ex.: [{key:"Malva", id:1}, ...])
+    const plants = @json($plants->map(fn($p) => ['key'=>$p->popular_name,'id'=>$p->id]));
+
+    function escapeHtml(text) {
+        return (text + '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    const tribute = new Tribute({
+        trigger: '@',
+        values: plants,
+        lookup: 'key',
+        fillAttr: 'key',
+        allowSpaces: true,
+        menuItemTemplate: function (item) {
+            // como aparecem as sugestões no menu
+            return `<div class="mention-item">${escapeHtml(item.string)}</div>`;
+        },
+        selectTemplate: function (item) {
+            if (!item || !item.original) return '';
+
+            const id = item.original.id;
+            const name = escapeHtml(item.original.key);
+
+            // retornamos HTML (string) — Tribute injeta essa string no editor
+            // contenteditable=false impede edição do chip
+            // usamos &nbsp; para garantir um espaço protegido depois do chip
+            return `<span class="mention-chip" contenteditable="false" data-plant-id="${id}">
+                        <span class="mention-name">${name}</span>
+                        <button type="button" class="chip-remove" contenteditable="false" aria-label="remover">×</button>
+                    </span>&nbsp;`;
+        },
+        replaceTextSuffix: '' // já usamos &nbsp; no template acima
+    });
+
+    tribute.attach(editor);
+
+    // Delegação: remover chip ao clicar no botão × (funciona com HTML inserido)
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.chip-remove');
+        if (!btn) return;
+        const chip = btn.closest('.mention-chip');
+        if (!chip) return;
+
+        chip.remove();
+        // reposiciona caret no final
+        placeCaretAtEnd(editor);
+        editor.focus();
+    });
+
+    function placeCaretAtEnd(el) {
+        el.focus();
+        if (typeof window.getSelection !== "undefined" && typeof document.createRange !== "undefined") {
+            const range = document.createRange();
+            range.selectNodeContents(el);
+            range.collapse(false);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
+    }
+});
+</script>
+
+<script>
+    function editorToTextWithTokens() {
+    const clone = editor.cloneNode(true);
+    clone.querySelectorAll('.mention-chip').forEach(chip => {
+        const id = chip.dataset.plantId;
+        const name = chip.querySelector('.mention-name')?.textContent ?? '';
+        const token = `[[plant:${id}:${name}]]`;
+        const textNode = document.createTextNode(token);
+        chip.replaceWith(textNode);
+    });
+    return clone.textContent;
+}
+
+// no submit do form:
+form.addEventListener('submit', function(e) {
+    const hidden = document.getElementById('content_hidden');
+    hidden.value = editorToTextWithTokens();
+});
+
+</script>
+
+
+<script>
+function serializeEditorContent() {
+    const editor = document.getElementById("content-editor");
+    let output = "";
+
+    editor.childNodes.forEach(node => {
+
+        // Caso seja um chip
+        if (node.nodeType === Node.ELEMENT_NODE && node.classList.contains("mention-chip")) {
+            const plantId = node.dataset.plantId;
+            output += `[[planta:${plantId}]]`;
+        }
+
+        // Caso seja texto puro
+        else if (node.nodeType === Node.TEXT_NODE) {
+            output += node.textContent;
+        }
+
+        // Caso seja uma quebra de linha <br>
+        else if (node.nodeName === "BR") {
+            output += "\n";
+        }
+    });
+
+    document.getElementById("content-hidden").value = output.trim();
+}
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+    const editor = document.getElementById("content-editor");
+    const raw = @json(old('content', $topic->content));
+
+    // Converter tokens em chips
+    const html = raw.replace(/\[\[planta:(\d+)\]\]/g, (match, id) => {
+        return `
+            <span class="mention-chip" contenteditable="false" data-plant-id="${id}">
+                <span class="mention-name">Carregando...</span>
+                <button type="button" class="chip-remove">×</button>
+            </span>&nbsp;
+        `;
+    });
+
+    editor.innerHTML = html;
+
+    // Agora preencher os nomes das plantas (opcional, mas elegante)
+    const plants = @json(
+        $plants->map(fn($p) => ['id' => $p->id, 'name' => $p->popular_name])
+    );
+
+    editor.querySelectorAll(".mention-chip").forEach(chip => {
+        const id = Number(chip.dataset.plantId);
+        const p = plants.find(pl => pl.id === id);
+
+        if (p) {
+            chip.querySelector(".mention-name").textContent = p.name;
+        }
+    });
+});
+
+</script>
+
 @endsection

@@ -122,9 +122,19 @@ class TopicController extends Controller
 
     // Formulário de edição
     public function edit(Topic $topic)
-    {
-        return view('topics.edit', compact('topic'));
-    }
+{
+    // Carrega todas as plantas para usar no autocomplete/mentions no form de edição
+    $plants = Plant::orderBy('popular_name', 'asc')->get();
+
+    // Se quiser checar permissão (opcional)
+    // $this->authorize('update', $topic);
+
+    return view('topics.edit', [
+        'topic'  => $topic,
+        'plants' => $plants,
+    ]);
+}
+
 
     public function update(Request $request, $id)
 {
@@ -251,16 +261,27 @@ class TopicController extends Controller
     private function convertMentions(string $text): string
     {
         return preg_replace_callback(
-            '/@\[([^\]]+)\]\((\d+)\)/',
+            '/\[\[planta:(\d+)\]\]/',
             function ($m) {
-                $name = $m[1];
-                $id   = $m[2];
-                $url  = url("/plant/{$id}/" . \Illuminate\Support\Str::slug($name, '-'));
+
+                $id = (int) $m[1];
+
+                // Buscar planta no banco
+                $plant = \App\Models\Plant::find($id);
+
+                if (!$plant) {
+                    return ''; // ou devolve o token bruto, se preferir
+                }
+
+                $name = $plant->popular_name;
+                $slug = \Illuminate\Support\Str::slug($name, '-');
+
+                $url = url("/plant/{$id}/{$slug}");
+
                 return "<a href=\"{$url}\" class=\"plant-ref\">{$name}</a>";
             },
             $text
         );
     }
-
 
 }

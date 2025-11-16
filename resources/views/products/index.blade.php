@@ -161,7 +161,9 @@
 <div class="container my-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold primaryTitles">Produtos</h2>
-        <a href="{{ route('products.create') }}" class="btn secondaryButton">+ Adicionar Produto</a>
+        @if(Auth::check() && Auth::user()->user_lvl === 'admin')
+            <a href="{{ route('products.create') }}" class="btn secondaryButton">+ Adicionar Produto</a>
+        @endif
     </div>
 
     <div class="row g-4">

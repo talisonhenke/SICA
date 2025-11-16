@@ -124,7 +124,9 @@
 <div class="container my-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold primaryTitles">Tópicos</h2>
-        <a href="{{ route('topics.create') }}" class="btn secondaryButton">+ Adicionar Tópico</a>
+        @if(Auth::check() && Auth::user()->user_lvl === 'admin')
+            <a href="{{ route('topics.create') }}" class="btn secondaryButton">+ Adicionar Tópico</a>
+        @endif
     </div>
 
     @if(session('success'))
