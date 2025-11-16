@@ -15,19 +15,19 @@ return new class extends Migration
     {
         Schema::create('plants', function (Blueprint $table) {
             $table->id();
-            $table->string('scientific_name', 255);
-            $table->string('popular_name', 255);
-            $table->string('slug', 255);
-            $table->string('habitat', 255);
-            $table->json('useful_parts');
-            $table->text('characteristics');
-            $table->text('observations');
-            $table->text('popular_use');
-            $table->text('chemical_composition');
-            $table->text('contraindications');
-            $table->text('mode_of_use');
-            $table->json('images');
-            $table->text('info_references');
+            $table->string('scientific_name', 255)->nullable();
+            $table->string('popular_name', 255)->nullable();
+            $table->string('slug', 255)->nullable();
+            $table->string('habitat', 255)->nullable();
+            $table->json('useful_parts')->nullable();
+            $table->text('characteristics')->nullable();
+            $table->text('observations')->nullable();
+            $table->text('popular_use')->nullable();
+            $table->text('chemical_composition')->nullable();
+            $table->text('contraindications')->nullable();
+            $table->text('mode_of_use')->nullable();
+            $table->json('images')->nullable();
+            $table->text('info_references')->nullable();
             $table->text('qr_code')->nullable(); // pode ser link/identificador
             $table->timestamps(); // created_at e updated_at
         });

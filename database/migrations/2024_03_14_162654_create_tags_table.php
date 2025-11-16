@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('tags', function (Blueprint $table) {
             $table->id(); // ID autoincrement
-            $table->string('name'); // Nome da tag (ex: "Dor de cabeça", "Calmante")
+            $table->string('name')->nullable(); // Nome da tag (ex: "Dor de cabeça", "Calmante")
             $table->text('description')->nullable(); // Descrição detalhada da tag (opcional)
             $table->timestamps(); // created_at e updated_at
         });

@@ -5,17 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Order extends Model
+class OrderHistory extends Model
 {
     use HasFactory;
 
+    protected $table = 'order_history'; // Corrige o nome da tabela
+    
     protected $fillable = [
-        'total_amount',
+        'order_id',
         'status',
-        'order_pix',
-    ];
-
-    protected $casts = [
-    'order_address' => 'array',
+        'notes',
+        'changes',
     ];
 }

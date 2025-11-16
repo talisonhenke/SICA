@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('plant_tag', function (Blueprint $table) {
             $table->id(); // ID autoincrement
-            $table->foreignId('plant_id')->constrained('plants')->onDelete('cascade');
-            $table->foreignId('tag_id')->constrained('tags')->onDelete('cascade');
+            $table->foreignId('plant_id')->nullable()->constrained('plants')->onDelete('cascade');
+            $table->foreignId('tag_id')->nullable()->constrained('tags')->onDelete('cascade');
             $table->timestamps();
 
             // Garantir que não haja duplicidade da mesma tag na mesma planta

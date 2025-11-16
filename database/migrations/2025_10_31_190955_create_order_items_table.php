@@ -10,10 +10,10 @@ return new class extends Migration
     {
         Schema::create('order_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')->constrained()->onDelete('cascade');
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->integer('quantity')->default(1);
-            $table->decimal('price', 10, 2); // preço do produto no momento do pedido
+            $table->foreignId('order_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('product_id')->nullable()->constrained()->onDelete('cascade');
+            $table->integer('quantity')->default(1)->nullable();
+            $table->decimal('price', 10, 2)->nullable(); // preço do produto no momento do pedido
             $table->timestamps();
         });
     }

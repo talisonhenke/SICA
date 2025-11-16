@@ -125,12 +125,28 @@
                     <a href="{{ route('cart.clear') }}" class="btn btn-outline-danger me-2">
                         <i class="bi bi-x-circle"></i> Esvaziar
                     </a>
-                    {{-- <button class="btn btn-success" disabled>
-                        <i class="bi bi-credit-card"></i> Finalizar Compra
-                    </button> --}}
-                    <a href="{{ route('checkout.pix') }}" class="btn btn-success btn-lg">
-                        Finalizar compra
-                    </a>
+                    <form action="{{ route('orders.store') }}" method="POST" style="display: inline;">
+                        @csrf
+
+                        {{-- Envia cada item do carrinho --}}
+                        @foreach($cart as $id => $item)
+                            <input type="hidden" name="items[{{ $id }}][product_id]" value="{{ $id }}">
+                            <input type="hidden" name="items[{{ $id }}][name]" value="{{ $item['name'] }}">
+                            <input type="hidden" name="items[{{ $id }}][price]" value="{{ $item['price'] }}">
+                            <input type="hidden" name="items[{{ $id }}][quantity]" value="{{ $item['quantity'] }}">
+                        @endforeach
+
+                        {{-- Envia o total da compra --}}
+                        <input type="hidden" name="total" value="{{ $total }}">
+
+                        {{-- Endereço do pedido (placeholder, será tratado depois) --}}
+                        <input type="hidden" name="order_address" value="{}">
+
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-credit-card"></i> Finalizar Compra
+                        </button>
+                    </form>
+
                 </div>
             </div>
         @else

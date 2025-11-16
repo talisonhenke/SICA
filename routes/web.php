@@ -16,6 +16,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CheckoutController;
 
 // QR-Code
@@ -119,6 +120,12 @@ Route::get('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 
 // pix routes 
 Route::get('/checkout/pix', [CheckoutController::class, 'pix'])->name('checkout.pix');
+
+// orders routes 
+Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+
+Route::get('/orders/{order}/payment', [OrderController::class, 'paymentPage'])
+    ->name('orders.payment');
 
 
 

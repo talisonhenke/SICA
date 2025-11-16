@@ -2,157 +2,155 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\OrderHistory;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class OrderController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        //
-    }
+        // chapix de quem vai receber 
+        $chave = "fdcf6a38-1173-4f7f-bc9b-328c37297fbf";
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
+        // 1️⃣ Pegamos o carrinho da sessão
+        $cart = session()->get('cart', []);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
-
-    function gerarPixPayload($chave, $valor, $nomeRecebedor, $cidade, $identificador) 
-    {
-        $payload = [
-            "00" => "01",
-            "26" => [
-                "00" => "BR.GOV.BCB.PIX",
-                "01" => $chave
-            ],
-            "52" => "0000",
-            "53" => "986",
-            "54" => number_format($valor, 2, '.', ''),
-            "58" => "BR",
-            "59" => $nomeRecebedor,
-            "60" => strtoupper($cidade),
-            "62" => [
-                "05" => $identificador
-            ]
-        ];
-
-        $montar = function ($arr) use (&$montar) {
-            $out = "";
-            foreach ($arr as $id => $valor) {
-                if (is_array($valor)) {
-                    $valString = $montar($valor);
-                } else {
-                    $valString = $valor;
-                }
-                $out .= $id . str_pad(strlen($valString), 2, '0', STR_PAD_LEFT) . $valString;
-            }
-            return $out;
-        };
-
-        $semCRC = $montar($payload) . "6304";
-
-        $crc = strtoupper(dechex(crc16($semCRC)));
-
-        return $semCRC . $crc;
-    }
-
-    function crc16($string) {
-        $crc = 0xFFFF;
-        for ($i = 0; $i < strlen($string); $i++) {
-            $crc ^= ord($string[$i]) << 8;
-            for ($b = 0; $b < 8; $b++) {
-                if ($crc & 0x8000) {
-                    $crc = ($crc << 1) ^ 0x1021;
-                } else {
-                    $crc = ($crc << 1);
-                }
-                $crc &= 0xFFFF;
-            }
+        if (empty($cart)) {
+            return redirect()->route('cart.index')->with('error', 'Seu carrinho está vazio.');
         }
-        return $crc;
+
+        // 2️⃣ Calculamos o total
+        $total = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
+
+        // 3️⃣ Criamos o pedido
+        $order = Order::create([
+            'user_id'       => Auth::user()->id,
+            'total_amount'  => $total,
+            'order_address' => null,      // vamos implementar depois
+            'status'        => 'pending',
+            'order_pix'     => 'generating'         // vamos preencher depois
+        ]);
+
+        // 4️⃣ Criamos os itens do pedido
+        foreach ($cart as $productId => $item) {
+            OrderItem::create([
+                'order_id'   => $order->id,
+                'product_id' => $productId,
+                'quantity'   => $item['quantity'],
+                'price'      => $item['price']
+            ]);
+        }
+
+        // 5️⃣ Registramos histórico
+        OrderHistory::create([
+            'order_id' => $order->id,
+            'status'   => 'pending',
+            'notes'    => 'Pedido criado e aguardando pagamento.',
+        ]);
+
+        // 6️⃣ Criamos o PIX (método idêntico ao que você testou ontem)
+        $payload = $this->gerarPayloadPix($chave,$total);
+
+        // salvamos o código no pedido
+        $order->update([
+            'order_pix' => $payload
+        ]);
+
+        // 7️⃣ Limpamos o carrinho
+        session()->forget('cart');
+
+        // 8️⃣ Redirecionamos o usuário para a página de pagamento
+        return redirect()->route('orders.payment', $order->id);
     }
 
-    public function gerarPixQR(Request $request)
+    /*
+     * Gerar QR Code PIX (mesmo algoritmo de ontem)
+     */
+private function crc16($payload)
+{
+    $polynomial = 0x1021;
+    $result = 0xFFFF;
+
+    for ($i = 0; $i < strlen($payload); $i++) {
+        $result ^= (ord($payload[$i]) << 8);
+        for ($j = 0; $j < 8; $j++) {
+            if ($result & 0x8000) {
+                $result = ($result << 1) ^ $polynomial;
+            } else {
+                $result = $result << 1;
+            }
+            $result &= 0xFFFF;
+        }
+    }
+
+    return strtoupper(str_pad(dechex($result), 4, '0', STR_PAD_LEFT));
+}
+
+
+    public function montarPix(array $data)
     {
-        $valor = $request->valor;
-        $chave = 'sua-chave-aqui';
-        $nome  = 'Seu Nome';
-        $cidade = 'Sua Cidade';
-        $id = 'PED' . rand(1000, 9999);
+        $result = '';
 
-        $payload = gerarPixPayload($chave, $valor, $nome, $cidade, $id);
+        foreach ($data as $id => $value) {
+            if (is_array($value)) {
+                $raw = $this->montarPix($value);
+            } else {
+                $raw = $value;
+            }
 
-        $qr = QrCode::size(300)->generate($payload);
+            $len = strlen($raw);
+            $result .= $id . str_pad($len, 2, '0', STR_PAD_LEFT) . $raw;
+        }
 
-        return view('checkout.pix', compact('qr', 'payload'));
+        return $result . "6304" . $this->crc16($result);
     }
 
+    private function gerarPayloadPix($chavePix, $valor)
+{
+    $merchantAccountInfo =
+        $this->emvField("00", "BR.GOV.BCB.PIX") .
+        $this->emvField("01", $chavePix);
+
+    $merchantAccountInfo = $this->emvField("26", $merchantAccountInfo);
+
+    $payload =
+        $this->emvField("00", "01") .                // Payload format
+        $merchantAccountInfo .
+        $this->emvField("52", "0000") .             // Merchant category
+        $this->emvField("53", "986") .              // Currency
+        $this->emvField("54", number_format($valor, 2, '.', '')) .
+        $this->emvField("58", "BR") .
+        $this->emvField("59", "SICA Online") .
+        $this->emvField("60", "PELOTAS") .
+        $this->emvField("62", $this->emvField("05", "SICA1234"));
+
+    // Adiciona campo do CRC (sem o CRC ainda)
+    $payload .= "6304";
+
+    // Agora calcula o CRC16
+    $crc = $this->crc16($payload);
+
+    return $payload . $crc;
+}
+
+    private function emvField($id, $value)
+{
+    $len = strlen($value);
+    return $id . str_pad($len, 2, '0', STR_PAD_LEFT) . $value;
+}
+    
+    public function paymentPage(Order $order)
+    {
+        $qrcodeSvg = \QrCode::size(280)->generate($order->order_pix);
+
+        return view('orders.payment', [
+            'order' => $order,
+            'qrcodeSvg' => $qrcodeSvg,
+            'payload' => $order->order_pix
+        ]);
+    }
 }

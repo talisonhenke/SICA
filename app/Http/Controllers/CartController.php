@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
@@ -17,7 +18,6 @@ class CartController extends Controller
 {
     // Recupera o carrinho da sessão, ou um array vazio se não existir
     $cart = session()->get('cart', []);
-
     // Calcula o total
     $total = 0;
     foreach ($cart as $item) {
