@@ -31,7 +31,8 @@ class AddressesController extends Controller
             'street'   => 'required|string|max:255',
             'number'   => 'required|string|max:20',
             'city'     => 'required|string|max:255',
-            'state'    => 'required|string|max:2',
+            'state'    => 'required|string|max:255',
+            'country'     => 'required|string|max:255',
             'zip_code'  => 'required|string|max:20',
             'latitude' => 'nullable|numeric',
             'longitude'=> 'nullable|numeric',
@@ -41,7 +42,7 @@ class AddressesController extends Controller
         ]);
 
         Address::create([
-            'user_id'   => Auth::id(),
+            'user_id'   => Auth::user()->id,
             'street'    => $request->street,
             'number'    => $request->number,
             'complement'=> $request->complement,
@@ -110,7 +111,7 @@ class AddressesController extends Controller
      */
     private function authorizeOwner(Address $address)
     {
-        if ($address->user_id !== Auth::id()) {
+        if ($address->user_id !== Auth::user()->id) {
             abort(403, 'Acesso negado.');
         }
     }

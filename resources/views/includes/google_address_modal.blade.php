@@ -42,6 +42,16 @@
                         </div>
 
                         <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Complemento</label>
+                            <input type="text" id="complement" name="complement" class="form-control">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Bairro</label>
+                            <input type="text" id="district" name="district" class="form-control">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
                             <label class="form-label fw-semibold">Cidade</label>
                             <input type="text" id="city" name="city" class="form-control" required>
                         </div>

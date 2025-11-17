@@ -132,5 +132,32 @@ Route::get('/orders/{order}/payment', [OrderController::class, 'paymentPage'])
 // addresses routes 
 
 Route::middleware(['auth'])->group(function () {
-    Route::resource('addresses', AddressesController::class);
+
+    // Lista endereços
+    Route::get('/addresses', [AddressesController::class, 'index'])
+        ->name('addresses.index');
+
+    // Página de criação
+    Route::get('/addresses/create', [AddressesController::class, 'create'])
+        ->name('addresses.create');
+
+    // Salvar novo endereço
+    Route::post('/addresses', [AddressesController::class, 'store'])
+        ->name('addresses.store');
+
+    // Mostrar endereço específico
+    Route::get('/addresses/{address}', [AddressesController::class, 'show'])
+        ->name('addresses.show');
+
+    // Página de edição
+    Route::get('/addresses/{address}/edit', [AddressesController::class, 'edit'])
+        ->name('addresses.edit');
+
+    // Atualizar endereço
+    Route::put('/addresses/{address}', [AddressesController::class, 'update'])
+        ->name('addresses.update');
+
+    // Deletar endereço
+    Route::delete('/addresses/{address}', [AddressesController::class, 'destroy'])
+        ->name('addresses.destroy');
 });

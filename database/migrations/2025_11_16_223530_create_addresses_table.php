@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('complement')->nullable();    // Complemento
             $table->string('district')->nullable();      // Bairro
             $table->string('city')->nullable();          // Cidade
-            $table->string('state', 2)->nullable();      // Sigla do estado (SP, RJ...)
+            $table->string('state')->nullable();      // Sigla do estado (SP, RJ...)
             $table->string('zip_code', 20)->nullable();  // CEP
             $table->string('country')->default('Brasil');
 
