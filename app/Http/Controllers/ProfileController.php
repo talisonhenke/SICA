@@ -18,7 +18,12 @@ class ProfileController extends Controller
             'admin' => 'Administrador'
         ];
 
-        return view('profile.edit_profile', compact('user', 'levels'));
+
+        return view('profile.edit_profile', [
+            'user' => $user,
+            'levels' => $levels,
+            'addresses' => $user->addresses, // <-- Adicionamos isto!
+        ]);
     }
 
     // Atualiza o nome do usuário logado

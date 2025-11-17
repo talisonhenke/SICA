@@ -18,6 +18,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\AddressesController;
 
 // QR-Code
 
@@ -128,5 +129,8 @@ Route::get('/orders/{order}/payment', [OrderController::class, 'paymentPage'])
     ->name('orders.payment');
 
 
+// addresses routes 
 
-
+Route::middleware(['auth'])->group(function () {
+    Route::resource('addresses', AddressesController::class);
+});
