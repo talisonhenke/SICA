@@ -218,7 +218,7 @@ function initAutocomplete() {
 }
 
 /* ===========================================================
-   REVERSE GEOCODING
+   REVERSE GEOCODING  
 =========================================================== */
 function updateAddressFromLatLng(lat, lng) {
 
