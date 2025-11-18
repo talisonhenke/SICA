@@ -329,3 +329,53 @@ select.form-select-sm:focus {
     color: var(--color-surface);
     border: none;
 }
+
+/* =================================================
+   CORREÇÕES CSS para Google Places Autocomplete em Modais
+   (Deve ser inserido no arquivo CSS principal após o Bootstrap)
+   =================================================
+*/
+
+/* 1. Garante que o container de sugestões fique sempre no topo */
+.pac-container {
+    /* Valor alto, garantindo que seja maior que o z-index do modal (tipicamente 1050) */
+    z-index: 99999 !important; 
+    /* Remove qualquer limitação de corte */
+    overflow: visible !important;
+}
+
+/* 2. Garante que o corpo do modal não corte o Autocomplete */
+.modal-body {
+    overflow: visible;
+}
+
+/* 3. Garante que o componente Place Picker não esconda as sugestões */
+gmpx-place-picker {
+    overflow: visible;
+}
+
+/* Opcional: Se a cor de fundo do modal for muito escura, este estilo garante que o texto 
+   das sugestões seja sempre legível (fundo branco). */
+.pac-item {
+    background-color: #fff;
+}
+
+/* =================================================
+   CORREÇÃO CRÍTICA PARA VISIBILIDADE DO MARCADOR
+   =================================================
+*/
+
+/* Garante que o container do mapa não esconda elementos flutuantes */
+gmp-map {
+    /* Opcional: Garante que o mapa tenha uma posição de referência para elementos filhos */
+    position: relative !important;
+    overflow: visible !important; 
+}
+
+/* Força o marcador a ter um z-index alto e garante que ele seja renderizado. */
+gmp-advanced-marker {
+    z-index: 999999 !important; /* Valor muito alto para aparecer sobre TUDO */
+    visibility: visible !important;
+    display: block !important;
+    opacity: 1 !important;
+}

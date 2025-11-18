@@ -235,7 +235,7 @@ function updateAddressFromLatLng(lat, lng) {
 }
 
 /* ===========================================================
-   EXTRAÇÃO E PREENCHIMENTO DOS CAMPOS (COMPLETA)
+   EXTRAÇÃO DOS CAMPOS
 =========================================================== */
 function getPart(components, type) {
     let obj = components.find(c => c.types.includes(type));
@@ -243,22 +243,12 @@ function getPart(components, type) {
 }
 
 function fillAddressFields(components) {
-    
-    // 💡 NOVO: Limpa o campo Bairro antes de preencher, assim como os outros
-    document.getElementById("district").value = ""; 
 
     document.getElementById("street").value =
         getPart(components, "route");
 
     document.getElementById("number").value =
         getPart(components, "street_number");
-        
-    // 🎯 ADICIONA A LÓGICA DE EXTRAÇÃO DO BAIRRO
-    const districtValue = getPart(components, "sublocality_level_1") || 
-                          getPart(components, "sublocality");
-
-    document.getElementById("district").value = districtValue;
-    // FIM DA LÓGICA DO BAIRRO
 
     document.getElementById("city").value =
         getPart(components, "administrative_area_level_2");
