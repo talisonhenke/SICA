@@ -253,7 +253,7 @@ function fillAddressFields(components) {
     document.getElementById("number").value =
         getPart(components, "street_number");
         
-    // 🎯 ADICIONA A LÓGICA DE EXTRAÇÃO DO BAIRRO
+    // ADICIONA A LÓGICA DE EXTRAÇÃO DO BAIRRO
     const districtValue = getPart(components, "sublocality_level_1") || 
                           getPart(components, "sublocality");
 
