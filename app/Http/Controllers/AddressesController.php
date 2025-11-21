@@ -73,26 +73,42 @@ class AddressesController extends Controller
     /**
      * Atualizar endereço
      */
-    public function update(Request $request, Address $address)
-    {
-        $this->authorizeOwner($address);
+    public function update(Request $request, $id)
+{
+    $address = Address::findOrFail($id);
 
-        $validated = $request->validate([
-            'street'     => 'required|string|max:255',
-            'number'     => 'required|string|max:20',
-            'complement' => 'nullable|string|max:255',
-            'district'   => 'nullable|string|max:255',
-            'city'       => 'required|string|max:255',
-            'state'      => 'required|string|max:2',
-            'zip_code'   => 'required|string|max:20',
-            'latitude'   => 'nullable|numeric',
-            'longitude'  => 'nullable|numeric',
-        ]);
+    // Validação: idêntica ao método store
+    $validated = $request->validate([
+        'street'     => 'required|string|max:255',
+        'number'     => 'required|string|max:20',
+        'city'       => 'required|string|max:255',
+        'state'      => 'required|string|max:255',
+        'country'    => 'required|string|max:255',
+        'zip_code'   => 'required|string|max:20',
+        'latitude'   => 'nullable|numeric',
+        'longitude'  => 'nullable|numeric',
+        'complement' => 'nullable|string|max:255',
+        'district'   => 'nullable|string|max:255',
+    ]);
 
-        $address->update($validated);
+    // Atualiza registro
+    $address->update([
+        'street'     => $validated['street'],
+        'number'     => $validated['number'],
+        'complement' => $validated['complement'] ?? null,
+        'district'   => $validated['district'] ?? null,
+        'city'       => $validated['city'],
+        'state'      => $validated['state'],
+        'zip_code'   => $validated['zip_code'],
+        'latitude'   => $validated['latitude'] ?? null,
+        'longitude'  => $validated['longitude'] ?? null,
+    ]);
 
-        return redirect()->back()->with('success', 'Endereço atualizado!');
-    }
+    return redirect()
+        ->back()
+        ->with('success', 'Endereço atualizado com sucesso!');
+}
+
 
     /**
      * Excluir endereço
@@ -103,7 +119,7 @@ class AddressesController extends Controller
 
         $address->delete();
 
-        return redirect()->back()->with('success', 'Endereço excluído!');
+        return redirect()->back()->with('msg', 'Endereço excluído com sucesso!');
     }
 
     /**

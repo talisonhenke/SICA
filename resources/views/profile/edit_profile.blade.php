@@ -5,236 +5,217 @@
 @section('content')
 
 <style>
-    /* --- ESTILIZAÇÃO USANDO AS CORES GLOBAIS --- */
+    /* --- PALETA DE CORES GLOBAL --- */
     :root {
-        --primary-color: #4CAF50;     /* Verde padrão */
-        --secondary-color: #2E7D32;   /* Verde escuro */
-        --accent-color: #FFC107;      /* Amarelo */
-        --danger-color: #dc3545;      /* Vermelho padrão */
-        --light-color: #f8f9fa;
-        --dark-color: #343a40;
+        --primary-color: #4CAF50;
+        --primary-dark: #2E7D32;
+        --accent-color: #FFC107;
+        --danger-color: #dc3545;
+        --bg-light: #f5f7fa;
+        --bg-card: #ffffff;
+        --text-dark: #2f2f2f;
+        --text-muted: #6c757d;
+        --border-color: #e0e0e0;
     }
 
-    .profile-card {
-        max-width: 500px;
+    body {
+        background: var(--bg-light);
+    }
+
+    /* ------------------------------ */
+    /* CARD PRINCIPAL DE PERFIL       */
+    /* ------------------------------ */
+
+    .profile-wrapper {
+        max-width: 850px;
         margin: auto;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     }
 
-    .profile-header {
+    .profile-header-card {
+        background: var(--bg-card);
+        border-radius: 14px;
+        padding: 2rem;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    }
+
+    .profile-photo {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
         background: var(--primary-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
         color: white;
+        font-size: 36px;
+        font-weight: 700;
+        margin-right: 20px;
     }
 
-    .modal-header {
-        background: var(--primary-color);
-        color: white;
-    }
-
-    .address-box {
-        padding: 1rem;
-        border-radius: 10px;
-        background: var(--light-color);
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-
-    .address-entry {
-        border-left: 4px solid var(--primary-color);
-        padding-left: 10px;
-        margin-bottom: 10px;
-    }
-
-    .add-address-btn {
-        background: var(--primary-color);
-        border: none;
-        color: white;
+    .profile-info h3 {
+        margin-bottom: 5px;
         font-weight: 600;
     }
 
-    .add-address-btn:hover {
-        background: var(--secondary-color);
+    .badge-level {
+        background: var(--primary-color);
+        padding: 4px 10px;
+        border-radius: 12px;
         color: white;
+        font-size: 0.8rem;
+        font-weight: 600;
     }
 
+    /* ------------------------------ */
+    /* CARDS SECUNDÁRIOS              */
+    /* ------------------------------ */
+
+    .card-custom {
+        background: var(--bg-card);
+        border-radius: 14px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+    }
+
+    .section-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 1.2rem;
+    }
+
+    .info-item strong {
+        color: var(--text-dark);
+    }
+
+    /* ------------------------------ */
+    /* ENDEREÇOS                      */
+    /* ------------------------------ */
+
+    .address-card {
+        border-left: 4px solid var(--primary-color);
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+        background: var(--bg-light);
+    }
+
+    .address-actions button {
+        margin-right: 8px;
+    }
+
+    .icon-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
 </style>
 
-<div class="container my-4">
+<div class="container py-4">
+    <div class="profile-wrapper">
 
-    <h1 class="text-center mb-4">Editar Perfil</h1>
+        <!-- ---------------------- -->
+        <!-- CABEÇALHO DE PERFIL    -->
+        <!-- ---------------------- -->
+        <div class="profile-header-card d-flex align-items-center">
 
-    <!-- CARD DO PERFIL -->
-    <div class="card profile-card shadow-sm">
+            <div class="profile-photo">
+                {{ strtoupper(substr($user->name, 0, 1)) }}
+            </div>
 
-        <div class="card-header profile-header">
-            <h5 class="mb-0">Informações do Usuário</h5>
-        </div>
+            <div class="profile-info">
+                <h3>{{ $user->name }}</h3>
+                <p class="text-muted mb-1">{{ $user->email }}</p>
 
-        <div class="card-body">
-            <ul class="list-group list-group-flush mb-3">
-                <li class="list-group-item"><strong>Nome:</strong> {{ $user->name }}</li>
-                <li class="list-group-item"><strong>Email:</strong> {{ $user->email }}</li>
-                <li class="list-group-item"><strong>Nível de Usuário:</strong> {{ $levels[$user->user_lvl] ?? $user->user_lvl }}</li>
-            </ul>
+                <span class="badge-level">
+                    {{ $levels[$user->user_lvl] ?? $user->user_lvl }}
+                </span>
+            </div>
 
-            <div class="d-grid">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editNameModal">
-                    Editar
+            <div class="ms-auto">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editNameModal">
+                    Editar Perfil
                 </button>
             </div>
         </div>
-    </div>
 
-    <!-- SEÇÃO DE ENDEREÇOS -->
-    <div class="mt-5">
-        <h3 class="text-center mb-3">Meus Endereços</h3>
+        <!-- ---------------------- -->
+        <!-- INFORMAÇÕES DO USUÁRIO -->
+        <!-- ---------------------- -->
+        <div class="card-custom">
+            <div class="section-title">Informações da Conta</div>
 
-        <div class="address-box">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item info-item">
+                    <strong>Nome:</strong> {{ $user->name }}
+                </li>
+                <li class="list-group-item info-item">
+                    <strong>Email:</strong> {{ $user->email }}
+                </li>
+                <li class="list-group-item info-item">
+                    <strong>Nível:</strong> {{ $levels[$user->user_lvl] ?? $user->user_lvl }}
+                </li>
+            </ul>
+        </div>
 
-            <!-- Lista de endereços -->
+        <!-- ---------------------- -->
+        <!-- LISTA DE ENDEREÇOS     -->
+        <!-- ---------------------- -->
+        <div class="card-custom">
+            <div class="section-title text-center">Meus Endereços</div>
+
             @forelse($addresses as $address)
-                <div class="address-entry">
+
+                <div class="address-card">
                     <strong>{{ $address->street }}, Nº {{ $address->number }}</strong><br>
                     {{ $address->city }} - {{ $address->state }}<br>
                     CEP: {{ $address->zip_code }}
-                    <div class="mt-2">
-                        <!-- BOTÃO EDITAR -->
+
+                    <div class="address-actions mt-2">
+
+                        <!-- EDITAR -->
                         <button 
-                            type="button" 
-                            class="btn btn-sm btn-outline-primary"
+                            class="btn btn-outline-primary btn-sm icon-btn"
                             data-bs-toggle="modal"
                             data-bs-target="#editAddressModal"
                             onclick='openEditModal(@json($address))'
-                            >
-                            Editar
+                        >
+                            ✏ Editar
                         </button>
 
-                        <!-- BOTÃO EXCLUIR -->
-                        <button 
-                            type="button" 
-                            class="btn btn-sm btn-outline-danger"
-                            data-bs-toggle="modal"
-                            data-bs-target="#deleteAddressModal"
+                        <!-- EXCLUIR -->
+                        <form action="{{ route('addresses.destroy', $address->id) }}" 
+                              method="POST" 
+                              style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button 
+                                class="btn btn-danger btn-sm icon-btn"
+                                onclick="return confirm('Tem certeza que deseja excluir este endereço?');"
                             >
-                            Excluir
-                        </button>
+                                🗑 Excluir
+                            </button>
+                        </form>
+
                     </div>
                 </div>
+
             @empty
                 <p class="text-muted text-center">Nenhum endereço cadastrado.</p>
             @endforelse
 
-            <!-- MODAL GOOGLE ADDRESS -->
-            @include('includes.google_address_modal')
-
-            @include('includes.google_address_edit_modal')
-            
             <div class="d-grid mt-3">
-                <button class="btn add-address-btn" data-bs-toggle="modal" data-bs-target="#googleAddressModal">
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#googleAddressModal">
                     + Adicionar Endereço
                 </button>
             </div>
-
         </div>
+
+        @include('includes.google_address_modal')
+        @include('includes.google_address_edit_modal')
+
     </div>
-
-</div>
-
-
-
-
-
-<!-- --------------------------- -->
-<!-- MODAL: EDITAR NOME -->
-<!-- --------------------------- -->
-<div class="modal fade" id="editNameModal" tabindex="-1">
-  <div class="modal-dialog">
-    <form action="{{ route('profile.updateName') }}" method="POST">
-        @csrf
-        @method('PATCH')
-
-        <div class="modal-content">
-
-            <div class="modal-header">
-                <h5 class="modal-title">Editar Nome</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <div class="modal-body">
-
-                <div class="mb-3">
-                    <label class="form-label">Nome</label>
-                    <input type="text" name="name" class="form-control" value="{{ $user->name }}" required>
-                </div>
-
-                <div class="d-grid">
-                    <button type="button" class="btn btn-secondary"
-                        data-bs-toggle="modal" data-bs-target="#changePasswordModal"
-                        data-bs-dismiss="modal">
-                        Alterar Senha
-                    </button>
-                </div>
-
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" class="btn btn-primary">Salvar Nome</button>
-            </div>
-
-        </div>
-    </form>
-  </div>
-</div>
-
-
-
-
-
-<!-- --------------------------- -->
-<!-- MODAL: ALTERAR SENHA -->
-<!-- --------------------------- -->
-<div class="modal fade" id="changePasswordModal" tabindex="-1">
-  <div class="modal-dialog">
-    <form action="{{ route('profile.updatePassword') }}" method="POST">
-        @csrf
-        @method('PATCH')
-
-        <div class="modal-content">
-
-            <div class="modal-header">
-                <h5 class="modal-title">Alterar Senha</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <div class="modal-body">
-
-                <div class="mb-3">
-                    <label class="form-label">Senha Atual</label>
-                    <input type="password" name="current_password" class="form-control" required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Nova Senha</label>
-                    <input type="password" name="new_password" class="form-control" required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Confirmar Nova Senha</label>
-                    <input type="password" name="new_password_confirmation" class="form-control" required>
-                </div>
-
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" class="btn btn-primary">Salvar</button>
-            </div>
-
-        </div>
-    </form>
-  </div>
 </div>
 
 @endsection
