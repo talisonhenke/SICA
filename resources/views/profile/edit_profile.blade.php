@@ -99,8 +99,26 @@
                     {{ $address->city }} - {{ $address->state }}<br>
                     CEP: {{ $address->zip_code }}
                     <div class="mt-2">
-                        <a href="#" class="btn btn-sm btn-outline-primary">Editar</a>
-                        <a href="#" class="btn btn-sm btn-outline-danger">Excluir</a>
+                        <!-- BOTÃO EDITAR -->
+                        <button 
+                            type="button" 
+                            class="btn btn-sm btn-outline-primary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#editAddressModal"
+                            onclick='openEditModal(@json($address))'
+                            >
+                            Editar
+                        </button>
+
+                        <!-- BOTÃO EXCLUIR -->
+                        <button 
+                            type="button" 
+                            class="btn btn-sm btn-outline-danger"
+                            data-bs-toggle="modal"
+                            data-bs-target="#deleteAddressModal"
+                            >
+                            Excluir
+                        </button>
                     </div>
                 </div>
             @empty
@@ -109,6 +127,8 @@
 
             <!-- MODAL GOOGLE ADDRESS -->
             @include('includes.google_address_modal')
+
+            @include('includes.google_address_edit_modal')
             
             <div class="d-grid mt-3">
                 <button class="btn add-address-btn" data-bs-toggle="modal" data-bs-target="#googleAddressModal">
