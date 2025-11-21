@@ -13,14 +13,13 @@ class AddressesController extends Controller
      */
     public function index()
     {
-        $addresses = Auth::user()->addresses;
-
         return view('profile.editprofile', [
             'user'      => Auth::user(),
-            'levels'    => getUserLevels(), // caso você use isso
-            'addresses' => $addresses
+            'levels'    => getUserLevels(),
+            'addresses' => Auth::user()->addresses
         ]);
     }
+
 
     /**
      * Salvar novo endereço
@@ -131,4 +130,23 @@ class AddressesController extends Controller
             abort(403, 'Acesso negado.');
         }
     }
+
+    public function setPrimary(Address $address)
+    {
+        $this->authorizeOwner($address);
+
+        Address::where('user_id', Auth::user()->id)->update(['is_primary' => false]);
+
+        $address->update(['is_primary' => true]);
+
+        return response()->json([
+            'status' => 'ok',
+            'message' => 'Endereço principal selecionado com sucesso'
+        ]);
+
+
+    }
+
+
+
 }

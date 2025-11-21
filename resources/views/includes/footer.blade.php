@@ -14,7 +14,8 @@
 </div>
 <script>
     @if(Auth::check())
-        console.log(@json(Auth::user()));
+        // console.log(@json(Auth::user()->id));
+        // console.log(auth()->id());
     @else
         console.log("Nenhum usuário logado.");
     @endif

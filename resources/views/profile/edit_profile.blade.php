@@ -5,7 +5,6 @@
 @section('content')
 
 <style>
-    /* --- PALETA DE CORES GLOBAL --- */
     :root {
         --primary-color: #4CAF50;
         --primary-dark: #2E7D32;
@@ -21,10 +20,6 @@
     body {
         background: var(--bg-light);
     }
-
-    /* ------------------------------ */
-    /* CARD PRINCIPAL DE PERFIL       */
-    /* ------------------------------ */
 
     .profile-wrapper {
         max-width: 850px;
@@ -52,24 +47,6 @@
         margin-right: 20px;
     }
 
-    .profile-info h3 {
-        margin-bottom: 5px;
-        font-weight: 600;
-    }
-
-    .badge-level {
-        background: var(--primary-color);
-        padding: 4px 10px;
-        border-radius: 12px;
-        color: white;
-        font-size: 0.8rem;
-        font-weight: 600;
-    }
-
-    /* ------------------------------ */
-    /* CARDS SECUNDÁRIOS              */
-    /* ------------------------------ */
-
     .card-custom {
         background: var(--bg-card);
         border-radius: 14px;
@@ -85,39 +62,26 @@
         margin-bottom: 1.2rem;
     }
 
-    .info-item strong {
-        color: var(--text-dark);
-    }
-
-    /* ------------------------------ */
-    /* ENDEREÇOS                      */
-    /* ------------------------------ */
-
-    .address-card {
+    /* ENDEREÇOS */
+    .address-entry {
         border-left: 4px solid var(--primary-color);
         padding: 1rem;
         margin-bottom: 1rem;
-        border-radius: 8px;
+        border-radius: 10px;
         background: var(--bg-light);
+        transition: 0.2s;
     }
 
-    .address-actions button {
-        margin-right: 8px;
-    }
-
-    .icon-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
+    .primary-card {
+        background: #e8f5e9;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.07);
     }
 </style>
 
 <div class="container py-4">
     <div class="profile-wrapper">
 
-        <!-- ---------------------- -->
-        <!-- CABEÇALHO DE PERFIL    -->
-        <!-- ---------------------- -->
+        <!-- HEADER -->
         <div class="profile-header-card d-flex align-items-center">
 
             <div class="profile-photo">
@@ -140,70 +104,74 @@
             </div>
         </div>
 
-        <!-- ---------------------- -->
-        <!-- INFORMAÇÕES DO USUÁRIO -->
-        <!-- ---------------------- -->
+        <!-- INFORMAÇÕES -->
         <div class="card-custom">
             <div class="section-title">Informações da Conta</div>
 
             <ul class="list-group list-group-flush">
-                <li class="list-group-item info-item">
-                    <strong>Nome:</strong> {{ $user->name }}
-                </li>
-                <li class="list-group-item info-item">
-                    <strong>Email:</strong> {{ $user->email }}
-                </li>
-                <li class="list-group-item info-item">
-                    <strong>Nível:</strong> {{ $levels[$user->user_lvl] ?? $user->user_lvl }}
-                </li>
+                <li class="list-group-item"><strong>Nome:</strong> {{ $user->name }}</li>
+                <li class="list-group-item"><strong>Email:</strong> {{ $user->email }}</li>
+                <li class="list-group-item"><strong>Nível:</strong> {{ $levels[$user->user_lvl] ?? $user->user_lvl }}</li>
             </ul>
         </div>
 
-        <!-- ---------------------- -->
-        <!-- LISTA DE ENDEREÇOS     -->
-        <!-- ---------------------- -->
+        <!-- ENDEREÇOS -->
         <div class="card-custom">
             <div class="section-title text-center">Meus Endereços</div>
 
-            @forelse($addresses as $address)
+            <div id="address-list">
+                @forelse($addresses as $address)
 
-                <div class="address-card">
-                    <strong>{{ $address->street }}, Nº {{ $address->number }}</strong><br>
-                    {{ $address->city }} - {{ $address->state }}<br>
-                    CEP: {{ $address->zip_code }}
+                <div class="address-entry {{ $address->is_primary ? 'primary-card' : '' }}" data-id="{{ $address->id }}">
 
-                    <div class="address-actions mt-2">
+                    <div class="d-flex justify-content-between align-items-start">
 
-                        <!-- EDITAR -->
+                        <div>
+                            <strong>{{ $address->street }}, Nº {{ $address->number }}</strong><br>
+                            {{ $address->city }} - {{ $address->state }}<br>
+                            CEP: {{ $address->zip_code }}
+                        </div>
+
+                        <div class="text-end">
+                            <label class="form-check form-switch m-0">
+                                <input 
+                                    type="checkbox" 
+                                    class="form-check-input primary-toggle"
+                                    onclick="setPrimaryToggle(event, {{ $address->id }})"
+                                    {{ $address->is_primary ? 'checked' : '' }}>
+                                <small class="text-muted ms-1">Principal</small>
+                            </label>
+                        </div>
+
+                    </div>
+
+                    <div class="mt-2">
                         <button 
-                            class="btn btn-outline-primary btn-sm icon-btn"
+                            type="button" 
+                            class="btn btn-sm btn-outline-primary"
                             data-bs-toggle="modal"
                             data-bs-target="#editAddressModal"
-                            onclick='openEditModal(@json($address))'
-                        >
-                            ✏ Editar
+                            onclick='openEditModal(@json($address))'>
+                            Editar
                         </button>
 
-                        <!-- EXCLUIR -->
-                        <form action="{{ route('addresses.destroy', $address->id) }}" 
-                              method="POST" 
-                              style="display:inline;">
+                        <form action="{{ route('addresses.destroy', $address->id) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
                             <button 
-                                class="btn btn-danger btn-sm icon-btn"
-                                onclick="return confirm('Tem certeza que deseja excluir este endereço?');"
-                            >
-                                🗑 Excluir
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirm('Tem certeza que deseja excluir este endereço?');">
+                                Excluir
                             </button>
                         </form>
-
                     </div>
+
                 </div>
 
-            @empty
-                <p class="text-muted text-center">Nenhum endereço cadastrado.</p>
-            @endforelse
+                @empty
+                    <p class="text-muted text-center">Nenhum endereço cadastrado.</p>
+                @endforelse
+            </div>
 
             <div class="d-grid mt-3">
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#googleAddressModal">
@@ -217,5 +185,72 @@
 
     </div>
 </div>
+
+<script>
+/* 
+ * Define como endereço principal 
+ */
+async function setPrimaryToggle(event, id) {
+    event.preventDefault();
+
+    const el = event.target;
+    const toggles = [...document.querySelectorAll('.primary-toggle')];
+    const prev = toggles.map(t => t.checked);
+
+    toggles.forEach(t => t.disabled = true);
+
+    try {
+        const resp = await fetch(`/addresses/${id}/primary`, {
+            method: "PATCH",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({})
+        });
+
+        if (!resp.ok) throw new Error("Erro HTTP " + resp.status);
+
+        const data = await resp.json();
+
+        // Atualiza UI
+        toggles.forEach(t => t.checked = false);
+        el.checked = true;
+
+        if (data.status === "ok") {
+            showSessionToast(data.message);
+            reorderPrimaryCard(el);
+        }
+
+
+    } catch (err) {
+        console.error(err);
+        toggles.forEach((t, i) => t.checked = prev[i]);
+        alert("Não foi possível definir como principal.");
+    } finally {
+        toggles.forEach(t => t.disabled = false);
+    }
+}
+
+/* 
+ * Reordenar o card no topo
+ */
+function reorderPrimaryCard(el) {
+    const card = el.closest(".address-entry");
+    const container = document.querySelector("#address-list");
+
+    // Remove classe dos outros cards
+    document.querySelectorAll('.address-entry').forEach(c =>
+        c.classList.remove('primary-card')
+    );
+
+    // Marca o atual
+    card.classList.add('primary-card');
+
+    // Move para o topo
+    container.prepend(card);
+}
+</script>
 
 @endsection

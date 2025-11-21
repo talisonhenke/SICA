@@ -266,7 +266,7 @@ function openEditModal(address) {
 }
 
 function resetEditModal() {
-    console.log(currentAddress, "Current adress");
+    // console.log(currentAddress, "Current adress");
     if (!currentAddress) return;
 
     document.getElementById('street').value      = currentAddress.street ?? "";

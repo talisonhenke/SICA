@@ -117,7 +117,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const closeModal = document.getElementById("closeQrModal");
     const scanResult = document.getElementById("scanResult");
     const baseDomain = "{{ url('/') }}";
-    console.log("Domínio base:" + baseDomain);
+    // console.log("Domínio base:" + baseDomain);
     
     let html5QrCode;
 
@@ -148,7 +148,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     { deviceId: { exact: cameraId } },
                     { fps: 10, qrbox: { width: 250, height: 250 } },
                     decodedText => {
-                        console.log(decodedText);
+                        // console.log(decodedText);
                         if (decodedText.startsWith(baseDomain)) {
                             scanResult.innerHTML = `✅ Código reconhecido!<br>${decodedText}`;
                             setTimeout(() => window.location.href = decodedText, 1000);
@@ -226,3 +226,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
 {{-- tribute (menções) --}}
 <script src="{{ asset('vendor/tribute/tribute.min.js') }}"></script>
+
+<!-- toast sem session  -->
+<script>
+    
+function showSessionToast(message) {
+    // Apaga qualquer alerta anterior
+    const old = document.getElementById("success-alert");
+    if (old) old.remove();
+
+    // Cria div do alerta
+    const alertDiv = document.createElement("div");
+    alertDiv.id = "success-alert";
+    alertDiv.className = "alert alert-primary alert-dismissible fade show auto-close";
+    alertDiv.role = "alert";
+    alertDiv.innerHTML = `
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <strong>Mensagem:</strong> ${message}
+    `;
+
+    // Adiciona ao topo da página (ou onde preferir)
+    document.body.prepend(alertDiv);
+
+    // Inicializa bootstrap alert
+    new bootstrap.Alert(alertDiv);
+
+    // Auto-close após 4s
+    setTimeout(() => {
+        const bsAlert = bootstrap.Alert.getOrCreateInstance(alertDiv);
+        bsAlert.close();
+    }, 4000);
+}
+
+</script>

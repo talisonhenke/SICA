@@ -14,6 +14,7 @@ class PlantController extends Controller
     // Lista todas as plantas
     public function index()
     {
+
         $plants = Plant::orderBy('popular_name', 'asc')->get();
         return view('plants.plants_list', ['plants' => $plants]);
     }

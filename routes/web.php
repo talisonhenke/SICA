@@ -161,3 +161,6 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/addresses/{address}', [AddressesController::class, 'destroy'])
         ->name('addresses.destroy');
 });
+
+Route::patch('/addresses/{address}/primary', [AddressesController::class, 'setPrimary'])
+    ->name('addresses.setPrimary');
