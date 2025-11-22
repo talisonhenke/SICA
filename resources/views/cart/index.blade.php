@@ -104,7 +104,34 @@
                                 <td class="text-success fw-semibold">
                                     R$ {{ number_format($item['price'], 2, ',', '.') }}
                                 </td>
-                                <td>{{ $item['quantity'] }}</td>
+                                <td>
+                                    <div class="d-flex justify-content-center align-items-center">
+
+                                        {{-- Botão de diminuir --}}
+                                        <form action="{{ route('cart.update', $id) }}" method="POST" class="me-2">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="action" value="decrement">
+                                            <button class="btn btn-outline-secondary btn-sm">
+                                                <i class="bi bi-dash-lg"></i>
+                                            </button>
+                                        </form>
+
+                                        <span class="px-2 fw-bold">{{ $item['quantity'] }}</span>
+
+                                        {{-- Botão de aumentar --}}
+                                        <form action="{{ route('cart.update', $id) }}" method="POST" class="ms-2">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="action" value="increment">
+                                            <button class="btn btn-outline-secondary btn-sm">
+                                                <i class="bi bi-plus-lg"></i>
+                                            </button>
+                                        </form>
+
+                                    </div>
+                                </td>
+
                                 <td class="fw-semibold text-primary">
                                     R$ {{ number_format($item['price'] * $item['quantity'], 2, ',', '.') }}
                                 </td>

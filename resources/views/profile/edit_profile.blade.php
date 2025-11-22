@@ -98,7 +98,7 @@
             </div>
 
             <div class="ms-auto">
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editNameModal">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileOptions">
                     Editar Perfil
                 </button>
             </div>
@@ -113,6 +113,32 @@
                 <li class="list-group-item"><strong>Email:</strong> {{ $user->email }}</li>
                 <li class="list-group-item"><strong>Nível:</strong> {{ $levels[$user->user_lvl] ?? $user->user_lvl }}</li>
             </ul>
+        </div>
+
+        <!-- MODAL EDIAR PERFIL  -->
+        <div class="modal fade" id="editProfileOptions" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">Editar Perfil</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body text-center">
+                        <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal"
+                                data-bs-target="#editNameModal" data-bs-dismiss="modal">
+                            Alterar Nome
+                        </button>
+
+                        <button class="btn btn-warning w-100" data-bs-toggle="modal"
+                                data-bs-target="#editPasswordModal" data-bs-dismiss="modal">
+                            Alterar Senha
+                        </button>
+                    </div>
+
+                </div>
+            </div>
         </div>
 
         <!-- ENDEREÇOS -->
@@ -182,6 +208,9 @@
 
         @include('includes.google_address_modal')
         @include('includes.google_address_edit_modal')
+        @include('includes.edit_name_modal')
+        @include('includes.edit_password_modal')
+
 
     </div>
 </div>

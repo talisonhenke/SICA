@@ -77,4 +77,32 @@ public function clear()
     return redirect()->route('cart.index')->with('success', 'Carrinho esvaziado com sucesso!');
 }
 
+public function updateQuantity(Request $request, $id)
+{
+    $cart = session()->get('cart', []);
+
+    if (!isset($cart[$id])) {
+        return back()->with('error', 'Produto não encontrado no carrinho.');
+    }
+
+    $action = $request->input('action');
+
+    if ($action === 'increment') {
+        $cart[$id]['quantity'] += 1;
+    }
+
+    if ($action === 'decrement') {
+        $cart[$id]['quantity'] -= 1;
+
+        // Se chegou em zero, remove o produto
+        if ($cart[$id]['quantity'] <= 0) {
+            unset($cart[$id]);
+        }
+    }
+
+    session()->put('cart', $cart);
+
+    return back()->with('msg', 'Quantidade atualizada.');
+}
+
 }

@@ -2,10 +2,10 @@
 @section('content')
 <style>
     .plants-container {
-        max-width: 950px;
-        margin: 2rem auto;
+        /* max-width: 950px; */
+        margin: 0 auto;
         background-color: var(--color-surface-primary);
-        border-radius: 1rem;
+        /* border-radius: 1rem; */
         box-shadow: 0 4px 10px rgba(0,0,0,0.08);
         padding: 2rem;
     }
@@ -133,7 +133,7 @@
     }
 </style>
 
-<div class="plants-container">
+<div class="plants-container col-sm-12 col-md-10 col-lg-8">
     <h2 class="plants-title">Lista de Plantas</h2>
 
     <input type="text" id="searchInput" class="form-control mb-4" placeholder="🔍 Pesquisar planta...">
