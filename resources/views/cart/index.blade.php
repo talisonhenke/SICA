@@ -149,13 +149,10 @@
             <div class="cart-summary mt-4 d-flex justify-content-between align-items-center">
                 <h4>Total: <span class="text-success">R$ {{ number_format($total, 2, ',', '.') }}</span></h4>
                 <div>
-                    <a href="{{ route('cart.clear') }}" class="btn btn-outline-danger me-2">
-                        <i class="bi bi-x-circle"></i> Esvaziar
-                    </a>
-                    <form action="{{ route('orders.store') }}" method="POST" style="display: inline;">
+                    <form action="{{ route('orders.store') }}" method="POST" id="checkoutForm">
                         @csrf
 
-                        {{-- Envia cada item do carrinho --}}
+                        {{-- ENVIO DOS ITENS --}}
                         @foreach($cart as $id => $item)
                             <input type="hidden" name="items[{{ $id }}][product_id]" value="{{ $id }}">
                             <input type="hidden" name="items[{{ $id }}][name]" value="{{ $item['name'] }}">
@@ -163,16 +160,25 @@
                             <input type="hidden" name="items[{{ $id }}][quantity]" value="{{ $item['quantity'] }}">
                         @endforeach
 
-                        {{-- Envia o total da compra --}}
                         <input type="hidden" name="total" value="{{ $total }}">
 
-                        {{-- Endereço do pedido (placeholder, será tratado depois) --}}
-                        <input type="hidden" name="order_address" value="{}">
+                        {{-- Estes dois serão preenchidos no modal --}}
+                        <input type="hidden" name="payment_method" id="payment_method_input">
+                        <input type="hidden" name="address_id" id="address_id_input">
 
-                        <button type="submit" class="btn btn-success btn-lg">
+                        <a href="{{ route('cart.clear') }}" class="btn btn-outline-danger me-2">
+                            <i class="bi bi-x-circle"></i> Esvaziar
+                        </a>
+
+                        <button type="button" id="btnCheckout" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#checkoutModal">
                             <i class="bi bi-credit-card"></i> Finalizar Compra
                         </button>
+
+                        {{-- MODAL --}}
+                        @include('checkout.modal_order_confirm')
+
                     </form>
+
 
                 </div>
             </div>
@@ -187,4 +193,5 @@
         @endif
     </div>
 </div>
+
 @endsection
