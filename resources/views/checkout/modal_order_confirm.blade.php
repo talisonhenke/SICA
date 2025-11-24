@@ -142,6 +142,10 @@
                         <button type="button" class="btn btn-primary w-100 mt-2" id="btnSaveAddress" onclick="saveNewAddress()">
                             Salvar Endereço
                         </button>
+                        <button type="button" class="btn btn-outline-secondary w-100 mt-2" id="btnCancelNewAddress">
+                            Cancelar
+                        </button>
+
 
                     </div>
 
@@ -149,15 +153,16 @@
 
 
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+           <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="btnMainCancel" data-bs-dismiss="modal">
                     Cancelar
                 </button>
 
-                <button type="submit" class="btn btn-success">
+                <button type="submit" class="btn btn-success" id="btnMainConfirm">
                     Confirmar e Continuar
                 </button>
             </div>
+
 
         </div>
     </div>
@@ -169,6 +174,33 @@ let checkoutMap;
 let checkoutMarker;
 let checkoutGeocoder;
 let checkoutAutocomplete;
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const collapseEl = document.getElementById("newAddressForm");
+    const btnMainCancel = document.getElementById("btnMainCancel");
+    const btnMainConfirm = document.getElementById("btnMainConfirm");
+    const btnCancelNewAddress = document.getElementById("btnCancelNewAddress");
+
+    // Quando abrir o formulário de novo endereço
+    collapseEl.addEventListener("show.bs.collapse", () => {
+        btnMainCancel.style.display = "none";
+        btnMainConfirm.style.display = "none";
+    });
+
+    // Quando fechar o formulário
+    collapseEl.addEventListener("hide.bs.collapse", () => {
+        btnMainCancel.style.display = "inline-block";
+        btnMainConfirm.style.display = "inline-block";
+    });
+
+    // Ação do botão CANCELAR interno
+    btnCancelNewAddress.addEventListener("click", () => {
+        const collapseInstance = bootstrap.Collapse.getOrCreateInstance(collapseEl);
+        collapseInstance.hide();
+    });
+});
+
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -337,14 +369,64 @@ function saveNewAddress() {
     .then(data => {
         console.log("Retorno do Laravel:", data);
 
-        if (data.success) {
-            alert("Endereço cadastrado com sucesso!");
+        if (!data.success) {
+            alert("Erro ao cadastrar o endereço.");
+            return;
         }
+
+        const address = data.address;
+
+        // -------------------------------------------------------
+        // 1. ADICIONA O NOVO ENDEREÇO AO SELECT
+        // -------------------------------------------------------
+        const select = document.getElementById("addressSelect");
+
+        const option = document.createElement("option");
+        option.value = address.id;
+        option.textContent =
+            `${address.street}, ${address.number} — ${address.district} — ${address.city}`;
+
+        select.appendChild(option);
+
+        // -------------------------------------------------------
+        // 2. JÁ SELECIONA O ENDEREÇO ADICIONADO
+        // -------------------------------------------------------
+        select.value = address.id;
+
+        // -------------------------------------------------------
+        // 3. FECHA O FORMULÁRIO DE NOVO ENDEREÇO
+        // -------------------------------------------------------
+        const collapse = bootstrap.Collapse.getOrCreateInstance(
+            document.getElementById("newAddressForm")
+        );
+        collapse.hide();
+
+        // Restaurar botões principais
+        document.getElementById("btnMainCancel").style.display = "inline-block";
+        document.getElementById("btnMainConfirm").style.display = "inline-block";
+
+        // -------------------------------------------------------
+        // (Opcional) limpar os campos do formulário
+        // -------------------------------------------------------
+        document.getElementById("new_street").value = "";
+        document.getElementById("new_number").value = "";
+        document.getElementById("new_district").value = "";
+        document.getElementById("new_city").value = "";
+        document.getElementById("new_state").value = "";
+        document.getElementById("new_country").value = "";
+        document.getElementById("new_zipcode").value = "";
+        document.getElementById("new_complement").value = "";
+        document.getElementById("new_lat").value = "";
+        document.getElementById("new_lng").value = "";
+
+        alert("Endereço cadastrado com sucesso!");
+
     })
     .catch(error => {
         console.error(error);
         alert("Erro ao cadastrar o endereço.");
     });
 }
+
 </script>
 
