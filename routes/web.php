@@ -164,5 +164,9 @@ Route::middleware(['auth'])->group(function () {
         ->name('addresses.destroy');
 });
 
-Route::patch('/addresses/{address}/primary', [AddressesController::class, 'setPrimary'])
+    Route::patch('/addresses/{address}/primary', [AddressesController::class, 'setPrimary'])
     ->name('addresses.setPrimary');
+
+    Route::post('/addresses/storeByCheckout', [AddressesController::class, 'storeByCheckout'])
+    ->name('addresses.storeByCheckout');
+

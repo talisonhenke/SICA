@@ -11,7 +11,7 @@
 	</script>
 	<title>S.I.C.A - Sistema de Informação Sobre Chás Avaliados</title>
 	<link rel="icon" type="image/png" href="{{ asset('images/logo_sica.png') }}">
-
+	<meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
 	<div class="main d-flex flex-column min-vh-100">
