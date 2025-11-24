@@ -108,19 +108,32 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-8 mb-2">
+                            <div class="col-6 mb-2">
                                 <label class="form-label">Cidade</label>
                                 <input type="text" class="form-control" id="new_city">
                             </div>
-                            <div class="col-4 mb-2">
+
+                            <div class="col-6 mb-2">
                                 <label class="form-label">CEP</label>
                                 <input type="text" class="form-control" id="new_zipcode">
                             </div>
                         </div>
 
+                        <div class="row">
+                            <div class="col-6 mb-2">
+                                <label class="form-label">Estado</label>
+                                <input type="text" class="form-control" id="new_state">
+                            </div>
+
+                            <div class="col-6 mb-2">
+                                <label class="form-label">País</label>
+                                <input type="text" class="form-control" id="new_country">
+                            </div>
+                        </div>
+
                         <div class="mb-2">
-                            <label class="form-label">Observação (opcional)</label>
-                            <input type="text" class="form-control" id="new_note">
+                            <label class="form-label">Complemento (opcional)</label>
+                            <input type="text" class="form-control" id="new_complement">
                         </div>
 
                         <input type="hidden" id="new_lat">
@@ -133,6 +146,7 @@
                     </div>
 
                 </div>
+
 
 
             <div class="modal-footer">
@@ -279,47 +293,58 @@ function fillCheckoutFields(comp) {
     document.getElementById("new_city").value     = getPart(comp, "administrative_area_level_2");
     document.getElementById("new_zipcode").value  = getPart(comp, "postal_code");
 
+    // ⭐ NOVOS CAMPOS
+    document.getElementById("new_state").value    = getPart(comp, "administrative_area_level_1");
+    document.getElementById("new_country").value  = getPart(comp, "country");
 }
+
 </script>
 
 <script>
 function saveNewAddress() {
-    let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    const formData = new FormData();
-    formData.append('street', document.getElementById('new_street').value);
-    formData.append('number', document.getElementById('new_number').value);
-    formData.append('district', document.getElementById('new_district').value);
-    formData.append('city', document.getElementById('new_city').value);
-    formData.append('zipcode', document.getElementById('new_zipcode').value);
-    formData.append('note', document.getElementById('new_note').value);
-    formData.append('latitude', document.getElementById('new_lat').value);
-    formData.append('longitude', document.getElementById('new_lng').value);
 
-
-    //TODO: Verificar e validar resposta do método storeByCheckout
+    const payload = {
+        street:     document.getElementById('new_street').value,
+        number:     document.getElementById('new_number').value,
+        district:   document.getElementById('new_district').value,
+        city:       document.getElementById('new_city').value,
+        state:      document.getElementById('new_state').value,
+        country:    document.getElementById('new_country').value,
+        zip_code:   document.getElementById('new_zipcode').value,
+        latitude:   document.getElementById('new_lat').value,
+        longitude:  document.getElementById('new_lng').value,
+        complement: document.getElementById('new_complement').value
+    };
 
     fetch("{{ route('addresses.storeByCheckout') }}", {
-        method: 'POST',
-        body: formData,
+        method: "POST",
         headers: {
-            "X-CSRF-TOKEN": token,
             "Content-Type": "application/json",
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(async response => {
+        const text = await response.text();
+
+        try {
+            return JSON.parse(text);
+        } catch (e) {
+            console.error("Resposta não-JSON:", text);
+            throw new Error("Controller retornou HTML ao invés de JSON.");
         }
     })
-    .then(res => res.json())
     .then(data => {
-        if (data.success) {
-            const select = document.getElementById('addressSelect');
-            const option = document.createElement('option');
-            option.value = data.address.id;
-            option.textContent = `${data.address.street}, ${data.address.number} — ${data.address.district} — ${data.address.city}`;
-            option.selected = true;
-            select.appendChild(option);
+        console.log("Retorno do Laravel:", data);
 
-            $('#newAddressForm').modal('hide');
+        if (data.success) {
+            alert("Endereço cadastrado com sucesso!");
         }
+    })
+    .catch(error => {
+        console.error(error);
+        alert("Erro ao cadastrar o endereço.");
     });
 }
-
 </script>
 

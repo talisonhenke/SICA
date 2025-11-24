@@ -150,26 +150,21 @@ class AddressesController extends Controller
     public function storeByCheckout(Request $request)
     {
         $validated = $request->validate([
-            'street'       => 'required|string|max:255',
-            'number'       => 'required|string|max:20',
-            'district'     => 'nullable|string|max:255',
-            'city'         => 'required|string|max:255',
-            'state'        => 'required|string|max:2',
-            'zipcode'      => 'required|string|max:20',
-            'latitude'     => 'required',
-            'longitude'    => 'required',
-            'complement'   => 'nullable|string|max:255',
-            'reference'    => 'nullable|string|max:255',
+            'street'     => 'required|string|max:255',
+            'number'     => 'required|string|max:20',
+            'city'       => 'required|string|max:255',
+            'state'      => 'required|string|max:255',
+            'country'    => 'required|string|max:255',
+            'zip_code'   => 'required|string|max:20',
+            'latitude'   => 'nullable|numeric',
+            'longitude'  => 'nullable|numeric',
+            'complement' => 'nullable|string|max:255',
+            'district'   => 'nullable|string|max:255',
         ]);
 
         $validated['user_id'] = auth()->id();
 
         $address = Address::create($validated);
-        $myjson = response()->json([
-            'success' => true,
-            'address' => $address]);
-
-        dd($myjson);
 
         return response()->json([
             'success' => true,
