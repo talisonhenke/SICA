@@ -13,29 +13,38 @@ class OrderController extends Controller
 {
     public function store(Request $request)
     {
-        // chapix de quem vai receber 
+        // chave pix de quem vai receber 
         $chave = "fdcf6a38-1173-4f7f-bc9b-328c37297fbf";
 
-        // 1️⃣ Pegamos o carrinho da sessão
+        // Carrinho da sessão
         $cart = session()->get('cart', []);
 
         if (empty($cart)) {
-            return redirect()->route('cart.index')->with('error', 'Seu carrinho está vazio.');
+            return redirect()->route('cart.index')
+                ->with('error', 'Seu carrinho está vazio.');
         }
 
-        // 2️⃣ Calculamos o total
+        // Total do pedido
         $total = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
 
-        // 3️⃣ Criamos o pedido
+        // =========================================
+        // PEGANDO O ENDEREÇO ENVIADO NO FORM
+        // =========================================
+        //$address = $request->input('order_address');  // recebe array completo
+
+        $jsonAddress = json_decode($request->order_address_json, true);
+        // dd($jsonAddress);
+
+        // Criamos o pedido
         $order = Order::create([
-            'user_id'       => Auth::user()->id,
+            'user_id'       => auth()->id(),
             'total_amount'  => $total,
-            'order_address' => null,      // vamos implementar depois
+            'order_address' => $jsonAddress,    // <-- SALVANDO O ENDEREÇO AQUI
             'status'        => 'pending',
-            'order_pix'     => 'generating'         // vamos preencher depois
+            'order_pix'     => 'generating'
         ]);
 
-        // 4️⃣ Criamos os itens do pedido
+        // Criamos os itens do pedido
         foreach ($cart as $productId => $item) {
             OrderItem::create([
                 'order_id'   => $order->id,
@@ -45,27 +54,28 @@ class OrderController extends Controller
             ]);
         }
 
-        // 5️⃣ Registramos histórico
+        // Histórico
         OrderHistory::create([
             'order_id' => $order->id,
             'status'   => 'pending',
             'notes'    => 'Pedido criado e aguardando pagamento.',
         ]);
 
-        // 6️⃣ Criamos o PIX (método idêntico ao que você testou ontem)
-        $payload = $this->gerarPayloadPix($chave,$total);
+        // Criar payload PIX
+        $payload = $this->gerarPayloadPix($chave, $total);
 
-        // salvamos o código no pedido
+        // Atualiza PIX
         $order->update([
             'order_pix' => $payload
         ]);
 
-        // 7️⃣ Limpamos o carrinho
+        // Limpar carrinho
         session()->forget('cart');
 
-        // 8️⃣ Redirecionamos o usuário para a página de pagamento
+        // Redireciona
         return redirect()->route('orders.payment', $order->id);
     }
+
 
     /*
      * Gerar QR Code PIX (mesmo algoritmo de ontem)

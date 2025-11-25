@@ -170,3 +170,17 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/addresses/storeByCheckout', [AddressesController::class, 'storeByCheckout'])
     ->name('addresses.storeByCheckout');
 
+// Admin routes
+
+Route::prefix('admin')->middleware(['auth', 'is_admin'])->group(function () {
+
+    Route::get('/dashboard', 
+        [App\Http\Controllers\Admin\DashboardController::class, 'index']
+    )->name('admin.dashboard');
+
+    // Tela "ver pedido"
+    Route::get('/orders/{id}', 
+        [App\Http\Controllers\Admin\OrderAdminController::class, 'show']
+    )->name('admin.orders.show');
+
+});

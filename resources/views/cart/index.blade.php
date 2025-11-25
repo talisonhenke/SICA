@@ -165,6 +165,9 @@
                         {{-- Estes dois serão preenchidos no modal --}}
                         <input type="hidden" name="payment_method" id="payment_method_input">
                         <input type="hidden" name="address_id" id="address_id_input">
+                        <input type="hidden" name="select_address" id="select_address">
+                        <input type="hidden" name="order_address_json" id="order_address_json">
+
 
                         <a href="{{ route('cart.clear') }}" class="btn btn-outline-danger me-2">
                             <i class="bi bi-x-circle"></i> Esvaziar
@@ -193,5 +196,50 @@
         @endif
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const select = document.getElementById("addressSelect");
+    const hidden = document.getElementById("order_address_json");
+
+    // Copia o valor inicial do SELECTED OPTION para o campo hidden
+    hidden.value = select.value;
+    console.log('Endereço selecionado JSON:', hidden.value);
+});
+</script>
+
+<script>
+    //TODO: Ajustar lógica para salvar só os dados necessários do endereço
+    document.getElementById('addressSelect').addEventListener('change', function() {
+        document.getElementById('select_address').value = this.value;
+        document.getElementById('order_address_json').value = this.value;
+        console.log('Endereço selecionado ID:', this.value);
+        console.log('Endereço selecionado JSON:', document.getElementById('order_address_json').value);
+    });
+
+    document.getElementById("btnMainConfirm").addEventListener("click", function() {
+
+        const selectedId = document.getElementById("addressSelect").value;
+
+        // SE USUÁRIO ESCOLHEU ENDEREÇO EXISTENTE
+        if (!document.getElementById('order_address_json').value) {
+
+            // precisamos criar o JSON automaticamente
+            fetch('/addresses/get/' + selectedId)
+                .then(res => res.json())
+                .then(address => {
+                    document.getElementById('order_address_json').value = JSON.stringify(address);
+                    document.getElementById('selected_address_id').value = selectedId;
+
+                    document.getElementById("realCheckoutForm").submit();
+                });
+
+        } else {
+            // já existe o JSON (porque usuário criou um novo)
+            document.getElementById("realCheckoutForm").submit();
+        }
+    });
+</script>
+
 
 @endsection

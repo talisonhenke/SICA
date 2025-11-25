@@ -125,6 +125,7 @@
                 <li class="nav-item"><a class="nav-link" href="/plants_list">Lista de Plantas</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('topics.index') }}">Tópicos</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('products.index') }}">Produtos</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('admin.dashboard') }}">Admin</a></li>
 
                 @if(Auth::check() && Auth::user()->user_lvl === 'admin')
                     <li class="nav-item"><a class="nav-link" href="/add_plant">Adicionar</a></li>

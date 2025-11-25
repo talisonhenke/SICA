@@ -45,7 +45,7 @@
 
     /* Modal de resultados */
     .modal-content {
-        background-color: var(--color-surface) !important;
+        background-color: var(--color-surface-primary) !important;
         color: var(--color-text);
         border-radius: 1rem;
         border: 1px solid var(--color-border);

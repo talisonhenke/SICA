@@ -1,7 +1,6 @@
 <div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
-
             <div class="modal-header">
                 <h5 class="modal-title" id="checkoutModalLabel">Finalizar Pedido</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
@@ -43,7 +42,7 @@
 
                         <select id="addressSelect" name="selected_address" class="form-select">
                             @foreach ($addresses as $address)
-                                <option value="{{ $address->id }}"
+                                <option value="{{ $address }}"
                                     {{ $address->is_primary ? 'selected' : '' }}>
                                     {{ $address->street }}, {{ $address->number }} — {{ $address->district }} — {{ $address->city }}
                                 </option>
@@ -93,51 +92,51 @@
                         <!-- CAMPOS -->
                         <div class="mb-2">
                             <label class="form-label">Rua</label>
-                            <input type="text" class="form-control" id="new_street">
+                            <input type="text" class="form-control" id="new_street" name="order_address[street]">
                         </div>
 
                         <div class="row">
                             <div class="col-4 mb-2">
                                 <label class="form-label">Número</label>
-                                <input type="text" class="form-control" id="new_number">
+                                <input type="text" class="form-control" id="new_number" name="order_address[number]">
                             </div>
                             <div class="col-8 mb-2">
                                 <label class="form-label">Bairro</label>
-                                <input type="text" class="form-control" id="new_district">
+                                <input type="text" class="form-control" id="new_district" name="order_address[district]">
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-6 mb-2">
                                 <label class="form-label">Cidade</label>
-                                <input type="text" class="form-control" id="new_city">
+                                <input type="text" class="form-control" id="new_city" name="order_address[city]">
                             </div>
 
                             <div class="col-6 mb-2">
                                 <label class="form-label">CEP</label>
-                                <input type="text" class="form-control" id="new_zipcode">
+                                <input type="text" class="form-control" id="new_zipcode" name="order_address[zip_code]">
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-6 mb-2">
                                 <label class="form-label">Estado</label>
-                                <input type="text" class="form-control" id="new_state">
+                                <input type="text" class="form-control" id="new_state" name="order_address[state]">
                             </div>
 
                             <div class="col-6 mb-2">
                                 <label class="form-label">País</label>
-                                <input type="text" class="form-control" id="new_country">
+                                <input type="text" class="form-control" id="new_country" name="order_address[country]">
                             </div>
                         </div>
 
                         <div class="mb-2">
                             <label class="form-label">Complemento (opcional)</label>
-                            <input type="text" class="form-control" id="new_complement">
+                            <input type="text" class="form-control" id="new_complement" name="order_address[complement]">
                         </div>
 
-                        <input type="hidden" id="new_lat">
-                        <input type="hidden" id="new_lng">
+                        <input type="hidden" id="new_lat" name="order_address[latitude]">
+                        <input type="hidden" id="new_lng" name="order_address[longitude]">
 
                         <button type="button" class="btn btn-primary w-100 mt-2" id="btnSaveAddress" onclick="saveNewAddress()">
                             Salvar Endereço
@@ -162,8 +161,6 @@
                     Confirmar e Continuar
                 </button>
             </div>
-
-
         </div>
     </div>
 </div>
