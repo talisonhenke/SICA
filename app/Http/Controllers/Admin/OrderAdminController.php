@@ -17,9 +17,7 @@ class OrderAdminController extends Controller
         $order = Order::with('user')->findOrFail($id);
 
         // Decodificar o endereço JSON (caso exista)
-        $address = $order->order_address
-            ? json_decode($order->order_address, true)
-            : null;
+        $address = $order->order_address;
 
         return view('admin.orders.show', compact('order', 'address'));
     }

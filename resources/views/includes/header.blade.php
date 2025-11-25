@@ -50,13 +50,58 @@
         .menu-icon:hover {
             color: var(--color-warning);
         }
-        .themeIcon{
+        /* .themeIcon{
             color: var(--color-menu-text) !important;
-        }
+        } */
 
         .spanItems {
             color: var(--color-menu-text) !important;
         }
+
+        /* Botão padrão para tema (desktop) */
+        .theme-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 6px 8px;
+            border-radius: 50%;
+            transition: background 0.2s ease, transform 0.2s;
+            color: var(--color-menu-text);
+            font-size: 1.3rem;
+        }
+
+        .theme-btn:hover {
+            background: var(--color-accent);
+            transform: scale(1.1);
+        }
+
+        /* Versão mobile */
+        .theme-btn-mobile {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 10px 0;
+            font-size: 1rem;
+            color: var(--color-menu-text);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .theme-btn-mobile i {
+            font-size: 1.3rem;
+        }
+
+        /* Animação sutil para trocar ícone */
+        @keyframes rotate-icon {
+            from { transform: rotate(-90deg); opacity: 0; }
+            to   { transform: rotate(0); opacity: 1; }
+        }
+
+        .theme-animated {
+            animation: rotate-icon 0.3s ease;
+        }
+
 
         .nav-link {
             font-weight: 500;
@@ -132,54 +177,44 @@
                     <li class="nav-item"><a class="nav-link" href="/users_list">Usuários</a></li>
                 @endif
 
-                {{-- <li class="nav-item"><a class="nav-link" href="#aboutMe">Sobre Nós</a></li> --}}
-                {{-- <li class="nav-item"><a class="nav-link" href="#contactMe">Contato</a></li> --}}
+                <li class="nav-item d-none d-lg-block">
+                    <a class="nav-link position-relative d-flex align-items-center gap-1" href="{{ route('cart.index') }}">
+                        <i class="bi bi-cart3"></i>
+                        <span>Carrinho</span>
+                        @if(session('cart') && count(session('cart')) > 0)
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ count(session('cart')) }}
+                            </span>
+                        @endif
+                    </a>
+                </li>
+
+                <li class="nav-item d-lg-none">
+                    <a class="nav-link position-relative d-flex align-items-center justify-content-between" href="{{ route('cart.index') }}">
+                        <span class="spanItems">Carrinho</span>
+                        <i class="bi bi-cart3"></i>
+                        @if(session('cart') && count(session('cart')) > 0)
+                            <span class="badge bg-danger ms-2">
+                                {{ count(session('cart')) }}
+                            </span>
+                        @endif
+                    </a>
+                </li>
+
                 {{-- Troca de temas --}}
-                <li class="nav-item ms-2 d-sm-none d-lg-block">
-                    <div class="form-check form-switch d-flex align-items-center">
-                        <input class="form-check-input" type="checkbox" id="theme-toggle" style="cursor:pointer;">
-                        <label class="form-check-label ms-2" for="theme-toggle">
-                            <i class="bi bi-sun-fill themeIcon" id="themeIcon"></i>
-                        </label>
-                    </div>
-                </li>
-                <li class="nav-item ms-2 d-sm-block d-lg-none">
-                    <label class="theme-toggle-wrapper form-check form-switch d-flex align-items-center">
-                        
-                        <!-- Texto -->
-                        <span class="me-1 spanItems">Mudar tema</span>
-
-                        <!-- Switch -->
-                        <input class="form-check-input ms-1" type="checkbox" id="theme-toggle" style="cursor:pointer;">
-
-                        <!-- Ícone -->
-                        <i class="bi bi-sun-fill themeIcon ms-2" id="themeIcon"></i>
-
-                    </label>
+                <li class="nav-item d-none d-lg-flex align-items-center ms-2">
+                    <button id="themeToggleBtn" class="theme-btn">
+                        <i class="bi bi-sun-fill" id="themeIcon"></i>
+                    </button>
                 </li>
 
+                <li class="nav-item d-lg-none">
+                    <button id="themeToggleBtnMobile" class="theme-btn-mobile w-100 text-start">
+                        <span class="me-2">Tema</span>
+                        <i class="bi bi-sun-fill" id="themeIconMobile"></i>
+                    </button>
+                </li>
 
-                <li class="nav-item d-sm-none d-lg-block">
-                    <a class="nav-link position-relative" href="{{ route('cart.index') }}">
-                        <i class="bi bi-cart3"></i>
-                        @if(session('cart') && count(session('cart')) > 0)
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                {{ count(session('cart')) }}
-                            </span>
-                        @endif
-                    </a>
-                </li>
-                <li class="nav-item d-sm-block d-lg-none">
-                    <a class="nav-link position-relative" href="{{ route('cart.index') }}">
-                        <span class="spanItems">Ver carrinho</span>
-                        <i class="bi bi-cart3"></i>
-                        @if(session('cart') && count(session('cart')) > 0)
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                {{ count(session('cart')) }}
-                            </span>
-                        @endif
-                    </a>
-                </li>
 
                 {{-- Se o usuário estiver logado --}}
                 @if(Auth::check())

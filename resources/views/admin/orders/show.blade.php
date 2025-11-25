@@ -22,7 +22,7 @@
         <div class="card-body">
             <p class="mb-1"><strong>Nome:</strong> {{ $order->user->name ?? 'Não informado' }}</p>
             <p class="mb-1"><strong>Email:</strong> {{ $order->user->email ?? 'Não informado' }}</p>
-            <p class="mb-0"><strong>ID do usuário:</strong> {{ $order->user_id }}</p>
+            <!-- <p class="mb-0"><strong>ID do usuário:</strong> {{ $order->user_id }}</p> -->
         </div>
     </div>
 
@@ -62,16 +62,14 @@
                 {{ $order->updated_at->format('d/m/Y H:i') }}
             </p>
 
-            @if($order->order_pix)
+            <!-- @if($order->order_pix)
                 <p><strong>Código Pix:</strong> {{ $order->order_pix }}</p>
-            @endif
+            @endif -->
 
         </div>
     </div>
 
-    {{-- ============================== --}}
-    {{-- ENDEREÇO DO PEDIDO             --}}
-    {{-- ============================== --}}
+    {{-- ENDEREÇO DO PEDIDO --}}
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-white fw-bold">
             Endereço do Pedido
@@ -80,23 +78,33 @@
         <div class="card-body">
 
             @if($address)
-                <p><strong>Rua:</strong> {{ $address['street'] ?? '' }}</p>
-                <p><strong>Número:</strong> {{ $address['number'] ?? '' }}</p>
-                <p><strong>Bairro:</strong> {{ $address['district'] ?? '' }}</p>
-                <p><strong>Cidade:</strong> {{ $address['city'] ?? '' }}</p>
-                <p><strong>Estado:</strong> {{ $address['state'] ?? '' }}</p>
-                <p><strong>País:</strong> {{ $address['country'] ?? '' }}</p>
-                <p><strong>CEP:</strong> {{ $address['zipcode'] ?? '' }}</p>
-                <p><strong>Complemento:</strong> {{ $address['complement'] ?? '' }}</p>
-                <p><strong>Referência:</strong> {{ $address['reference'] ?? '' }}</p>
-                <p><strong>Latitude:</strong> {{ $address['latitude'] ?? '' }}</p>
-                <p><strong>Longitude:</strong> {{ $address['longitude'] ?? '' }}</p>
+                {{-- Exibir endereço simples --}}
+                <p class="mb-2">
+                    <strong>Endereço:</strong>
+                    {{ $address['street'] ?? '' }}, 
+                    {{ $address['number'] ?? '' }} — 
+                    {{ $address['district'] ?? '' }} — 
+                    {{ $address['city'] ?? '' }}
+                </p>
+
+                {{-- Div do mapa --}}
+                <div id="orderMap"
+                    style="width: 100%; height: 350px; border-radius: 10px; overflow: hidden;">
+                </div>
+
+                {{-- Variáveis para JavaScript --}}
+                <script>
+                    const orderLat = {{ $address['latitude'] ?? 'null' }};
+                    const orderLng = {{ $address['longitude'] ?? 'null' }};
+                </script>
+
             @else
                 <p class="text-muted">Endereço não disponível.</p>
             @endif
 
         </div>
     </div>
+
 
     {{-- ============================== --}}
     {{-- AÇÕES DO ADMIN                 --}}
@@ -114,4 +122,36 @@
 
     </div>
 </div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_KEY') }}"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    if (!orderLat || !orderLng) {
+        console.warn("Latitude/Longitude ausentes.");
+        return;
+    }
+
+    const position = { lat: orderLat, lng: orderLng };
+
+    // Criar mapa
+    const map = new google.maps.Map(document.getElementById("orderMap"), {
+        center: position,
+        zoom: 17,
+        streetViewControl: false,
+        fullscreenControl: false,
+        mapTypeControl: false,
+        draggable: false
+    });
+
+    // Criar marcador fixo
+    new google.maps.Marker({
+        position: position,
+        map: map,
+        draggable: false
+    });
+});
+</script>
+
 @endsection

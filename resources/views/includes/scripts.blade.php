@@ -175,54 +175,62 @@ document.addEventListener("DOMContentLoaded", function() {
 {{-- Troca de cores tema claro e escuro --}}
 
 <script>
-function updateThemeIcon(theme) {
-    const themeIcon = document.getElementById("themeIcon");
-    if (!themeIcon) return;
 
-    if (theme === "dark") {
-        themeIcon.classList.remove("bi-sun-fill");
-        themeIcon.classList.add("bi-moon-fill");
-    } else {
-        themeIcon.classList.remove("bi-moon-fill");
-        themeIcon.classList.add("bi-sun-fill");
-    }
+function applyIconMode(theme) {
+    const icons = document.querySelectorAll("#themeIcon, #themeIconMobile");
+
+    icons.forEach(icon => {
+        if (!icon) return;
+
+        icon.classList.add("theme-animated");
+
+        setTimeout(() => icon.classList.remove("theme-animated"), 300);
+
+        if (theme === "dark") {
+            icon.classList.remove("bi-sun-fill");
+            icon.classList.add("bi-moon-fill");
+        } else {
+            icon.classList.remove("bi-moon-fill");
+            icon.classList.add("bi-sun-fill");
+        }
+    });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
 
     const html = document.documentElement;
-    const toggle = document.getElementById("theme-toggle");
 
-    // 1️⃣ Ler tema salvo ou usar LIGHT como padrão
+    const btnDesktop = document.getElementById("themeToggleBtn");
+    const btnMobile  = document.getElementById("themeToggleBtnMobile");
+
+    // 1️⃣ Ler tema salvo
     let savedTheme = localStorage.getItem("theme") || "light";
-
-    // Garante que o valor seja apenas "light" ou "dark"
     if (savedTheme !== "light" && savedTheme !== "dark") {
         savedTheme = "light";
     }
 
-    // 2️⃣ Aplicar o tema no HTML
+    // 2️⃣ Aplicar tema ao carregar
     html.setAttribute("data-theme", savedTheme);
+    applyIconMode(savedTheme);
 
-    // 3️⃣ Posicionar o toggle:
-    // light => toggle desligado (unchecked)
-    // dark  => toggle ligado (checked)
-    toggle.checked = savedTheme === "dark";
-
-    // 4️⃣ Atualizar o ícone no carregamento
-    updateThemeIcon(savedTheme);
-
-    // 5️⃣ Evento para alternar o tema
-    toggle.addEventListener("change", () => {
-        const newTheme = toggle.checked ? "dark" : "light";
+    // 3️⃣ Função de alternância
+    function toggleTheme() {
+        const current = html.getAttribute("data-theme");
+        const newTheme = current === "light" ? "dark" : "light";
 
         html.setAttribute("data-theme", newTheme);
-        updateThemeIcon(newTheme);
         localStorage.setItem("theme", newTheme);
-    });
+
+        applyIconMode(newTheme);
+    }
+
+    // 4️⃣ Eventos
+    if (btnDesktop) btnDesktop.addEventListener("click", toggleTheme);
+    if (btnMobile) btnMobile.addEventListener("click", toggleTheme);
 
 });
 </script>
+
 
 {{-- tribute (menções) --}}
 <script src="{{ asset('vendor/tribute/tribute.min.js') }}"></script>
