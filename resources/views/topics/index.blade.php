@@ -84,7 +84,7 @@
     .topic-title {
         font-weight: 700;
         font-size: 1.3rem;
-        color: var(--color-menu-bg);
+        color: var(--color-text);
         margin-bottom: 0.5rem;
         text-align: center;
     }

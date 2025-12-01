@@ -54,38 +54,39 @@
 [data-theme="dark"] {
 
     /* -------------------------------------- */
-    /* PALETA BASE (VERSÕES DARK)             */
-    /* -------------------------------------- */
-    --color-primary-dark: #2D241D;      /* Marrom ainda mais escuro */
-    --color-primary: #3C3027;           /* Marrom escuro suave */
-    --color-primary-light: #5A4A3D;     /* Marrom claro porém fechado */
+/* PALETA BASE DO LOGO (VERSÕES DARK)    */
+/* -------------------------------------- */
 
-    --color-secondary: #222f1d;         /* Verde escuro menos saturado */
-    --color-accent: #86A770;            /* Verde claro adaptado p/ dark */
+--color-primary-dark: #A18C79; 
+--color-primary: #B6A18D;
+--color-primary-light: #C3B2A6;
 
-    --color-muted: #A0A0A0;             /* Cinza claro para texto secundário */
+--color-secondary: #749D61; 
+--color-accent: #93B37F;
 
-    /* -------------------------------------- */
-    /* ELEMENTOS GERAIS (DARK THEME)          */
-    /* -------------------------------------- */
+--color-muted: #6E6A64;
 
-     --color-bg: #4A3A2A;               /* Fundo geral */
-    --color-surface-primary: #ffffff;
-    --color-surface-secondary: #F5F1EB;          /* Cartões/painéis */
-    --color-text: #000000;             /* Texto principal */
+/* -------------------------------------- */
+/* ELEMENTOS GERAIS (DARK THEME)          */
+/* -------------------------------------- */
 
-    /* Menu Superior */
-    --color-menu-bg: #4A633F;
-    --color-menu-text: #ffffff;
+--color-bg: #1A1410;
+--color-surface-primary: #2A201A;
+--color-surface-secondary: #4A3A2A;
+--color-text: #EBE6E0; 
 
-    /* Menu Inferior (mobile) */
-    --color-bottom-nav-bg: #4A633F;
-    --color-bottom-nav-text: #ffffff;
+/* Menu Superior */
+--color-menu-bg: #33422A; 
+--color-menu-text: #EBE6E0; 
 
-    /* Inputs e Bordas */
-    --color-border: #cfc8c0;
-    --color-input-bg: #ffffff;
-    --color-input-text: #000000;
+/* Menu Inferior (mobile) */
+--color-bottom-nav-bg: #33422A; 
+--color-bottom-nav-text: #EBE6E0; 
+
+/* Inputs e Bordas */
+--color-border: #4A3A2A;
+--color-input-bg: #ffffff;
+--color-input-text: #000000; 
 
     /* -------------------------------------- */
     /* ESTADOS (iguais ao tema claro)         */

@@ -33,14 +33,19 @@
         border-color: var(--color-menu-bg);
         box-shadow: 0 0 0 0.2rem rgba(74,99,63,0.25);
         outline: none;
-        background-color: var(--color-surface-primary);
+        background-color: var(--color-input-bg);
+    }
+
+    #searchInput::placeholder {
+        color: var(--color-input-text);
+        opacity: 1;
     }
 
     /* Letra separadora */
     .letter-divider {
         font-size: 1.5rem;
         font-weight: 700;
-        color: var(--color-menu-bg);
+        color: var(--color-accent);
         margin-top: 1.5rem;
         margin-bottom: 0.8rem;
         border-bottom: 2px solid var(--color-bottom-nav-bg);

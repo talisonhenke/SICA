@@ -8,7 +8,7 @@
 
         .navbar {
             transition: all 0.3s ease-in-out;
-            background-color: var(--color-secondary) !important;
+            background-color: var(--color-menu-bg) !important;
         }
 
         /* Alinhamento perfeito do logo */

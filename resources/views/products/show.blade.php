@@ -34,7 +34,7 @@
     .product-title {
         font-size: 2rem;
         font-weight: 700;
-        color: var(--color-menu-bg);
+        color: var(--color-text);
         margin-bottom: 0.5rem;
     }
 
