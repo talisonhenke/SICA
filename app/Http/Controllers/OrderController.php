@@ -11,17 +11,76 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class OrderController extends Controller
 {
+    public function index(Request $request)
+    {
+        $userId = auth()->id();
+
+        // Filtro atual (default = abertos)
+        $filter = $request->get('filter', 'open');
+
+        // Query base (sempre filtra pelo usuário logado)
+        $query = Order::where('user_id', $userId)->with('items.product');
+
+        // Aplicação dos filtros
+        if ($filter === 'open') {
+            $query->whereIn('status', ['pending', 'preparing', 'shipped']);
+        } elseif ($filter === 'delivered') {
+            $query->where('status', 'delivered');
+        } elseif ($filter === 'canceled') {
+            $query->where('status', 'canceled');
+        }
+
+        // Ordenação semelhante ao admin
+        $orders = $query
+            ->orderByRaw(
+                "
+            CASE
+                WHEN status = 'pending' THEN 0
+                WHEN status = 'preparing' THEN 1
+                WHEN status = 'shipped' THEN 2
+                WHEN status = 'delivered' THEN 3
+                WHEN status = 'canceled' THEN 4
+                ELSE 5
+            END
+        ",
+            )
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Estatísticas para exibição nos filtros
+        $stats = [
+            'open' => Order::where('user_id', $userId)
+                ->whereIn('status', ['pending', 'preparing', 'shipped'])
+                ->count(),
+            'delivered' => Order::where('user_id', $userId)->where('status', 'delivered')->count(),
+            'canceled' => Order::where('user_id', $userId)->where('status', 'canceled')->count(),
+            'total' => Order::where('user_id', $userId)->count(),
+        ];
+
+        return view('orders.index', compact('orders', 'stats', 'filter'));
+    }
+
+    public function show($id)
+    {
+        $order = Order::where('user_id', auth()->id())
+            ->with('items.product')
+            ->findOrFail($id);
+
+        $address = $order->order_address;
+
+        return view('orders.show', compact('order', 'address'));
+    }
+
     public function store(Request $request)
     {
-        // chave pix de quem vai receber 
-        $chave = "fdcf6a38-1173-4f7f-bc9b-328c37297fbf";
+        // chave pix de quem vai receber
+        $chave = 'fdcf6a38-1173-4f7f-bc9b-328c37297fbf';
 
         // Carrinho da sessão
         $cart = session()->get('cart', []);
 
         if (empty($cart)) {
-            return redirect()->route('cart.index')
-                ->with('error', 'Seu carrinho está vazio.');
+            return redirect()->route('cart.index')->with('error', 'Seu carrinho está vazio.');
         }
 
         // Total do pedido
@@ -37,28 +96,28 @@ class OrderController extends Controller
 
         // Criamos o pedido
         $order = Order::create([
-            'user_id'       => auth()->id(),
-            'total_amount'  => $total,
-            'order_address' => $jsonAddress,    // <-- SALVANDO O ENDEREÇO AQUI
-            'status'        => 'pending',
-            'order_pix'     => 'generating'
+            'user_id' => auth()->id(),
+            'total_amount' => $total,
+            'order_address' => $jsonAddress, // <-- SALVANDO O ENDEREÇO AQUI
+            'status' => 'pending',
+            'order_pix' => 'generating',
         ]);
 
         // Criamos os itens do pedido
         foreach ($cart as $productId => $item) {
             OrderItem::create([
-                'order_id'   => $order->id,
+                'order_id' => $order->id,
                 'product_id' => $productId,
-                'quantity'   => $item['quantity'],
-                'price'      => $item['price']
+                'quantity' => $item['quantity'],
+                'price' => $item['price'],
             ]);
         }
 
         // Histórico
         OrderHistory::create([
             'order_id' => $order->id,
-            'status'   => 'pending',
-            'notes'    => 'Pedido criado e aguardando pagamento.',
+            'status' => 'pending',
+            'notes' => 'Pedido criado e aguardando pagamento.',
         ]);
 
         // Criar payload PIX
@@ -66,7 +125,7 @@ class OrderController extends Controller
 
         // Atualiza PIX
         $order->update([
-            'order_pix' => $payload
+            'order_pix' => $payload,
         ]);
 
         // Limpar carrinho
@@ -76,30 +135,28 @@ class OrderController extends Controller
         return redirect()->route('orders.payment', $order->id);
     }
 
-
     /*
      * Gerar QR Code PIX (mesmo algoritmo de ontem)
      */
-private function crc16($payload)
-{
-    $polynomial = 0x1021;
-    $result = 0xFFFF;
+    private function crc16($payload)
+    {
+        $polynomial = 0x1021;
+        $result = 0xffff;
 
-    for ($i = 0; $i < strlen($payload); $i++) {
-        $result ^= (ord($payload[$i]) << 8);
-        for ($j = 0; $j < 8; $j++) {
-            if ($result & 0x8000) {
-                $result = ($result << 1) ^ $polynomial;
-            } else {
-                $result = $result << 1;
+        for ($i = 0; $i < strlen($payload); $i++) {
+            $result ^= ord($payload[$i]) << 8;
+            for ($j = 0; $j < 8; $j++) {
+                if ($result & 0x8000) {
+                    $result = ($result << 1) ^ $polynomial;
+                } else {
+                    $result = $result << 1;
+                }
+                $result &= 0xffff;
             }
-            $result &= 0xFFFF;
         }
+
+        return strtoupper(str_pad(dechex($result), 4, '0', STR_PAD_LEFT));
     }
-
-    return strtoupper(str_pad(dechex($result), 4, '0', STR_PAD_LEFT));
-}
-
 
     public function montarPix(array $data)
     {
@@ -116,43 +173,41 @@ private function crc16($payload)
             $result .= $id . str_pad($len, 2, '0', STR_PAD_LEFT) . $raw;
         }
 
-        return $result . "6304" . $this->crc16($result);
+        return $result . '6304' . $this->crc16($result);
     }
 
     private function gerarPayloadPix($chavePix, $valor)
-{
-    $merchantAccountInfo =
-        $this->emvField("00", "BR.GOV.BCB.PIX") .
-        $this->emvField("01", $chavePix);
+    {
+        $merchantAccountInfo = $this->emvField('00', 'BR.GOV.BCB.PIX') . $this->emvField('01', $chavePix);
 
-    $merchantAccountInfo = $this->emvField("26", $merchantAccountInfo);
+        $merchantAccountInfo = $this->emvField('26', $merchantAccountInfo);
 
-    $payload =
-        $this->emvField("00", "01") .                // Payload format
-        $merchantAccountInfo .
-        $this->emvField("52", "0000") .             // Merchant category
-        $this->emvField("53", "986") .              // Currency
-        $this->emvField("54", number_format($valor, 2, '.', '')) .
-        $this->emvField("58", "BR") .
-        $this->emvField("59", "SICA Online") .
-        $this->emvField("60", "PELOTAS") .
-        $this->emvField("62", $this->emvField("05", "SICA1234"));
+        $payload =
+            $this->emvField('00', '01') . // Payload format
+            $merchantAccountInfo .
+            $this->emvField('52', '0000') . // Merchant category
+            $this->emvField('53', '986') . // Currency
+            $this->emvField('54', number_format($valor, 2, '.', '')) .
+            $this->emvField('58', 'BR') .
+            $this->emvField('59', 'SICA Online') .
+            $this->emvField('60', 'PELOTAS') .
+            $this->emvField('62', $this->emvField('05', 'SICA1234'));
 
-    // Adiciona campo do CRC (sem o CRC ainda)
-    $payload .= "6304";
+        // Adiciona campo do CRC (sem o CRC ainda)
+        $payload .= '6304';
 
-    // Agora calcula o CRC16
-    $crc = $this->crc16($payload);
+        // Agora calcula o CRC16
+        $crc = $this->crc16($payload);
 
-    return $payload . $crc;
-}
+        return $payload . $crc;
+    }
 
     private function emvField($id, $value)
-{
-    $len = strlen($value);
-    return $id . str_pad($len, 2, '0', STR_PAD_LEFT) . $value;
-}
-    
+    {
+        $len = strlen($value);
+        return $id . str_pad($len, 2, '0', STR_PAD_LEFT) . $value;
+    }
+
     public function paymentPage(Order $order)
     {
         $qrcodeSvg = \QrCode::size(280)->generate($order->order_pix);
@@ -160,7 +215,7 @@ private function crc16($payload)
         return view('orders.payment', [
             'order' => $order,
             'qrcodeSvg' => $qrcodeSvg,
-            'payload' => $order->order_pix
+            'payload' => $order->order_pix,
         ]);
     }
 }

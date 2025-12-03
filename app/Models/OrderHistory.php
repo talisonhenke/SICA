@@ -15,6 +15,5 @@ class OrderHistory extends Model
         'order_id',
         'status',
         'notes',
-        'changes',
     ];
 }

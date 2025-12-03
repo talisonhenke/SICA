@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('order_history', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id')->nullable()->constrained()->onDelete('cascade');
-            $table->string('status')->nullable(); // ex: "pending", "paid", "shipped", "delivered", "canceled"
+            $table->string('status')->nullable(); // ex: "pending", "preparing", "shipped", "delivered", "canceled"
             $table->text('notes')->nullable(); // observações ou comentários
             $table->timestamps();
         });

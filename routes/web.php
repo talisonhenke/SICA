@@ -19,6 +19,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\AddressesController;
+use App\Http\Controllers\Admin\OrderAdminController;
 
 // QR-Code
 
@@ -130,6 +131,12 @@ Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
 Route::get('/orders/{order}/payment', [OrderController::class, 'paymentPage'])
     ->name('orders.payment');
 
+Route::get('/meus-pedidos', [OrderController::class, 'index'])
+        ->name('orders.index');
+
+Route::get('/meus-pedidos/{id}', [OrderController::class, 'show'])
+        ->name('orders.show');
+
 
 // addresses routes 
 
@@ -174,13 +181,28 @@ Route::middleware(['auth'])->group(function () {
 
 Route::prefix('admin')->middleware(['auth', 'is_admin'])->group(function () {
 
-    Route::get('/dashboard', 
-        [App\Http\Controllers\Admin\DashboardController::class, 'index']
-    )->name('admin.dashboard');
+        Route::get('/orders', [OrderAdminController::class, 'index'])
+            ->name('admin.orders.index');
 
-    // Tela "ver pedido"
-    Route::get('/orders/{id}', 
-        [App\Http\Controllers\Admin\OrderAdminController::class, 'show']
-    )->name('admin.orders.show');
+        // Página individual do pedido
+        Route::get('/orders/{id}', [OrderAdminController::class, 'show'])
+            ->name('admin.orders.show');
 
+        // 1. Marcar como pago (pending → preparing)
+        Route::post('/orders/{id}/mark-paid', [OrderAdminController::class, 'markPaid'])
+            ->name('admin.orders.markPaid');
+
+        // 2. Enviar pedido (preparing → shipped)
+        Route::post('/orders/{id}/ship', [OrderAdminController::class, 'ship'])
+            ->name('admin.orders.ship');
+
+        // 3. Cancelar pedido (qualquer estado permitido)
+        Route::post('/orders/{id}/cancel', [OrderAdminController::class, 'cancel'])
+            ->name('admin.orders.cancel');
+
+        //4. Pedido entregue (shippded → delivered)
+        Route::post('/admin/orders/{id}/deliver', [OrderAdminController::class, 'deliver'])
+            ->name('admin.orders.deliver');
+
+            
 });
