@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('user_lvl')->default('0');
+            $table->string('phone_number', 13)->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('permissions', 15);

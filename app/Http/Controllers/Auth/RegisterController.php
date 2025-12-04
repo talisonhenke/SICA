@@ -15,6 +15,7 @@ class RegisterController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'phone_number' => 'nullable|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
         ]);
@@ -24,6 +25,7 @@ class RegisterController extends Controller
         $user = new User;
         $user->name = $request->name;
         $user->email = $request->email;
+        $user->phone_number = $request->phone_number;
         $user->password = Hash::make($request->password);
         $user->user_lvl = 'member';
         $user->permissions = 'user';

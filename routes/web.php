@@ -97,6 +97,8 @@ Route::patch('/users/{user}/update-level', [UserController::class, 'updateLevel'
     Route::get('/edit_profile', [App\Http\Controllers\ProfileController::class, 'editProfile'])->name('profile.edit');
     Route::patch('/profile/update-name', [App\Http\Controllers\ProfileController::class, 'updateName'])->name('profile.updateName');
     Route::patch('/profile/update-password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.updatePassword');
+    Route::patch('/profile/update-phone', [ProfileController::class, 'updatePhone'])->name('profile.updatePhone');
+
 });
 
 //Topics routes

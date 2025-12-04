@@ -253,6 +253,32 @@
 
         </div>
 
+        <div class="modal fade" id="whatsModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">Enviar mensagem ao cliente</h5>
+                        <button class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <label for="msg">Mensagem:</label>
+                        <textarea id="msg" class="form-control" rows="8">{{ session('whatsapp_message') }}</textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="copyMsg()">Copiar Mensagem</button>
+
+                        <a class="btn btn-success" target="_blank" href="https://wa.me/{{ session('whatsapp_number') }}">
+                            Abrir WhatsApp
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_KEY') }}"></script>
@@ -288,6 +314,27 @@
             });
         });
     </script>
+
+    <script>
+        function copyMsg() {
+            const el = document.getElementById('msg');
+            el.select();
+            navigator.clipboard.writeText(el.value);
+            alert('Mensagem copiada!');
+        }
+    </script>
+
+
+    @if (session('whatsapp_message'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const modal = new bootstrap.Modal(document.getElementById('whatsModal'));
+                modal.show();
+            });
+        </script>
+    @endif
+
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 

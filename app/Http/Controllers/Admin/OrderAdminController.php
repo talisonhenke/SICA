@@ -13,11 +13,12 @@ class OrderAdminController extends Controller
         $currentStatus = $request->get('status', 'pending');
 
         $orders = Order::with('user')
-            ->when($currentStatus, function($q, $status) {
+            ->when($currentStatus, function ($q, $status) {
                 return $q->where('status', $status);
             })
-            ->orderByRaw("
-                CASE 
+            ->orderByRaw(
+                "
+                CASE
                     WHEN status = 'pending' THEN 0
                     WHEN status = 'preparing' THEN 1
                     WHEN status = 'shipped' THEN 2
@@ -25,22 +26,22 @@ class OrderAdminController extends Controller
                     WHEN status = 'canceled' THEN 4
                     ELSE 5
                 END
-            ")
+            ",
+            )
             ->orderBy('created_at', 'desc')
             ->get();
 
         $stats = [
-            'pending'   => Order::where('status', 'pending')->count(),
+            'pending' => Order::where('status', 'pending')->count(),
             'preparing' => Order::where('status', 'preparing')->count(),
-            'shipped'   => Order::where('status', 'shipped')->count(),
+            'shipped' => Order::where('status', 'shipped')->count(),
             'delivered' => Order::where('status', 'delivered')->count(),
-            'canceled'  => Order::where('status', 'canceled')->count(),
-            'total'     => Order::count(),
+            'canceled' => Order::where('status', 'canceled')->count(),
+            'total' => Order::count(),
         ];
 
         return view('admin.orders.index', compact('orders', 'stats', 'currentStatus'));
     }
-
 
     public function show($id)
     {
@@ -51,6 +52,16 @@ class OrderAdminController extends Controller
         return view('admin.orders.show', compact('order', 'address'));
     }
 
+    private function buildWhatsappMessage($order)
+    {
+        $itemsList = $order->items
+            ->map(function ($i) {
+                return "- {$i->product->name} (x{$i->quantity})";
+            })
+            ->implode("\n");
+
+        return "Olá {$order->user->name}, tudo bem?\n\n" . "Seu pagamento foi confirmado! 🎉\n" . "Estamos preparando seu pedido #{$order->id}.\n\n" . "Itens:\n{$itemsList}\n\n" . "Valor total: R$ {$order->total}\n" . 'Agradecemos sua compra!';
+    }
 
     /**
      * ================================
@@ -61,7 +72,7 @@ class OrderAdminController extends Controller
     // 1. Marcar como pago → preparing
     public function markPaid($id)
     {
-        $order = Order::findOrFail($id);
+        $order = Order::with('user', 'items.product')->findOrFail($id);
 
         if ($order->status !== 'pending') {
             return back()->with('msg', 'Este pedido não pode ser marcado como pago.');
@@ -70,9 +81,22 @@ class OrderAdminController extends Controller
         $order->status = 'preparing';
         $order->save();
 
-        return back()->with('msg', 'Pedido marcado como pago e movido para Preparando.');
-    }
+        // Número do cliente (DDD + número sem espaços)
+        $phone = preg_replace('/\D/', '', $order->user->phone);
 
+        // Mensagem personalizada
+        $message = "Olá {$order->user->name}, seu pagamento foi confirmado! 🎉\n";
+        $message .= "Agora seu pedido está sendo preparado.\n\n";
+        $message .= "Resumo do pedido:\n";
+
+        foreach ($order->items as $item) {
+            $message .= "- {$item->product->name} (x{$item->quantity})\n";
+        }
+
+        $message .= "\nObrigado por comprar conosco! 😊";
+
+        return back()->with('msg', 'Pedido marcado como pago e movido para Preparando.')->with('whatsapp_message', $message)->with('whatsapp_number', $phone);
+    }
 
     // 2. Enviar pedido → shipped
     public function ship($id)

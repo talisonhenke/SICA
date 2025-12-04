@@ -15,9 +15,8 @@ class ProfileController extends Controller
         $levels = [
             'member' => 'Membro',
             'moderator' => 'Moderador',
-            'admin' => 'Administrador'
+            'admin' => 'Administrador',
         ];
-
 
         return view('profile.edit_profile', [
             'user' => $user,
@@ -52,12 +51,41 @@ class ProfileController extends Controller
 
         // Verifica se a senha atual confere
         if (!Hash::check($request->current_password, $user->password)) {
-            return redirect()->back()->withErrors(['current_password' => 'Senha atual incorreta.']);
+            return redirect()
+                ->back()
+                ->withErrors(['current_password' => 'Senha atual incorreta.']);
         }
 
         $user->password = Hash::make($request->new_password);
         $user->save();
 
         return redirect()->back()->with('success', 'Senha atualizada com sucesso!');
+    }
+    // Atualiza o telefone do usuário logado
+    public function updatePhone(Request $request)
+    {
+        // O usuário digita formatado, então validamos o formato (99) 9 9999-9999
+        $request->validate([
+            'phone' => ['required', 'regex:/^\(\d{2}\)\s\d\s\d{4}-\d{4}$/'],
+        ]);
+
+        // Remove todos os caracteres que não são dígitos
+        $rawPhone = preg_replace('/\D/', '', $request->phone_number);
+
+        // Deve ter exatamente 11 dígitos
+        if (strlen($rawPhone) !== 11) {
+            return redirect()
+                ->back()
+                ->withErrors([
+                    'phone' => 'Telefone inválido.',
+                ])
+                ->withInput();
+        }
+
+        $user = Auth::user();
+        $user->phone_number = $rawPhone;
+        $user->save();
+
+        return redirect()->back()->with('success', 'Telefone atualizado com sucesso!');
     }
 }

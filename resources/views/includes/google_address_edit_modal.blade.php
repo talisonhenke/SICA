@@ -2,7 +2,7 @@
 <div class="modal fade" id="editAddressModal" tabindex="-1">
     <div class="modal-dialog modal-xl">
 
-        <form action="{{ route('addresses.update', $address->id) }}" method="POST">
+        <form id="editAddressForm" method="POST">
             @csrf
             @method('PUT')
 
@@ -34,57 +34,49 @@
 
                         <div class="col-md-8 mb-3">
                             <label class="form-label fw-semibold">Rua</label>
-                            <input type="text" id="street_edit" name="street" class="form-control"
-                                   value="{{ $address->street }}" required>
+                            <input type="text" id="street_edit" name="street" class="form-control" required>
                         </div>
 
                         <div class="col-md-4 mb-3">
                             <label class="form-label fw-semibold">Número</label>
-                            <input type="text" id="number_edit" name="number" class="form-control"
-                                   value="{{ $address->number }}" required>
+                            <input type="text" id="number_edit" name="number" class="form-control">
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-semibold">Complemento</label>
-                            <input type="text" id="complement_edit" name="complement" class="form-control"
-                                   value="{{ $address->complement }}">
+                            <input type="text" id="complement_edit" name="complement" class="form-control">
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-semibold">Bairro</label>
-                            <input type="text" id="district_edit" name="district" class="form-control"
-                                   value="{{ $address->district }}">
+                            <input type="text" id="district_edit" name="district" class="form-control">
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-semibold">Cidade</label>
-                            <input type="text" id="city_edit" name="city" class="form-control"
-                                   value="{{ $address->city }}" required>
+                            <input type="text" id="city_edit" name="city" class="form-control" required>
                         </div>
 
                         <div class="col-md-3 mb-3">
                             <label class="form-label fw-semibold">Estado</label>
-                            <input type="text" id="state_edit" name="state" class="form-control"
-                                   value="{{ $address->state }}" required>
+                            <input type="text" id="state_edit" name="state" class="form-control" required>
                         </div>
 
                         <div class="col-md-3 mb-3">
                             <label class="form-label fw-semibold">CEP</label>
-                            <input type="text" id="zip_code_edit" name="zip_code" class="form-control"
-                                   value="{{ $address->zip_code }}" required>
+                            <input type="text" id="zip_code_edit" name="zip_code" class="form-control" required>
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-semibold">País</label>
-                            <input type="text" id="country_edit" name="country" class="form-control"
-                                   value="{{ $address->country }}" required>
+                            <input type="text" id="country_edit" name="country" class="form-control" required>
                         </div>
 
                     </div>
 
                     <!-- HIDDEN -->
-                    <input type="hidden" id="latitude_edit" name="latitude" value="{{ $address->latitude }}">
-                    <input type="hidden" id="longitude_edit" name="longitude" value="{{ $address->longitude }}">
+                    <input type="hidden" id="latitude_edit" name="latitude">
+                    <input type="hidden" id="longitude_edit" name="longitude">
 
                 </div>
 
@@ -242,27 +234,6 @@ function fillEditFields(components) {
 
     document.getElementById("country_edit").value =
         getPartEdit(components, "country");
-}
-
-function openEditModal(address) {
-
-    currentAddress = address;
-
-    document.getElementById('street_edit').value      = address.street ?? "";
-    document.getElementById('number_edit').value      = address.number ?? "";
-    document.getElementById('complement_edit').value  = address.complement ?? "";
-    document.getElementById('district_edit').value    = address.district ?? "";
-    document.getElementById('city_edit').value        = address.city ?? "";
-    document.getElementById('state_edit').value       = address.state ?? "";
-    document.getElementById('zip_code_edit').value    = address.zip_code ?? "";
-    document.getElementById('country_edit').value     = address.country ?? "Brasil";
-    document.getElementById('latitude_edit').value    = address.latitude;
-    document.getElementById('longitude_edit').value   = address.longitude;
-
-    if (marker) {
-        marker.setLatLng([address.latitude, address.longitude]);
-        map.setView([address.latitude, address.longitude], 16);
-    }
 }
 
 function resetEditModal() {
