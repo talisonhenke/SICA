@@ -60,7 +60,7 @@
 
     <hr>
 
-    <h5><strong>Pedido #{{ $order->id }}</strong></h5>
+    <h5><strong>Pedido #{{ str_pad($order->id, 4, '0', STR_PAD_LEFT) }}</strong></h5>
 
     <p class="mt-3">
         <strong>Valor Total:</strong>

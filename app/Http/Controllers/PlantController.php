@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Models\Plant;
+use App\Models\Product;
 
 class PlantController extends Controller
 {
@@ -23,13 +24,14 @@ class PlantController extends Controller
     public function show($id, $slug = null)
     {
         $plant = Plant::findOrFail($id);
+        $product = Product::where('plant_id', $plant->id)->first();
         $actualSlug = $plant->slug ?? Str::slug($plant->popular_name, '-');
 
         if ($slug === null || $slug !== $actualSlug) {
             return redirect()->to(url("/plant/{$plant->id}/{$actualSlug}"));
         }
 
-        return view('plants.plant_article', ['plant' => $plant]);
+        return view('plants.plant_article', compact('plant', 'product'));
     }
 
     // Formulário de criação

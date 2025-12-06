@@ -20,12 +20,36 @@
             ];
         @endphp
 
+        @php
+                function formatPhone($phone)
+                {
+                    if (!$phone) {
+                        return null;
+                    }
+
+                    // Remove tudo que não for número
+                    $digits = preg_replace('/\D/', '', $phone);
+
+                    if (strlen($digits) !== 11) {
+                        return $phone; // Se não tiver 11 dígitos, retorna como está
+                    }
+
+                    return sprintf(
+                        '(%s) %s %s-%s',
+                        substr($digits, 0, 2),
+                        substr($digits, 2, 1),
+                        substr($digits, 3, 4),
+                        substr($digits, 7, 4),
+                    );
+                }
+            @endphp
+
         <a href="{{ route('admin.orders.index') }}" class="btn btn-outline-secondary mb-3">
             ← Voltar aos pedidos
         </a>
 
         <h2 class="fw-bold mb-4 primaryTitles">
-            Detalhes do Pedido #{{ $order->id }}
+            Detalhes do Pedido #{{ str_pad($order->id, 4, '0', STR_PAD_LEFT) }}
         </h2>
 
         {{-- ============================== --}}
@@ -39,6 +63,7 @@
             <div class="card-body">
                 <p class="mb-1"><strong>Nome:</strong> {{ $order->user->name ?? 'Não informado' }}</p>
                 <p class="mb-1"><strong>Email:</strong> {{ $order->user->email ?? 'Não informado' }}</p>
+                <p class="mb-1"><strong>Telefone:</strong> {{ formatPhone($order->user->phone_number) ?? 'Não informado' }}</p>
                 <!-- <p class="mb-0"><strong>ID do usuário:</strong> {{ $order->user_id }}</p> -->
             </div>
         </div>
