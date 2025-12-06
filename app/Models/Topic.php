@@ -16,5 +16,11 @@ class Topic extends Model
         'image',
         'featured',
     ];
+
+    public function comments()
+    {
+        return $this->hasMany(TopicComment::class)->orderBy('created_at', 'desc');
+    }
+
 }
 

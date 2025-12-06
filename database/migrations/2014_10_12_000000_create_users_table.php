@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('permissions', 15);
             $table->boolean('is_owner')->default(false);
+            $table->integer('comment_strikes')->default(0);
             $table->rememberToken();
             $table->timestamps();
         });        

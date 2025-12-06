@@ -14,6 +14,7 @@ use App\Http\Controllers\PlantController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TopicController;
+use App\Http\Controllers\TopicCommentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
@@ -110,6 +111,24 @@ Route::get('/topics/{topic}/edit', [TopicController::class, 'edit'])->name('topi
 Route::put('/topics/{topic}', [TopicController::class, 'update'])->name('topics.update');
 Route::delete('/topics/{topic}', [TopicController::class, 'destroy'])->name('topics.destroy');
 Route::post('/topics/{topic}/toggle-featured', [TopicController::class, 'toggleFeatured'])->name('topics.toggleFeatured');
+
+// Comentários de tópicos
+Route::middleware(['auth'])->group(function () {
+
+    Route::post('/topics/{topic}/comments', [TopicCommentController::class, 'store'])
+        ->name('topics.comments.store');
+
+    Route::put('/topic-comments/{comment}', [TopicCommentController::class, 'update'])
+        ->name('topic-comments.update');
+
+    Route::delete('/topic-comments/{comment}', [TopicCommentController::class, 'destroy'])
+        ->name('topic-comments.destroy');
+
+    Route::delete('/admin/comments/{id}/moderate-delete', [TopicCommentController::class, 'moderateDelete'])
+    ->middleware(['auth', 'is_admin'])
+    ->name('topic-comments.moderateDelete');
+});
+
 
 // Products routes
 

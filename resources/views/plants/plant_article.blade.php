@@ -21,6 +21,9 @@
 
 @section('content')
     <style>
+        .text-info-custom {
+            color: var(--color-text);
+        }
         .article-container {
             max-width: 950px;
             margin: 2rem auto;
@@ -281,13 +284,19 @@
             background: var(--color-accent);
             color: white;
         }
+
+        body.modal-open {
+            padding-right: 0 !important;
+            overflow: hidden;
+            /* mantém o bloqueio do scroll sem empurrar a página */
+        }
     </style>
 
     <div class="article-container">
         {{-- Opções do administrador --}}
         @if (Auth::check() && Auth::user()->user_lvl === 'admin')
             <div class="admin-options">
-                <h3>⚙️ Opções do Administrador</h3>
+                <h3 class="text-info-custom">⚙️ Opções do Administrador</h3>
                 <a href="{{ route('plants.edit', $plant->id) }}" class="btn btn-warning btn-sm">Editar</a>
                 <form action="{{ route('plants.destroy', $plant->id) }}" method="POST" style="display:inline;">
                     @csrf
@@ -304,7 +313,7 @@
         <div class="article-header d-flex justify-content-between align-items-start">
             <div>
                 <h1 class="article-title">{{ $plant->popular_name }}</h1>
-                <small><strong>Publicado em:</strong> {{ $plant->created_at->format('d/m/Y') }}</small>
+                <small class="text-info-custom"><strong>Publicado em:</strong> {{ $plant->created_at->format('d/m/Y') }}</small>
             </div>
 
             <div class="header-actions">
@@ -316,8 +325,8 @@
 
 
         <div class="article-body">
-            <p><strong>Nome Científico:</strong> {{ $plant->scientific_name }}</p>
-            <p><strong>Nome Popular:</strong> {{ $plant->popular_name }}</p>
+            <p class="text-info-custom"><strong>Nome Científico:</strong> {{ $plant->scientific_name }}</p>
+            <p class="text-info-custom"><strong>Nome Popular:</strong> {{ $plant->popular_name }}</p>
 
             {{-- Carrossel de imagens --}}
             @php
@@ -393,11 +402,11 @@
                                 </a>
                             </h3>
 
-                            <p class="related-description">
+                            <p class="related-description text-info-custom">
                                 {{ Str::limit($product->description, 120) }}
                             </p>
 
-                            <p class="related-price"><strong>Preço:</strong> R$
+                            <p class="related-price text-info-custom"><strong>Preço:</strong> R$
                                 {{ number_format($product->price, 2, ',', '.') }}</p>
 
                             <div class="related-actions">
@@ -405,13 +414,11 @@
                                     Ver detalhes
                                 </a>
 
-                                <form action="{{ route('cart.add', $product->id) }}" method="POST"
-                                    style="display:inline;">
-                                    @csrf
-                                    <button type="submit" class="btn btn-success btn-sm">
-                                        Adicionar ao carrinho
-                                    </button>
-                                </form>
+                                <button class="btn btn-success btn-sm add-to-cart-article-btn"
+                                    data-id="{{ $product->id }}">
+                                    <i class="bi bi-cart"></i> Adicionar ao carrinho
+                                </button>
+
                             </div>
                         </div>
 
@@ -450,10 +457,19 @@
 
                         </div>
 
-                        <div class="modal-footer d-flex justify-content-center">
+                        <div class="modal-footer d-flex justify-content-center gap-2">
+
                             <a id="whatsappLink" class="btn btn-success" target="_blank">
-                                Compartilhar no WhatsApp
+                                <i class="bi bi-whatsapp me-1"></i> WhatsApp
                             </a>
+
+                            <a id="facebookLink" class="btn btn-primary" target="_blank">
+                                <i class="bi bi-facebook me-1"></i> Facebook
+                            </a>
+
+                            <button class="btn btn-secondary" onclick="copyShareLink()">
+                                <i class="bi bi-link-45deg me-1"></i> Copiar Link
+                            </button>
 
                         </div>
 
@@ -464,22 +480,35 @@
             {{-- Informações adicionais --}}
             <div class="extra-info">
                 <h2>Informações Adicionais</h2>
-                <p><strong>Habitat:</strong> {{ $plant->habitat }}</p>
-                <p><strong>Partes Utilizadas:</strong></p>
+                <p class="text-info-custom"><strong>Habitat:</strong> {{ $plant->habitat }}</p>
+                <p class="text-info-custom"><strong>Partes Utilizadas:</strong></p>
                 <ul class="items-list">
                     @foreach ($plant->useful_parts as $part)
                         <li>{{ $part }}</li>
                     @endforeach
                 </ul>
-                <p><strong>Características:</strong> {{ $plant->characteristics }}</p>
-                <p><strong>Observações:</strong> {{ $plant->observations }}</p>
-                <p><strong>Composição Química:</strong> {{ $plant->chemical_composition }}</p>
-                <p><strong>Contraindicações:</strong> {{ $plant->contraindications }}</p>
-                <p><strong>Modo de Uso:</strong> {{ $plant->mode_of_use }}</p>
-                <p><strong>Referências:</strong> {{ $plant->info_references }}</p>
-                <p><strong>Tags:</strong> {{ $plant->tags }}</p>
+                <p class="text-info-custom"><strong>Características:</strong> {{ $plant->characteristics }}</p>
+                <p class="text-info-custom"><strong>Observações:</strong> {{ $plant->observations }}</p>
+                <p class="text-info-custom"><strong>Composição Química:</strong> {{ $plant->chemical_composition }}</p>
+                <p class="text-info-custom"><strong>Contraindicações:</strong> {{ $plant->contraindications }}</p>
+                <p class="text-info-custom"><strong>Modo de Uso:</strong> {{ $plant->mode_of_use }}</p>
+                <p class="text-info-custom"><strong>Referências:</strong> {{ $plant->info_references }}</p>
+                <p class="text-info-custom"><strong>Tags:</strong> {{ $plant->tags }}</p>
             </div>
         </div>
+
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 99999">
+            <div id="copyToast" class="toast align-items-center text-bg-success border-0" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        Link copiado para a área de transferência!
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                        data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        </div>
+
 
         {{-- Script para miniaturas --}}
         <script>
@@ -496,23 +525,77 @@
         </script>
 
         <script>
-            function updateWhatsAppLink() {
+            document.addEventListener('DOMContentLoaded', function() {
+
                 const message = document.getElementById('shareMessage').value.trim();
-                const encoded = encodeURIComponent(message);
+                const encodedMessage = encodeURIComponent(message);
+                const pageUrl = "{{ url("/plant/{$plant->id}/{$plant->slug}") }}";
+                const encodedUrl = encodeURIComponent(pageUrl);
 
-                document.getElementById('whatsappLink').href = `https://wa.me/?text=${encoded}`;
-            }
+                // WhatsApp (mensagem completa)
+                document.getElementById('whatsappLink').href =
+                    `https://wa.me/?text=${encodedMessage}`;
 
-            // atualiza ao abrir o modal
-            document.addEventListener('DOMContentLoaded', () => {
-                updateWhatsAppLink();
+                // Facebook
+                document.getElementById('facebookLink').href =
+                    `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
             });
 
-            // atualiza se o usuário editar o textarea (opcional, mas útil)
-            document.getElementById('shareMessage').addEventListener('input', updateWhatsAppLink);
+            function showCopyToast() {
+                const toastEl = document.getElementById("copyToast");
+                const t = new bootstrap.Toast(toastEl);
+                t.show();
+            }
+
+
+            // Copiar apenas o link
+            function copyShareLink() {
+                const pageUrl = "{{ url("/plant/{$plant->id}/{$plant->slug}") }}";
+
+                navigator.clipboard.writeText(pageUrl).then(() => {
+                    showCopyToast();
+                });
+            }
         </script>
 
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const buttons = document.querySelectorAll('.add-to-cart-article-btn');
 
+                buttons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const productId = this.dataset.id;
+
+                        fetch(`/cart/add/${productId}`, {
+                                method: 'GET',
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                // Notificação estilo index
+                                const alertBox = document.createElement('div');
+                                alertBox.className =
+                                    'alert alert-success alert-dismissible fade show position-fixed top-0 end-0 m-3';
+                                alertBox.style.zIndex = '1050';
+                                alertBox.innerHTML = `
+                    <strong>✔</strong> ${data.message || 'Produto adicionado ao carrinho!'}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                                document.body.appendChild(alertBox);
+
+                                setTimeout(() => {
+                                    alertBox.classList.remove('show');
+                                    alertBox.addEventListener('transitionend', () =>
+                                        alertBox.remove());
+                                }, 3000);
+                            })
+                            .catch(error => console.error('Erro ao adicionar ao carrinho:', error));
+                    });
+                });
+            });
+        </script>
 
 
     @endsection

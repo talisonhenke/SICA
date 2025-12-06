@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('topic_id')->nullable()->constrained('topics')->onDelete('cascade');
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->text('comment');
+            $table->decimal('toxicity_level', 3, 2)->default(0);
             $table->timestamps();
         });
     }
