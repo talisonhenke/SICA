@@ -380,6 +380,8 @@ function saveNewAddress() {
 
         const option = document.createElement("option");
         option.value = address.id;
+        document.getElementById('order_address_json').value = JSON.stringify(address);
+        console.log("Tste endereço" + JSON.stringify(address));
         option.textContent =
             `${address.street}, ${address.number} — ${address.district} — ${address.city}`;
 

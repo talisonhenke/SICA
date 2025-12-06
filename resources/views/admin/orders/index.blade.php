@@ -229,7 +229,7 @@
                                     $statusTranslations = [
                                         'pending' => 'Pendente',
                                         'preparing' => 'Preparando',
-                                        'shipped' => 'Enviado',
+                                        'shipped' => 'Em entrega',
                                         'delivered' => 'Entregue',
                                         'canceled' => 'Cancelado',
                                     ];

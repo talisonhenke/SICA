@@ -66,7 +66,7 @@ class ProfileController extends Controller
     {
         // O usuário digita formatado, então validamos o formato (99) 9 9999-9999
         $request->validate([
-            'phone' => ['required', 'regex:/^\(\d{2}\)\s\d\s\d{4}-\d{4}$/'],
+            'phone_number' => ['required', 'regex:/^\(\d{2}\)\s\d\s\d{4}-\d{4}$/'],
         ]);
 
         // Remove todos os caracteres que não são dígitos
@@ -77,7 +77,7 @@ class ProfileController extends Controller
             return redirect()
                 ->back()
                 ->withErrors([
-                    'phone' => 'Telefone inválido.',
+                    'phone_number' => 'Telefone inválido.',
                 ])
                 ->withInput();
         }

@@ -329,7 +329,13 @@ class PlantController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Erro ao atualizar planta: ' . $e->getMessage(), ['stack' => $e->getTraceAsString()]);
-            return back()->withErrors(['error' => '❌ Erro ao atualizar a planta.'])->withInput();
+
+            // DEBUG: mostrar erro completo na tela
+            dd([
+                'Mensagem' => $e->getMessage(),
+                'Stack Trace' => $e->getTraceAsString()
+            ]);
+            //return back()->withErrors(['error' => '❌ Erro ao atualizar a planta.'])->withInput();
         }
     }
 

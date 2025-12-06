@@ -82,16 +82,18 @@ class OrderAdminController extends Controller
         $order->save();
 
         // Número do cliente (DDD + número sem espaços)
-        $phone = preg_replace('/\D/', '', $order->user->phone);
+        $phone = preg_replace('/\D/', '', $order->user->phone_number);
 
         // Mensagem personalizada
-        $message = "Olá {$order->user->name}, seu pagamento foi confirmado! 🎉\n";
+        $message = "Olá *{$order->user->name}*, seu pagamento foi confirmado! 🎉\n";
         $message .= "Agora seu pedido está sendo preparado.\n\n";
         $message .= "Resumo do pedido:\n";
 
         foreach ($order->items as $item) {
-            $message .= "- {$item->product->name} (x{$item->quantity})\n";
+            $message .= "- {$item->product->name} (*x{$item->quantity}*)\n";
         }
+
+        $message .= "\nTotal do pedido: *R$ " . number_format($order->total_amount, 2, ',', '.') . "*\n";
 
         $message .= "\nObrigado por comprar conosco! 😊";
 
@@ -101,7 +103,7 @@ class OrderAdminController extends Controller
     // 2. Enviar pedido → shipped
     public function ship($id)
     {
-        $order = Order::findOrFail($id);
+        $order = Order::with('user', 'items.product')->findOrFail($id);
 
         if ($order->status !== 'preparing') {
             return back()->with('msg', 'O pedido só pode ser enviado se estiver em preparação.');
@@ -110,7 +112,24 @@ class OrderAdminController extends Controller
         $order->status = 'shipped';
         $order->save();
 
-        return back()->with('msg', 'Pedido marcado como Enviado.');
+        // Número do cliente (DDD + número sem espaços)
+        $phone = preg_replace('/\D/', '', $order->user->phone_number);
+
+        // Mensagem personalizada de envio
+        $message = "Olá *{$order->user->name}*, seu pedido foi enviado! 🚚💨\n";
+        $message .= "Agora ele está a caminho da entrega.\n\n";
+        $message .= "Resumo do pedido:\n";
+
+        foreach ($order->items as $item) {
+            $message .= "- {$item->product->name} (*x{$item->quantity}*)\n";
+        }
+
+        $message .= "\nTotal do pedido: *R$ " . number_format($order->total_amount, 2, ',', '.') . "*\n";
+
+
+        $message .= "\nQualquer dúvida, estou à disposição! 😊";
+
+        return back()->with('msg', 'Pedido marcado como Enviado.')->with('whatsapp_message', $message)->with('whatsapp_number', $phone);
     }
 
     // 3. Pedido entregue pedido → delivered
