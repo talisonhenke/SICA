@@ -15,7 +15,8 @@
         .navbar-brand {
             display: flex;
             align-items: center;
-            gap: 0.5rem; /* espaço entre logo e texto */
+            gap: 0.5rem;
+            /* espaço entre logo e texto */
             padding-top: 0 !important;
             padding-bottom: 0 !important;
             line-height: 1;
@@ -40,16 +41,20 @@
             display: inline-block;
             line-height: 1;
             position: relative;
-            top: 1px; /* ajuste fino */
+            top: 1px;
+            /* ajuste fino */
             color: var(--color-menu-text);
         }
+
         .menu-icon {
             color: var(--color-menu-text);
             font-size: 30px;
         }
+
         .menu-icon:hover {
             color: var(--color-warning);
         }
+
         /* .themeIcon{
             color: var(--color-menu-text) !important;
         } */
@@ -94,8 +99,15 @@
 
         /* Animação sutil para trocar ícone */
         @keyframes rotate-icon {
-            from { transform: rotate(-90deg); opacity: 0; }
-            to   { transform: rotate(0); opacity: 1; }
+            from {
+                transform: rotate(-90deg);
+                opacity: 0;
+            }
+
+            to {
+                transform: rotate(0);
+                opacity: 1;
+            }
         }
 
         .theme-animated {
@@ -158,7 +170,8 @@
         </a>
 
         {{-- Botão do menu mobile --}}
-        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent">
             {{-- <span class="navbar-toggler-icon"></span> --}}
             <i class="bi bi-list menu-icon"></i>
         </button>
@@ -170,20 +183,37 @@
                 <li class="nav-item"><a class="nav-link" href="/plants_list">Lista de Plantas</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('topics.index') }}">Tópicos</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('products.index') }}">Produtos</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('admin.orders.index') }}">Ver Pedidos</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('orders.index') }}">Meus Pedidos</a></li>
 
-                @if(Auth::check() && Auth::user()->user_lvl === 'admin')
-                    <li class="nav-item"><a class="nav-link" href="/add_plant">Adicionar</a></li>
+
+                @if (Auth::check() && Auth::user()->user_lvl === 'admin')
+                    <li class="nav-item"><a class="nav-link" href="{{ route('admin.orders.index') }}">Ver Pedidos</a>
+                    </li>
+                    <li class="nav-item position-relative">
+
+                        <a class="nav-link" href="{{ route('admin.moderation.index') }}">
+                            Moderação
+                        </a>
+
+                        {{-- Badge dinâmico preenchido via AJAX --}}
+                        <span id="moderationBadge"
+                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
+                            0
+                        </span>
+
+                    </li>
+
                     <li class="nav-item"><a class="nav-link" href="/users_list">Usuários</a></li>
                 @endif
 
                 <li class="nav-item d-none d-lg-block">
-                    <a class="nav-link position-relative d-flex align-items-center gap-1" href="{{ route('cart.index') }}">
+                    <a class="nav-link position-relative d-flex align-items-center gap-1"
+                        href="{{ route('cart.index') }}">
                         <i class="bi bi-cart3"></i>
                         <span>Carrinho</span>
-                        @if(session('cart') && count(session('cart')) > 0)
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        @if (session('cart') && count(session('cart')) > 0)
+                            <span
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                                 {{ count(session('cart')) }}
                             </span>
                         @endif
@@ -191,10 +221,11 @@
                 </li>
 
                 <li class="nav-item d-lg-none">
-                    <a class="nav-link position-relative d-flex align-items-center justify-content-between" href="{{ route('cart.index') }}">
+                    <a class="nav-link position-relative d-flex align-items-center justify-content-between"
+                        href="{{ route('cart.index') }}">
                         <span class="spanItems">Carrinho</span>
                         <i class="bi bi-cart3"></i>
-                        @if(session('cart') && count(session('cart')) > 0)
+                        @if (session('cart') && count(session('cart')) > 0)
                             <span class="badge bg-danger ms-2">
                                 {{ count(session('cart')) }}
                             </span>
@@ -218,24 +249,26 @@
 
 
                 {{-- Se o usuário estiver logado --}}
-                @if(Auth::check())
+                @if (Auth::check())
                     <li class="nav-item dropdown ms-lg-3">
-                        <a class="nav-link dropdown-toggle fw-bold px-3 rounded-pill" href="#" id="userMenu" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle fw-bold px-3 rounded-pill" href="#" id="userMenu"
+                            role="button" data-bs-toggle="dropdown">
                             {{ strtok(Auth::user()->name, ' ') }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="/edit_profile">Editar Perfil</a></li>
                             <li>
                                 <a class="dropdown-item" href="{{ route('logout') }}"
-                                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                   Sair
+                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    Sair
                                 </a>
                             </li>
                         </ul>
                     </li>
                 @else
                     <li class="nav-item ms-lg-3">
-                        <a class="btn btn-outline-light px-3 py-1 rounded-pill mt-lg-0 mt-sm-2" href="{{ route('login') }}">Entrar</a>
+                        <a class="btn btn-outline-light px-3 py-1 rounded-pill mt-lg-0 mt-sm-2"
+                            href="{{ route('login') }}">Entrar</a>
                     </li>
                 @endif
             </ul>

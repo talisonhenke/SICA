@@ -21,6 +21,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\AddressesController;
 use App\Http\Controllers\Admin\OrderAdminController;
+use App\Http\Controllers\AdminController;
 
 // QR-Code
 
@@ -127,6 +128,16 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/admin/comments/{id}/moderate-delete', [TopicCommentController::class, 'moderateDelete'])
     ->middleware(['auth', 'is_admin'])
     ->name('topic-comments.moderateDelete');
+
+    Route::post('/topic-comments/{id}/report', [TopicCommentController::class, 'report'])
+    ->name('topic-comments.report');
+
+    Route::post('/topic-comments/{id}/allow', [TopicCommentController::class, 'allow'])
+    ->name('topic-comments.allow');
+
+    // BLOQUEAR COMENTÁRIOS DO USUÁRIO
+    Route::post('/topic-comments/block-user/{userId}', [TopicCommentController::class, 'blockUser'])
+        ->name('topic-comments.blockUser');
 });
 
 
@@ -223,7 +234,18 @@ Route::prefix('admin')->middleware(['auth', 'is_admin'])->group(function () {
 
         //4. Pedido entregue (shippded → delivered)
         Route::post('/admin/orders/{id}/deliver', [OrderAdminController::class, 'deliver'])
-            ->name('admin.orders.deliver');
+            ->name('admin.orders.deliver');         
+});
 
-            
+// Atualizações moderação 
+
+Route::get('/api/check-updates', [AdminController::class, 'checkUpdates'])
+    ->name('admin.checkUpdates');
+
+Route::get('/api/counters', [AdminController::class, 'counters'])
+    ->name('admin.counters');
+
+Route::middleware(['auth', 'is_admin'])->group(function () {
+    Route::get('/moderation', [AdminController::class, 'moderationIndex'])
+        ->name('admin.moderation.index');
 });

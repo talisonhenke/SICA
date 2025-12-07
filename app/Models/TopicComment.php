@@ -11,12 +11,7 @@ class TopicComment extends Model
 
     protected $table = 'topic_comments';
 
-    protected $fillable = [
-        'topic_id',
-        'user_id',
-        'comment',
-        'toxicity_level'
-    ];
+    protected $fillable = ['user_id', 'topic_id', 'comment', 'toxicity_level', 'reported', 'moderated'];
 
     /**
      * Relacionamento: um comentário pertence a um tópico.

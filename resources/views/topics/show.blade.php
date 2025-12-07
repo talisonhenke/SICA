@@ -203,6 +203,7 @@
 
             </div>
 
+
             {{-- Lista de comentários --}}
             @foreach ($topic->comments as $comment)
                 <div class="comment-box d-flex p-3 mb-3 rounded shadow-sm">
@@ -215,6 +216,7 @@
                     </div>
 
                     <div class="comment-content flex-grow-1">
+
                         <strong>{{ $comment->user->name }}</strong>
                         <small class="text-muted d-block">
                             {{ $comment->created_at->format('d/m/Y H:i') }}
@@ -233,7 +235,6 @@
                                 </button>
                             @endif
 
-
                             {{-- Excluir — somente dono --}}
                             @if (Auth::check() && Auth::id() === $comment->user_id)
                                 <form action="{{ route('topic-comments.destroy', $comment->id) }}" method="POST"
@@ -245,7 +246,6 @@
                                     </button>
                                 </form>
                             @endif
-
 
                             {{-- Moderação — SOMENTE ADMIN --}}
                             @if (Auth::check() && Auth::user()->user_lvl === 'admin')
@@ -259,8 +259,18 @@
                                 </form>
                             @endif
 
-                        </div>
+                            {{-- NOVO: Denunciar — Todos logados, exceto o dono do comentário --}}
+                            @if (Auth::check() && Auth::id() !== $comment->user_id)
+                                <form action="{{ route('topic-comments.report', $comment->id) }}" method="POST"
+                                    onsubmit="return confirm('Deseja denunciar este comentário?');">
+                                    @csrf
+                                    <button class="btn btn-sm btn-outline-warning">
+                                        <i class="fa fa-flag"></i> Denunciar
+                                    </button>
+                                </form>
+                            @endif
 
+                        </div>
 
                     </div>
                 </div>
@@ -295,6 +305,7 @@
                 @endif
             @endforeach
         </div>
+
 
     </div>
 @endsection

@@ -20,7 +20,6 @@ class TopicCommentController extends Controller
 
         $user = auth()->user();
 
-        // ====== BLOQUEIO POR 3 STRIKES ======
         if ($user->comment_strikes >= 3) {
             return back()->with('error', 'A função de comentários está temporariamente indisponível para você.');
         }
@@ -31,39 +30,34 @@ class TopicCommentController extends Controller
             $comment = $request->comment;
 
             $toxicityScore = (float) $this->checkToxicity($comment);
-            // dd($toxicityScore);
 
             if ($toxicityScore === null) {
                 throw new \Exception('Perspective API retornou resposta inválida.');
             }
 
-            // ====== 1) REGRA DE BLOQUEIO POR TOXICIDADE ======
             if ($toxicityScore >= 0.8) {
                 DB::rollBack();
                 $user->increment('comment_strikes');
                 return back()->with('msg', 'Seu comentário foi identificado como inadequado e não pôde ser enviado.');
             }
 
-            // ====== 2) SALVA O COMENTÁRIO ======
             $saved = $topic->comments()->create([
                 'user_id' => $user->id,
                 'comment' => $comment,
                 'toxicity_level' => $toxicityScore,
+                'moderated' => 0,
+                'reported' => 0,
             ]);
 
             if (!$saved) {
-                throw new \Exception('Falha ao salvar o comentário no banco de dados.');
+                throw new \Exception('Falha ao salvar o comentário.');
             }
 
             DB::commit();
             return back()->with('msg', 'Comentário enviado!');
         } catch (\Throwable $e) {
             DB::rollBack();
-
-            Log::error('Erro ao registrar comentário: ' . $e->getMessage(), [
-                'exception' => $e,
-            ]);
-
+            Log::error('Erro ao registrar comentário: ' . $e->getMessage());
             return back()->with('error', 'Erro ao salvar comentário.');
         }
     }
@@ -76,12 +70,10 @@ class TopicCommentController extends Controller
 
         $user = auth()->user();
 
-        // ====== GARANTE QUE SOMENTE O AUTOR PODE EDITAR ======
         if ($comment->user_id !== $user->id) {
             abort(403, 'Você não tem permissão para editar este comentário.');
         }
 
-        // ====== BLOQUEIO POR 3 STRIKES ======
         if ($user->comment_strikes >= 3) {
             return back()->with('error', 'A função de comentários está temporariamente indisponível para você.');
         }
@@ -91,38 +83,96 @@ class TopicCommentController extends Controller
 
             $newCommentText = $request->comment;
 
-            // ====== VERIFICA TOXICIDADE ======
             $toxicityScore = (float) $this->checkToxicity($newCommentText);
 
             if ($toxicityScore === null) {
                 throw new \Exception('Perspective API retornou resposta inválida.');
             }
 
-            // ====== BLOQUEIO SE TOXICIDADE >= 0.8 ======
             if ($toxicityScore >= 0.8) {
                 DB::rollBack();
                 $user->increment('comment_strikes');
-
                 return back()->with('error', 'Seu comentário editado foi identificado como inadequado e não pôde ser atualizado.');
             }
 
-            // ====== ATUALIZA O COMENTÁRIO ======
             $comment->update([
                 'comment' => $newCommentText,
                 'toxicity_level' => $toxicityScore,
+                'moderated' => 0, // edição reinicia necessidade de moderação
+                'reported' => 0, // edição remove denúncias anteriores
             ]);
 
             DB::commit();
             return back()->with('msg', 'Comentário atualizado!');
         } catch (\Throwable $e) {
             DB::rollBack();
-
-            Log::error('Erro ao atualizar comentário: ' . $e->getMessage(), [
-                'exception' => $e,
-            ]);
-
+            Log::error('Erro ao atualizar comentário: ' . $e->getMessage());
             return back()->with('error', 'Erro ao atualizar comentário.');
         }
+    }
+
+    /**
+     * NOVO MÉTODO: Denunciar um comentário
+     */
+    public function report($commentId)
+    {
+        $comment = TopicComment::findOrFail($commentId);
+
+        // Apenas usuários logados
+        if (!auth()->check()) {
+            return back()->with('error', 'Você precisa estar logado para denunciar.');
+        }
+
+        // Comentário já moderado não pode mais ser denunciado
+        if ($comment->moderated == 1) {
+            return back()->with('msg', 'Este comentário já foi moderado.');
+        }
+
+        // Marca como denunciado
+        $comment->reported = 1;
+        $comment->save();
+
+        return back()->with('msg', 'Comentário denunciado para moderação.');
+    }
+
+    /**
+     * Moderador aprova o comentário (remove da fila).
+     */
+    public function moderatorApprove($commentId)
+    {
+        $comment = TopicComment::findOrFail($commentId);
+
+        if (!auth()->user() || auth()->user()->user_lvl !== 'admin') {
+            return back()->with('error', 'Apenas administradores podem moderar.');
+        }
+
+        $comment->update([
+            'moderated' => 1,
+            'reported' => 0,
+        ]);
+
+        return back()->with('success', 'Comentário marcado como analisado.');
+    }
+
+    /**
+     * Moderador exclui o comentário (com strike)
+     */
+    public function moderateDelete($commentId)
+    {
+        $comment = TopicComment::findOrFail($commentId);
+
+        if (!auth()->user() || auth()->user()->user_lvl !== 'admin') {
+            return back()->with('error', 'Apenas administradores podem moderar.');
+        }
+
+        $user = $comment->user;
+
+        $user->comment_strikes++;
+        $user->save();
+
+        $comment->delete();
+
+        return back()->with('success', 'Comentário excluído e strike aplicado.');
     }
 
     private function checkToxicity($text)
@@ -133,18 +183,15 @@ class TopicCommentController extends Controller
             $response = Http::timeout(10)->post("https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key={$apiKey}", [
                 'comment' => ['text' => $text],
                 'languages' => ['pt', 'en'],
-                'requestedAttributes' => [
-                    'TOXICITY' => new \stdClass(),
-                ],
+                'requestedAttributes' => ['TOXICITY' => new \stdClass()],
             ]);
 
             $json = $response->json();
 
-            // Pegando o valor correto
             return $json['attributeScores']['TOXICITY']['summaryScore']['value'] ?? 0.0;
         } catch (\Throwable $e) {
-            Log::error('Erro ao chamar Perspective API: ' . $e->getMessage());
-            return 0.0; // Falhou? Considera não tóxico (ou pode bloquear)
+            Log::error('Erro API Perspective: ' . $e->getMessage());
+            return 0.0;
         }
     }
 
@@ -152,7 +199,6 @@ class TopicCommentController extends Controller
     {
         $comment = TopicComment::findOrFail($id);
 
-        // Somente o dono do comentário pode excluir
         if (auth()->id() !== $comment->user_id) {
             return redirect()->back()->with('error', 'Você não tem permissão para excluir este comentário.');
         }
@@ -162,29 +208,25 @@ class TopicCommentController extends Controller
         return redirect()->back()->with('success', 'Comentário excluído com sucesso.');
     }
 
-    public function moderateDelete($commentId)
+    public function allow($id)
     {
-        $comment = TopicComment::findOrFail($commentId);
+        $comment = TopicComment::findOrFail($id);
 
-        // Garantir que só admin acesse
-        if (!auth()->user()->user_lvl == 'admin') {
-            return redirect()->back()->with('error', 'Apenas administradores podem moderar comentários.');
-        }
+        $comment->moderated = 1;
+        $comment->reported = 0; // limpa denúncia
+        $comment->save();
 
-        // Usuário autor do comentário
-        $user = $comment->user;
+        return back()->with('success', 'Comentário permitido e removido da moderação.');
+    }
 
-        if (!$user) {
-            return redirect()->back()->with('error', 'Usuário não encontrado.');
-        }
+    public function blockUser($userId)
+    {
+        $user = User::findOrFail($userId);
 
-        // Incrementa strike
-        $user->comment_strikes = $user->comment_strikes + 1;
+        // Força o limite de strikes
+        $user->comment_strikes = 3;
         $user->save();
 
-        // Exclui o comentário
-        $comment->delete();
-
-        return redirect()->back()->with('success', 'Comentário excluído e strike aplicado.');
+        return back()->with('success', 'Usuário bloqueado para fazer comentários.');
     }
 }
