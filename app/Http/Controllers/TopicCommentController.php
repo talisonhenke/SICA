@@ -30,6 +30,7 @@ class TopicCommentController extends Controller
             $comment = $request->comment;
 
             $toxicityScore = (float) $this->checkToxicity($comment);
+            // dd($toxicityScore);
 
             if ($toxicityScore === null) {
                 throw new \Exception('Perspective API retornou resposta inválida.');
@@ -61,6 +62,16 @@ class TopicCommentController extends Controller
             return back()->with('error', 'Erro ao salvar comentário.');
         }
     }
+
+    private function containsWord($text, $word)
+{
+    // Escapar caracteres especiais
+    $escaped = preg_quote($word, '/');
+
+    // Regex para palavra inteira (Unicode)
+    return preg_match('/\b' . $escaped . '\b/u', $text);
+}
+
 
     public function update(Request $request, TopicComment $comment)
     {
@@ -179,6 +190,29 @@ class TopicCommentController extends Controller
     {
         $apiKey = env('PERSPECTIVE_API_KEY');
 
+        //Carregar lista de badwords
+
+        $badwordsPath = storage_path('app/private/badwords.json');
+        $badwords = json_decode(file_get_contents($badwordsPath), true);
+
+        $unacceptable = $badwords['unacceptable'] ?? [];
+        $suspect = $badwords['suspect'] ?? [];
+
+        $textLower = mb_strtolower($text);
+
+        //  Checar palavras inaceitáveis (unacceptable)
+        //  comentário nem deve ser permitido
+
+        foreach ($unacceptable as $word) {
+            // busca palavra inteira, ignorando acento
+            if ($this->containsWord($textLower, $word)) {
+                return 0.9; // Não passa na validação
+            }
+        }
+
+        // ---------------------------
+        // 3. Consultar API Perspective
+        // ---------------------------
         try {
             $response = Http::timeout(10)->post("https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key={$apiKey}", [
                 'comment' => ['text' => $text],
@@ -188,11 +222,30 @@ class TopicCommentController extends Controller
 
             $json = $response->json();
 
-            return $json['attributeScores']['TOXICITY']['summaryScore']['value'] ?? 0.0;
+            $score = $json['attributeScores']['TOXICITY']['summaryScore']['value'] ?? 0.0;
         } catch (\Throwable $e) {
             Log::error('Erro API Perspective: ' . $e->getMessage());
-            return 0.0;
+            $score = 0.0;
         }
+
+        // ---------------------------
+        // 4. Somar pontos por palavras suspeitas
+        // ---------------------------
+        $extra = 0.0;
+
+        foreach ($suspect as $word) {
+            if ($this->containsWord($textLower, $word)) {
+                $extra += 0.4; // cada palavra suspeita soma valor de "toxicidade" no comentario
+
+                if ($extra >= 0.7) {
+                    return $extra; 
+                }
+            }
+        }
+
+        $finalScore = min($score + $extra, 1.0);
+
+        return $finalScore;
     }
 
     public function destroy($id)

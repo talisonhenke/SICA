@@ -4,6 +4,7 @@
 /public/storage
 /public/images/plants
 /storage/*.key
+/storage/app/private*
 /vendor
 .env
 .env.backup

@@ -187,7 +187,14 @@
 
 
                 @if (Auth::check() && Auth::user()->user_lvl === 'admin')
-                    <li class="nav-item"><a class="nav-link" href="{{ route('admin.orders.index') }}">Ver Pedidos</a>
+                    <li class="nav-item position-relative">
+                        <a class="nav-link" href="{{ route('admin.orders.index') }}">Ver Pedidos</a>
+
+                        {{-- Badge dinâmico preenchido via AJAX --}}
+                        <span id="ordersBadge"
+                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
+                            0
+                        </span>
                     </li>
                     <li class="nav-item position-relative">
 

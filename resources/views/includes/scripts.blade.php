@@ -278,28 +278,23 @@
     }
 </script>
 
-{{-- Verificação de novos comentários e pedidos --}}
+{{-- Verificação de novos comentários e pedidos Menu principal --}}
 <script>
     function checkModerationUpdates() {
-        console.log('[MODERAÇÃO] Executando checkModerationUpdates()...');
+        //console.log('[MODERAÇÃO] Executando checkModerationUpdates()...');
 
         fetch('/api/check-updates')
             .then(res => {
-                console.log('[MODERAÇÃO] Resposta bruta:', res);
+                //console.log('[MODERAÇÃO] Resposta bruta:', res);
                 return res.json();
             })
             .then(data => {
-                console.log('[MODERAÇÃO] JSON recebido:', data);
+                //console.log('[MODERAÇÃO] JSON recebido:', data);
 
                 const badge = document.getElementById('moderationBadge');
 
-                if (!badge) {
-                    console.warn('[MODERAÇÃO] Não encontrou #moderationBadge no DOM.');
-                    return;
-                }
-
                 const count = data.moderation ?? 0;
-                console.log('[MODERAÇÃO] Contagem:', count);
+                //console.log('[MODERAÇÃO] Contagem:', count);
 
                 if (count > 0) {
                     badge.classList.remove('d-none');
@@ -314,25 +309,20 @@
     }
 
     function checkOrderUpdates() {
-        console.log('[PEDIDOS] Executando checkOrderUpdates()...');
+        //console.log('[PEDIDOS] Executando checkOrderUpdates()...');
 
         fetch('/api/check-updates')
             .then(res => {
-                console.log('[PEDIDOS] Resposta bruta:', res);
+                //console.log('[PEDIDOS] Resposta bruta:', res);
                 return res.json();
             })
             .then(data => {
-                console.log('[PEDIDOS] JSON recebido:', data);
+                //console.log('[PEDIDOS] JSON recebido:', data);
 
                 const badge = document.getElementById('ordersBadge');
 
-                if (!badge) {
-                    console.warn('[PEDIDOS] Não encontrou #ordersBadge no DOM.');
-                    return;
-                }
-
                 const count = data.orders ?? 0;
-                console.log('[PEDIDOS] Contagem:', count);
+                //console.log('[PEDIDOS] Contagem:', count);
 
                 if (count > 0) {
                     badge.classList.remove('d-none');
@@ -348,14 +338,14 @@
     }
 
     // Primeiro carregamento
-    console.log('Executando checagem inicial...');
+    //console.log('Executando checagem inicial...');
     checkModerationUpdates();
     checkOrderUpdates();
 
     // Execução periódica
     setInterval(() => {
-        console.log('Executando checagem periódica...');
+        //console.log('Executando checagem periódica...');
         checkModerationUpdates();
         checkOrderUpdates();
-    }, 6000); // 6 segundos para testar
+    }, 15000); // 6 segundos para testar
 </script>

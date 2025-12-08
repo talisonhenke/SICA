@@ -14,15 +14,15 @@ class AdminController extends Controller
      */
     public function checkUpdates()
     {
-        // Pedidos criados no último minuto
-        $newOrders = Order::where('created_at', '>=', now()->subMinute())->count();
+        // Número de pedidos pendentes
+        $newOrders = Order::where('status', 'pending')->count();
 
         // Comentários novos que precisam de moderação:
         // - Não moderados
         // - E (toxic >= 0.1 ou reported)
         $newModeration = TopicComment::where('moderated', 0)
             ->where(function ($query) {
-                $query->where('toxicity_level', '>=', 0.1)
+                $query->where('toxicity_level', '>=', 0.4)
                       ->orWhere('reported', 1);
             })
             ->where('created_at', '>=', now()->subMinute())
