@@ -23,6 +23,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\AddressesController;
 use App\Http\Controllers\Admin\OrderAdminController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\SiteReviewController;
 
 // QR-Code
 
@@ -284,3 +285,15 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::get('/moderation', [AdminController::class, 'moderationIndex'])
         ->name('admin.moderation.index');
 });
+
+// Rotas de avaliação do site 
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/review', [App\Http\Controllers\SiteReviewController::class, 'store'])->name('review.store');
+    Route::post('/review/update', [App\Http\Controllers\SiteReviewController::class, 'update'])->name('review.update');
+});
+Route::middleware(['auth', 'is_admin'])->group(function () {
+    Route::get('/admin/reviews', [SiteReviewController::class, 'adminIndex'])
+        ->name('admin.reviews.index');
+});
+

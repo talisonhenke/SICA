@@ -211,6 +211,8 @@
                     </li>
 
                     <li class="nav-item"><a class="nav-link" href="/users_list">Usuários</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('admin.reviews.index') }}">Avaliações</a></li>
+                    ''
                 @endif
 
                 <li class="nav-item d-none d-lg-block">
