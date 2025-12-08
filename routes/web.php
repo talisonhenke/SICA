@@ -15,6 +15,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\TopicCommentController;
+use App\Http\Controllers\PlantCommentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
@@ -145,6 +146,40 @@ Route::middleware(['auth'])->group(function () {
 
 Route::resource('products', ProductController::class);
 Route::post('/products/{id}/toggle-status', [ProductController::class, 'toggleStatus'])->name('products.toggleStatus');
+
+// Comentários de plantas
+Route::middleware(['auth'])->group(function () {
+
+    // Criar novo comentário em uma planta
+    Route::post('/plants/{plant}/comments', [PlantCommentController::class, 'store'])
+        ->name('plant-comments.store');
+
+    // Atualizar comentário de planta
+    Route::put('/plant-comments/{comment}', [PlantCommentController::class, 'update'])
+        ->name('plant-comments.update');
+
+    // Excluir comentário de planta
+    Route::delete('/plant-comments/{comment}', [PlantCommentController::class, 'destroy'])
+        ->name('plant-comments.destroy');
+
+    // Exclusão moderada pelo admin
+    Route::delete('/admin/plant-comments/{id}/moderate-delete', [PlantCommentController::class, 'moderateDelete'])
+        ->middleware(['auth', 'is_admin'])
+        ->name('plant-comments.moderateDelete');
+
+    // Reportar comentário
+    Route::post('/plant-comments/{id}/report', [PlantCommentController::class, 'report'])
+        ->name('plant-comments.report');
+
+    // Permitir comentário após análise do admin
+    Route::post('/plant-comments/{id}/allow', [PlantCommentController::class, 'allow'])
+        ->name('plant-comments.allow');
+
+    // Bloquear usuário de comentar em plantas
+    Route::post('/plant-comments/block-user/{userId}', [PlantCommentController::class, 'blockUser'])
+        ->name('plant-comments.blockUser');
+});
+
 
 // Cart routes
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');

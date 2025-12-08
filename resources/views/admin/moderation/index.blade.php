@@ -82,7 +82,7 @@
         <div class="row justify-content-center">
             <div class="col-12 col-lg-10">
 
-                <h2 class="mb-4">Moderação de Comentários</h2>
+                <h2 class="mb-4 primaryTitles">Moderação de Comentários</h2>
 
                 {{-- SELECT DE FILTRO --}}
                 <div class="mb-3">
@@ -189,6 +189,10 @@
 
     {{-- MODAIS --}}
     @foreach ($comments as $comment)
+        @php
+            $baseRoute = $comment->comment_type === 'topic' ? 'topic-comments' : 'plant-comments';
+        @endphp
+
         <div class="modal fade" id="moderateModal{{ $comment->id }}">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -209,23 +213,26 @@
                     </div>
 
                     <div class="modal-footer d-flex justify-content-around">
-                        <form action="{{ route('topic-comments.moderateDelete', $comment->id) }}" method="POST"
+                        <form action="{{ route($baseRoute . '.moderateDelete', $comment->id) }}" method="POST"
                             onsubmit="return confirm('Excluir e dar STRIKE ao usuário?');">
                             @csrf
                             @method('DELETE')
                             <button class="btn btn-danger">Excluir + Strike</button>
                         </form>
 
-                        <form action="{{ route('topic-comments.allow', $comment->id) }}" method="POST">
+
+                        <form action="{{ route($baseRoute . '.allow', $comment->id) }}" method="POST">
                             @csrf
                             <button class="btn btn-success">Permitir Comentário</button>
                         </form>
+
 
                         <form action="{{ route('topic-comments.blockUser', $comment->user->id) }}" method="POST"
                             onsubmit="return confirm('Bloquear comentários deste usuário?');">
                             @csrf
                             <button class="btn btn-dark">Bloquear Usuário</button>
                         </form>
+
                     </div>
 
                 </div>

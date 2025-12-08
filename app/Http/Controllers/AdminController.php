@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\TopicComment;
+use App\Models\PlantComment;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class AdminController extends Controller
 {
@@ -17,16 +20,22 @@ class AdminController extends Controller
         // Número de pedidos pendentes
         $newOrders = Order::where('status', 'pending')->count();
 
-        // Comentários novos que precisam de moderação:
-        // - Não moderados
-        // - E (toxic >= 0.1 ou reported)
-        $newModeration = TopicComment::where('moderated', 0)
+        // Comentários de TÓPICOS que precisam de moderação (não moderados E (tox >= 0.4 OR reported))
+        $topicNew = TopicComment::where('moderated', 0)
             ->where(function ($query) {
-                $query->where('toxicity_level', '>=', 0.4)
-                      ->orWhere('reported', 1);
+                $query->where('toxicity_level', '>=', 0.4)->orWhere('reported', 1);
             })
-            ->where('created_at', '>=', now()->subMinute())
             ->count();
+
+        // Comentários de PLANTAS que precisam de moderação (mesma lógica)
+        $plantNew = PlantComment::where('moderated', 0)
+            ->where(function ($query) {
+                $query->where('toxicity_level', '>=', 0.4)->orWhere('reported', 1);
+            })
+            ->count();
+
+        // Soma total (cada registro é contado apenas uma vez por tabela)
+        $newModeration = $topicNew + $plantNew;
 
         return response()->json([
             'orders' => $newOrders,
@@ -47,8 +56,7 @@ class AdminController extends Controller
         // - Toxic >= 0.7 OU Reported
         $moderationQueue = TopicComment::where('moderated', 0)
             ->where(function ($query) {
-                $query->where('toxicity_level', '>=', 0.7)
-                      ->orWhere('reported', 1);
+                $query->where('toxicity_level', '>=', 0.7)->orWhere('reported', 1);
             })
             ->count();
 
@@ -65,32 +73,93 @@ class AdminController extends Controller
     {
         $filter = $request->input('filter', 'all');
 
-        $query = TopicComment::with('user', 'topic')
-            ->where('moderated', 0) // regra global
+        /*
+    |--------------------------------------------------------------------------
+    | 1) BASE QUERY — TOPIC COMMENTS
+    |--------------------------------------------------------------------------
+    */
+        $topicQuery = TopicComment::with('user', 'topic')
+            ->where('moderated', 0)
             ->where(function ($q) {
-                $q->where('toxicity_level', '>=', 0.1)
-                  ->orWhere('reported', 1);
+                $q->where('toxicity_level', '>=', 0.1)->orWhere('reported', 1);
             });
 
+        /*
+    |--------------------------------------------------------------------------
+    | 2) BASE QUERY — PLANT COMMENTS
+    |--------------------------------------------------------------------------
+    */
+        $plantQuery = PlantComment::with('user', 'plant')
+            ->where('moderated', 0)
+            ->where(function ($q) {
+                $q->where('toxicity_level', '>=', 0.1)->orWhere('reported', 1);
+            });
+
+        /*
+    |--------------------------------------------------------------------------
+    | 3) FILTROS
+    |--------------------------------------------------------------------------
+    */
         switch ($filter) {
             case 'suspect': // >= 0.1
-                $query->where('toxicity_level', '>=', 0.1);
+                $topicQuery->where('toxicity_level', '>=', 0.1);
+                $plantQuery->where('toxicity_level', '>=', 0.1);
                 break;
 
             case 'high': // >= 0.7
-                $query->where('toxicity_level', '>=', 0.7);
+                $topicQuery->where('toxicity_level', '>=', 0.7);
+                $plantQuery->where('toxicity_level', '>=', 0.7);
                 break;
 
             case 'reported':
-                $query->where('reported', 1);
+                $topicQuery->where('reported', 1);
+                $plantQuery->where('reported', 1);
                 break;
 
             default:
-                // "all": não mexe, já está filtrado pela regra geral
+                // "all": já tem as regras globais aplicadas
                 break;
         }
 
-        $comments = $query->orderBy('created_at', 'desc')->paginate(20);
+        /*
+    |--------------------------------------------------------------------------
+    | 4) CARREGA TODOS OS COMENTÁRIOS
+    |--------------------------------------------------------------------------
+    */
+        $topicComments = $topicQuery->get();
+        $plantComments = $plantQuery->get();
+
+        $topicComments->map(function ($c) {
+            $c->comment_type = 'topic';
+            return $c;
+        });
+
+        $plantComments->map(function ($c) {
+            $c->comment_type = 'plant';
+            return $c;
+        });
+
+        // junta tudo em uma única coleção
+        
+
+        /*
+    |--------------------------------------------------------------------------
+    | 5) UNE AS DUAS LISTAS
+    |--------------------------------------------------------------------------
+    */
+        //$allComments = $topicComments->merge($plantComments)->sortByDesc('created_at')->values(); // reseta indexes
+        $allComments = $topicComments->merge($plantComments)->sortByDesc('created_at')->values();
+
+        /*
+    |--------------------------------------------------------------------------
+    | 6) PAGINAÇÃO MANUAL
+    |--------------------------------------------------------------------------
+    */
+        $perPage = 20;
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $items = $allComments->slice(($currentPage - 1) * $perPage, $perPage)->values();
+
+        $comments = new LengthAwarePaginator($items, $allComments->count(), $perPage, $currentPage, ['path' => request()->url(), 'query' => request()->query()]);
 
         return view('admin.moderation.index', compact('comments', 'filter'));
     }

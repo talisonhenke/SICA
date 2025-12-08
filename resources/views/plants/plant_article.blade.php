@@ -24,6 +24,7 @@
         .text-info-custom {
             color: var(--color-text);
         }
+
         .article-container {
             max-width: 950px;
             margin: 2rem auto;
@@ -290,6 +291,28 @@
             overflow: hidden;
             /* mantém o bloqueio do scroll sem empurrar a página */
         }
+
+        .comments-section {
+            margin-top: 3rem;
+        }
+
+        .avatar-circle {
+            width: 48px;
+            height: 48px;
+            background: var(--color-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 1.2rem;
+            user-select: none;
+        }
+
+        .comment-box {
+            background: var(--color-surface-primary);
+        }
     </style>
 
     <div class="article-container">
@@ -313,7 +336,8 @@
         <div class="article-header d-flex justify-content-between align-items-start">
             <div>
                 <h1 class="article-title">{{ $plant->popular_name }}</h1>
-                <small class="text-info-custom"><strong>Publicado em:</strong> {{ $plant->created_at->format('d/m/Y') }}</small>
+                <small class="text-info-custom"><strong>Publicado em:</strong>
+                    {{ $plant->created_at->format('d/m/Y') }}</small>
             </div>
 
             <div class="header-actions">
@@ -496,6 +520,147 @@
                 <p class="text-info-custom"><strong>Tags:</strong> {{ $plant->tags }}</p>
             </div>
         </div>
+
+        <div class="comments-section">
+            <h3 class="mb-3">Comentários</h3>
+
+            {{-- Formulário para comentar --}}
+            <div class="card mb-4 p-3">
+
+                @guest
+                    <textarea class="form-control mb-2" rows="3" placeholder="Faça login para comentar..." disabled></textarea>
+                    <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        Entrar para comentar
+                    </button>
+                @else
+                    {{-- Verificação de STRIKES --}}
+                    @if (auth()->user()->comment_strikes >= 3)
+                        <div class="alert alert-warning mb-0">
+                            A função de comentários está temporariamente indisponível para você.
+                        </div>
+                    @else
+                        <form action="{{ route('plant-comments.store', $plant->id) }}" method="POST">
+                            @csrf
+                            <textarea name="comment" class="form-control mb-2" rows="3" required placeholder="Escreva seu comentário..."></textarea>
+                            <button class="btn btn-primary">Enviar Comentário</button>
+                        </form>
+                    @endif
+                @endguest
+
+            </div>
+
+            {{-- Lista de comentários --}}
+            @foreach ($plant->comments as $comment)
+                <div class="comment-box d-flex p-3 mb-3 rounded shadow-sm">
+
+                    {{-- Avatar --}}
+                    <div class="comment-avatar me-3">
+                        <div class="avatar-circle">
+                            {{ strtoupper(substr($comment->user->name, 0, 1)) }}
+                        </div>
+                    </div>
+
+                    <div class="comment-content flex-grow-1">
+
+                        {{-- Cabeçalho --}}
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+
+                            {{-- Nome e data --}}
+                            <div>
+                                <strong>{{ $comment->user->name }}</strong>
+                                <small class="text-muted d-block">
+                                    {{ $comment->created_at->timezone('America/Sao_Paulo')->format('d/m/Y H:i') }}
+                                </small>
+                            </div>
+
+                            {{-- Botão Denunciar — para qualquer usuário logado diferente do autor --}}
+                            @if (Auth::check() && Auth::id() !== $comment->user_id)
+                                <form action="{{ route('plant-comments.report', $comment->id) }}" method="POST"
+                                    class="m-0 p-0" onsubmit="return confirm('Deseja denunciar este comentário?');">
+
+                                    @csrf
+                                    <button class="btn btn-sm btn-light border-0 d-flex align-items-center"
+                                        style="font-size: 0.85rem; padding: 2px 6px;">
+                                        <i class="bi bi-flag-fill text-danger me-1"></i>
+                                        Denunciar
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+
+                        <p class="mt-2">{{ $comment->comment }}</p>
+
+                        {{-- Botões --}}
+                        <div class="d-flex gap-2">
+
+                            {{-- Editar — dono do comentário --}}
+                            @if (Auth::check() && Auth::id() === $comment->user_id)
+                                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal"
+                                    data-bs-target="#editCommentModal{{ $comment->id }}">
+                                    Editar
+                                </button>
+                            @endif
+
+                            {{-- Excluir — dono do comentário --}}
+                            @if (Auth::check() && Auth::id() === $comment->user_id)
+                                <form action="{{ route('plant-comments.destroy', $comment->id) }}" method="POST"
+                                    onsubmit="return confirm('Tem certeza que deseja excluir este comentário?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-sm btn-outline-danger">
+                                        Excluir
+                                    </button>
+                                </form>
+                            @endif
+
+                            {{-- Moderação — ADMIN --}}
+                            @if (Auth::check() && Auth::user()->user_lvl === 'admin')
+                                <form action="{{ route('plant-comments.moderateDelete', $comment->id) }}" method="POST"
+                                    onsubmit="return confirm('Tem certeza que deseja EXCLUIR este comentário para fins de moderação?\n\nEssa ação dará um STRIKE ao usuário autor do comentário. Ao atingir 3 strikes, ele será impedido de comentar até ser desbloqueado.');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-sm btn-warning">
+                                        Moderar (Excluir + Strike)
+                                    </button>
+                                </form>
+                            @endif
+
+                        </div>
+
+                    </div>
+                </div>
+
+                {{-- Modal de edição --}}
+                @if (Auth::check() && Auth::id() === $comment->user_id)
+                    <div class="modal fade" id="editCommentModal{{ $comment->id }}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Editar Comentário</h5>
+                                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <form action="{{ route('plant-comments.update', $comment->id) }}" method="POST">
+                                    @csrf
+                                    @method('PUT')
+
+                                    <div class="modal-body">
+                                        <textarea name="comment" rows="4" class="form-control">{{ $comment->comment }}</textarea>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button class="btn btn-primary">Salvar</button>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            @endforeach
+        </div>
+
 
         <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 99999">
             <div id="copyToast" class="toast align-items-center text-bg-success border-0" role="alert">

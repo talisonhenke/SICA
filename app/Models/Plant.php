@@ -31,4 +31,10 @@ class Plant extends Model
         'useful_parts' => 'array',
         //'images' => 'array',
     ];
+
+    public function comments()
+    {
+        return $this->hasMany(PlantComment::class, 'plant_id', 'id');
+    }
+
 }
