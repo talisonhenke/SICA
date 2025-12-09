@@ -309,6 +309,9 @@
                     <small class="invalid-feedback">{{ $message }}</small>
                 @enderror
 
+                <small id="imageError" class="file-error d-none">
+                    Você pode selecionar no máximo 5 imagens.
+                </small>
 
                 <div id="imagePreview" class="image-preview-container"></div>
             </div>
@@ -325,6 +328,32 @@
                 @enderror
             </div>
 
+            {{-- INPUT HIDDEN PARA ENVIAR TAGS SELECIONADAS --}}
+            @php
+                // Pega o valor antigo (se houver). Pode vir como array ou string.
+                $oldRaw = old('tags', null);
+
+                // Se for página de edit e não houver old(), pega as tags do plant (ids)
+                if ($oldRaw === null && isset($plant) && method_exists($plant, 'tags')) {
+                    $oldRaw = $plant->tags->pluck('id')->toArray();
+                }
+
+                // Normaliza tudo para array de strings
+                $oldTagsArray = [];
+                if (is_array($oldRaw)) {
+                    $oldTagsArray = array_map('strval', $oldRaw);
+                } elseif (is_string($oldRaw) && trim($oldRaw) !== '') {
+                    // Caso venha "1,2,3"
+                    $oldTagsArray = array_filter(array_map('trim', explode(',', $oldRaw)));
+                }
+
+                // Valor string sempre: "1,2,3" ou ""
+                $oldTagsValue = $oldTagsArray ? implode(',', $oldTagsArray) : '';
+            @endphp
+
+            <input type="hidden" name="tags" id="tagsInput" value="{{ $oldTagsValue }}">
+
+
             {{-- BOTÃO PARA ABRIR MODAL DE TAGS --}}
             <div class="form-group mb-3">
                 <label>Tags</label>
@@ -334,7 +363,8 @@
                         Adicionar / Remover Tags
                     </button>
                 </div>
-                {{-- Lista das tags selecionadas --}}
+
+                {{-- Lista das tags selecionadas (visual) --}}
                 <div class="mt-2" id="selectedTagsContainer"></div>
             </div>
 
@@ -346,17 +376,31 @@
                             <h5 class="modal-title">Selecionar Tags</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
+
                         <div class="modal-body">
+                            @php
+                                // Normaliza old('tags') para um array de ids (strings)
+                                $oldTagsRaw = old('tags', '');
+                                $oldTagsArray = [];
+                                if (is_array($oldTagsRaw)) {
+                                    $oldTagsArray = array_map('strval', $oldTagsRaw);
+                                } elseif (is_string($oldTagsRaw) && trim($oldTagsRaw) !== '') {
+                                    $oldTagsArray = array_filter(array_map('trim', explode(',', $oldTagsRaw)));
+                                }
+                            @endphp
+
                             @foreach ($tags as $tag)
                                 <div class="form-check">
                                     <input class="form-check-input tag-checkbox" type="checkbox"
-                                        value="{{ $tag->id }}" id="tag_{{ $tag->id }}">
+                                        value="{{ $tag->id }}" id="tag_{{ $tag->id }}"
+                                        {{ in_array((string) $tag->id, $oldTagsArray, true) ? 'checked' : '' }}>
                                     <label class="form-check-label" for="tag_{{ $tag->id }}">
                                         {{ $tag->name }}
                                     </label>
                                 </div>
                             @endforeach
                         </div>
+
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                             <button type="button" class="btn btn-primary" id="saveTagsBtn">Salvar Tags</button>
@@ -365,8 +409,6 @@
                 </div>
             </div>
 
-            {{-- INPUT HIDDEN PARA ENVIAR TAGS SELECIONADAS --}}
-            <input type="hidden" name="tags" id="tagsInput" value="">
 
 
             <button type="submit" class="btn-submit" id="submitBtn">💾 Salvar Planta</button>
@@ -375,32 +417,57 @@
     </div>
 
     {{-- Scripts --}}
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const saveBtn = document.getElementById('saveTagsBtn');
             const tagsInput = document.getElementById('tagsInput');
             const selectedContainer = document.getElementById('selectedTagsContainer');
+            const saveBtn = document.getElementById('saveTagsBtn');
 
-            saveBtn.addEventListener('click', function() {
-                const selected = Array.from(document.querySelectorAll('.tag-checkbox:checked')).map(cb => cb
-                    .value);
-                tagsInput.value = selected.join(',');
+            if (!tagsInput || !selectedContainer || !saveBtn) return;
 
-                // Atualiza visualização das tags
+            // Lê valor inicial do hidden (ex: "1,2,5" ou "")
+            const raw = (tagsInput.value || '').trim();
+            const initialTags = raw === '' ? [] : raw.split(',').map(s => s.trim()).filter(Boolean);
+
+            function renderSelectedVisual(tagIds) {
                 selectedContainer.innerHTML = '';
-                Array.from(document.querySelectorAll('.tag-checkbox:checked')).forEach(cb => {
-                    const label = document.querySelector(`label[for="${cb.id}"]`).innerText;
-                    const span = document.createElement('span');
-                    span.className = 'badge bg-success me-1';
-                    span.innerText = label;
-                    selectedContainer.appendChild(span);
+                tagIds.forEach(id => {
+                    const label = document.querySelector('label[for="tag_' + id + '"]');
+                    if (label) {
+                        const span = document.createElement('span');
+                        span.className = 'badge bg-success me-1';
+                        span.innerText = label.innerText.trim();
+                        selectedContainer.appendChild(span);
+                    }
                 });
+            }
 
-                // Fecha o modal
-                const modalEl = document.getElementById('tagsModal');
-                const modal = bootstrap.Modal.getInstance(modalEl);
-                modal.hide();
+            // Marca checkboxes iniciais (se existirem)
+            initialTags.forEach(id => {
+                const cb = document.getElementById('tag_' + id);
+                if (cb) cb.checked = true;
+            });
+
+            // Renderiza visual inicial (se houver)
+            if (initialTags.length) renderSelectedVisual(initialTags);
+
+            // Botão salvar do modal: atualiza hidden e visual
+            saveBtn.addEventListener('click', function() {
+                const selected = Array.from(document.querySelectorAll('.tag-checkbox:checked'))
+                    .map(cb => cb.value)
+                    .filter(Boolean);
+
+                tagsInput.value = selected.join(',');
+                renderSelectedVisual(selected);
+
+                // Fecha modal (se Bootstrap estiver presente)
+                try {
+                    const modalEl = document.getElementById('tagsModal');
+                    const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                    modal.hide();
+                } catch (err) {
+                    // ignore
+                }
             });
         });
     </script>

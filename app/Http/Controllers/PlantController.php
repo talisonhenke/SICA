@@ -350,6 +350,20 @@ class PlantController extends Controller
             $plant->qr_code = $request->qr_code ? $request->qr_code : url("/plant/{$plant->id}/{$plant->slug}");
 
             // Gerencia imagens
+
+             if (!$request->hasFile('images')) {
+                return back()
+                    ->withErrors(['images' => 'É obrigatório enviar ao menos uma imagem da planta.'])
+                    ->withInput();
+            }
+
+            // SE VEIO O CAMPO MAS VAZIO (raro, mas possível)
+            if (empty($request->file('images'))) {
+                return back()
+                    ->withErrors(['images' => 'Envie pelo menos uma imagem.'])
+                    ->withInput();
+            }
+
             $existingImages = json_decode($plant->images, true) ?? [];
             $dir = public_path('images/plants/' . $plant->id);
 
@@ -357,19 +371,46 @@ class PlantController extends Controller
                 File::makeDirectory($dir, 0755, true);
             }
 
-            // Remove imagens deletadas
+            // ==============================
+            // 1) REMOVE IMAGENS DELETADAS (APENAS EM MEMÓRIA, NÃO APAGAR AINDA)
+            // ==============================
             $deletedImages = json_decode($request->deleted_images ?? '[]', true);
+
+            // Guardar para deletar DEPOIS do commit
+            $imagesToDeleteLater = [];
+
             if (is_array($deletedImages) && !empty($deletedImages)) {
                 foreach ($deletedImages as $imagePath) {
-                    $fullPath = public_path($imagePath);
-                    if (File::exists($fullPath)) {
-                        File::delete($fullPath);
-                    }
-                    $existingImages = array_filter($existingImages, fn($img) => $img !== $imagePath);
+                    // Remover somente da lista, mas NÃO do disco
+                    $existingImages = array_values(
+                        array_filter($existingImages, function ($img) use ($imagePath) {
+                            return $img !== $imagePath;
+                        }),
+                    );
+
+                    // Armazena para deletar somente após o sucesso
+                    $imagesToDeleteLater[] = $imagePath;
                 }
             }
 
-            // Upload de novas imagens
+            // ==============================
+            // 2) VALIDAÇÃO: SE DEPOIS DA REMOÇÃO
+            //    NÃO SOBRAR NENHUMA IMAGEM
+            //    ENTÃO É OBRIGATÓRIO ENVIAR ALGUMA
+            // ==============================
+
+            $noExistingImages = empty($existingImages);
+            $noNewUploads = !$request->hasFile('images') || empty($request->file('images'));
+
+            if ($noExistingImages && $noNewUploads) {
+                return back()
+                    ->withErrors(['images' => '❌ É obrigatório manter ou enviar ao menos uma imagem da planta.'])
+                    ->withInput();
+            }
+
+            // ==============================
+            // 3) UPLOAD DAS NOVAS IMAGENS
+            // ==============================
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
                     if ($image->isValid()) {
@@ -381,21 +422,37 @@ class PlantController extends Controller
                 }
             }
 
-            // Ordena imagens se enviado
+            // ==============================
+            // 4) REORDENAÇÃO DAS IMAGENS
+            // ==============================
             if ($request->has('ordered_images')) {
                 $ordered = json_decode($request->ordered_images, true);
                 if (is_array($ordered) && !empty($ordered)) {
+                    // primeiro coloca na ordem enviada
                     $existingImages = array_values(array_unique(array_merge($ordered, $existingImages)));
                 }
             }
 
+            // Salva imagens atualizadas
             $plant->images = json_encode(array_values($existingImages));
+
             $plant->save();
 
             $tagIds = array_filter(explode(',', $request->input('tags', '')));
             $plant->tags()->sync($tagIds);
 
             DB::commit();
+
+            // ==============================
+            // 5) SÓ AGORA, APÓS COMMIT, DELETAR IMAGENS ANTIGAS
+            // ==============================
+            foreach ($imagesToDeleteLater as $imagePath) {
+                $fullPath = public_path($imagePath);
+                if (File::exists($fullPath)) {
+                    File::delete($fullPath);
+                }
+            }
+
             return redirect()->route('plants.index')->with('msg', '✅ Planta atualizada com sucesso!');
         } catch (\Throwable $e) {
             DB::rollBack();
