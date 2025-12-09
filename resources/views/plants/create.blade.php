@@ -155,6 +155,14 @@
             margin-top: 0.3rem;
             font-weight: 500;
         }
+
+        .file-error {
+            display: block;
+            color: #dc3545;
+            /* Vermelho padrão do Bootstrap */
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
     </style>
 
     <div class="create-plant-container">
@@ -288,13 +296,24 @@
             {{-- Imagens --}}
             <div class="form-group mb-3">
                 <label for="images" class="file-label">📸 Escolher Imagens (máximo 5)</label>
-                <input type="file" id="images" name="images[]" accept="image/*" multiple required>
+
+                <input type="file"
+                    class="form-control @error('images') is-invalid @enderror @error('images.*') is-invalid @enderror"
+                    id="images" name="images[]" accept="image/*" multiple required>
+
+                @error('images')
+                    <small class="invalid-feedback">{{ $message }}</small>
+                @enderror
+
                 @error('images.*')
                     <small class="invalid-feedback">{{ $message }}</small>
                 @enderror
-                <small id="imageError" class="invalid-feedback d-none">Você pode selecionar no máximo 5 imagens.</small>
+
+
                 <div id="imagePreview" class="image-preview-container"></div>
             </div>
+
+
 
             {{-- Referências --}}
             <div class="form-group mb-3">

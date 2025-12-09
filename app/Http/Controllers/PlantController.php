@@ -17,7 +17,12 @@ class PlantController extends Controller
     public function index()
     {
         $plants = Plant::orderBy('popular_name', 'asc')->get();
-        return view('plants.plants_list', ['plants' => $plants]);
+        $tags = Tag::all(); // pega todas as tags disponíveis
+
+        return view('plants.plants_list', [
+            'plants' => $plants,
+            'tags' => $tags,
+        ]);
     }
 
     // Mostra uma planta específica
@@ -166,13 +171,39 @@ class PlantController extends Controller
 
             $imagePaths = [];
 
-            // Upload de imagens (se houver)
-            if ($request->hasFile('images')) {
-                $dir = public_path('images/plants/' . $plant->id);
-                if (!File::exists($dir)) {
-                    File::makeDirectory($dir, 0755, true);
-                }
+            // Diretório da planta (garante que exista)
+            $dir = public_path('images/plants/' . $plant->id);
+            if (!File::exists($dir)) {
+                File::makeDirectory($dir, 0755, true);
+            }
 
+            // SE NÃO FOI ENVIADA NENHUMA IMAGEM
+            if (!$request->hasFile('images')) {
+                return back()
+                    ->withErrors(['images' => 'É obrigatório enviar ao menos uma imagem da planta.'])
+                    ->withInput();
+            }
+
+            // SE VEIO O CAMPO MAS VAZIO (raro, mas possível)
+            if (empty($request->file('images'))) {
+                return back()
+                    ->withErrors(['images' => 'Envie pelo menos uma imagem.'])
+                    ->withInput();
+            }
+
+            $request->validate(
+                [
+                    'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
+                ],
+                [
+                    'images.*.image' => 'Cada arquivo enviado deve ser uma imagem válida.',
+                    'images.*.mimes' => 'As imagens devem estar nos formatos: JPEG, PNG, JPG ou WEBP.',
+                    'images.*.max' => 'Cada imagem não pode ultrapassar 5 MB de tamanho.',
+                ],
+            );
+
+            // Upload obrigatório de imagens
+            if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
                     if ($image && $image->isValid()) {
                         $extension = $image->extension();
@@ -183,10 +214,17 @@ class PlantController extends Controller
                 }
             }
 
-            if (!empty($imagePaths)) {
-                $plant->images = json_encode($imagePaths);
+            // Se não houver nenhuma imagem válida, retorna com erro
+            if (empty($imagePaths)) {
+                // Apaga o registro temporário, pois não podemos deixar planta sem imagem
+                $plant->delete();
+
+                return back()
+                    ->withErrors(['images*.required' => '❌ É obrigatório enviar ao menos uma imagem da planta.'])
+                    ->withInput();
             }
 
+            $plant->images = json_encode($imagePaths);
             $plant->save();
 
             // Processa tags
