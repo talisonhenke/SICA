@@ -517,7 +517,11 @@
                 <p class="text-info-custom"><strong>Contraindicações:</strong> {{ $plant->contraindications }}</p>
                 <p class="text-info-custom"><strong>Modo de Uso:</strong> {{ $plant->mode_of_use }}</p>
                 <p class="text-info-custom"><strong>Referências:</strong> {{ $plant->info_references }}</p>
-                <p class="text-info-custom"><strong>Tags:</strong> {{ $plant->tags }}</p>
+                <p class="text-info-custom"><strong>Tags:</strong>
+                    @foreach ($plant->tags as $tag)
+                        <span class="badge bg-success">{{ $tag->name }}</span>
+                    @endforeach
+                </p>
             </div>
         </div>
 

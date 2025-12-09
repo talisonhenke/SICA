@@ -29,12 +29,18 @@ class Plant extends Model
 
     protected $casts = [
         'useful_parts' => 'array',
-        //'images' => 'array',
+        // 'images' => 'array',
     ];
 
     public function comments()
     {
         return $this->hasMany(PlantComment::class, 'plant_id', 'id');
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'plant_tag', 'plant_id', 'tag_id')
+                    ->withTimestamps();
     }
 
 }

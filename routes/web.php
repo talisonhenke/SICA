@@ -24,6 +24,7 @@ use App\Http\Controllers\AddressesController;
 use App\Http\Controllers\Admin\OrderAdminController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SiteReviewController;
+use App\Http\Controllers\TagController;
 
 // QR-Code
 
@@ -289,11 +290,32 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 // Rotas de avaliação do site 
 
 Route::middleware(['auth'])->group(function () {
-    Route::post('/review', [App\Http\Controllers\SiteReviewController::class, 'store'])->name('review.store');
-    Route::post('/review/update', [App\Http\Controllers\SiteReviewController::class, 'update'])->name('review.update');
+    Route::post('/review', [SiteReviewController::class, 'store'])->name('review.store');
+    Route::post('/review/update', [SiteReviewController::class, 'update'])->name('review.update');
 });
 Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::get('/admin/reviews', [SiteReviewController::class, 'adminIndex'])
         ->name('admin.reviews.index');
+});
+
+// Tags routes 
+
+Route::middleware(['auth', 'is_admin'])->group(function () {
+
+    // LISTAR (index)
+    Route::get('/admin/tags', [TagController::class, 'index'])
+        ->name('tags.index');
+
+    // CRIAR (store)
+    Route::post('/admin/tags', [TagController::class, 'store'])
+        ->name('tags.store');
+
+    // EDITAR (update)
+    Route::put('/admin/tags/{id}', [TagController::class, 'update'])
+        ->name('tags.update');
+
+    // EXCLUIR (destroy)
+    Route::delete('/admin/tags/{id}', [TagController::class, 'destroy'])
+        ->name('tags.destroy');
 });
 
