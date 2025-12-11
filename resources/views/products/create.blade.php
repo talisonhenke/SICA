@@ -1,82 +1,205 @@
 @extends('layouts.main')
 
 @section('content')
-<div class="container">
+
+<style>
+    /* Estilo específico da página */
+    .product-card {
+        background: var(--color-surface-primary);
+        border-radius: 12px;
+        border: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .product-header {
+        background: var(--color-primary);
+        color: #fff;
+        padding: 12px 18px;
+        font-weight: 600;
+        border-radius: 12px 12px 0 0;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--color-text);
+    }
+
+    .form-control, .form-select {
+        background: var(--color-surface-secondary);
+        border: 1px solid rgba(0,0,0,0.15);
+        color: var(--color-text);
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 0.15rem rgba(94,74,59,0.3);
+    }
+
+    .invalid-feedback {
+        font-size: .875rem;
+        color: #b30000;
+    }
+
+    #previewImage {
+        max-width: 260px;
+        border-radius: 10px;
+        border: 2px solid var(--color-primary-light);
+    }
+
+    .btn-save {
+        background: var(--color-secondary);
+        border: none;
+        font-weight: 600;
+    }
+
+    .btn-save:hover {
+        background: var(--color-accent);
+    }
+</style>
+
+<div class="container my-4">
     <div class="row justify-content-center">
-        <div class="col-md-8 my-4">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white fw-bold">
+        <div class="col-md-8">
+
+            <div class="product-card shadow-sm">
+                <div class="product-header">
                     Adicionar Novo Produto
                 </div>
 
-                <div class="card-body">
+                <div class="card-body p-4">
+
                     <form method="POST" action="{{ route('products.store') }}" enctype="multipart/form-data">
                         @csrf
 
                         {{-- Planta relacionada --}}
-                        <div class="form-group mb-3">
-                            <label for="plant_id">Planta relacionada</label>
-                            <select class="form-control" id="plant_id" name="plant_id" required>
-                                <option value="">Selecione uma planta...</option>
+                        <div class="mb-3">
+                            <label for="plant_id" class="form-label">Planta relacionada</label>
+                            <select class="form-select @error('plant_id') is-invalid @enderror"
+                                    id="plant_id" name="plant_id">
+                                <option value="">Selecione...</option>
+
                                 @foreach($plants as $plant)
-                                    <option value="{{ $plant->id }}">{{ $plant->popular_name }}</option>
+                                    <option value="{{ $plant->id }}"
+                                        {{ old('plant_id') == $plant->id ? 'selected' : '' }}>
+                                        {{ $plant->popular_name }}
+                                    </option>
                                 @endforeach
                             </select>
+
+                            @error('plant_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
+
 
                         {{-- Nome do produto --}}
-                        <div class="form-group mb-3">
-                            <label for="name">Nome do Produto</label>
-                            <input type="text" class="form-control" id="name" name="name" required>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Nome do Produto</label>
+                            <input type="text"
+                                   class="form-control @error('name') is-invalid @enderror"
+                                   id="name" name="name"
+                                   value="{{ old('name') }}">
+
+                            @error('name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
+
 
                         {{-- Descrição --}}
-                        <div class="form-group mb-3">
-                            <label for="description">Descrição</label>
-                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Descrição</label>
+                            <textarea class="form-control @error('description') is-invalid @enderror"
+                                      id="description" name="description"
+                                      rows="3" required>{{ old('description') }}</textarea>
+
+                            @error('description')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
+
 
                         {{-- Preço --}}
-                        <div class="form-group mb-3">
-                            <label for="price">Preço (R$)</label>
-                            <input type="number" step="0.01" class="form-control" id="price" name="price" required>
+                        <div class="mb-3">
+                            <label for="price" class="form-label">Preço (R$)</label>
+                            <input type="number" step="0.01"
+                                   class="form-control @error('price') is-invalid @enderror"
+                                   id="price" name="price"
+                                   value="{{ old('price') }}">
+
+                            @error('price')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
+
 
                         {{-- Estoque --}}
-                        <div class="form-group mb-3">
-                            <label for="stock">Estoque</label>
-                            <input type="number" class="form-control" id="stock" name="stock" value="0" required>
+                        <div class="mb-3">
+                            <label for="stock" class="form-label">Estoque</label>
+                            <input type="number"
+                                   class="form-control @error('stock') is-invalid @enderror"
+                                   id="stock" name="stock"
+                                   value="{{ old('stock', 0) }}">
+
+                            @error('stock')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
+
 
                         {{-- Status --}}
-                        <div class="form-group mb-3">
-                            <label for="status">Status</label>
-                            <select class="form-control" id="status" name="status" required>
-                                <option value="1" selected>Ativo</option>
-                                <option value="0">Inativo</option>
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select @error('status') is-invalid @enderror"
+                                    id="status" name="status">
+                                <option value="1" {{ old('status', 1) == 1 ? 'selected' : '' }}>Ativo</option>
+                                <option value="0" {{ old('status', 1) == 0 ? 'selected' : '' }}>Inativo</option>
                             </select>
+
+                            @error('status')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
-                        {{-- Imagem do produto --}}
-                        <div class="form-group mb-3">
-                            <label for="image">Imagem do Produto</label>
-                            <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+
+                        {{-- Imagem --}}
+                        <div class="mb-3">
+                            <label for="image" class="form-label">Imagem do Produto</label>
+                            <input type="file"
+                                   class="form-control @error('image') is-invalid @enderror"
+                                   id="image" name="image"
+                                   accept="image/*">
+
+                            @error('image')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
 
                             {{-- Preview --}}
-                            <div class="mt-3 text-center">
-                                <img id="previewImage" src="#" alt="Preview da imagem" class="img-thumbnail d-none" style="max-width: 250px; height: auto;">
+                            <div class="text-center mt-3">
+                                <img id="previewImage"
+                                     src="#"
+                                     alt="Preview"
+                                     class="img-thumbnail d-none">
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-success" id="submitBtn">Salvar Produto</button>
+                        {{-- Botão --}}
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-save px-4 py-2">
+                                Salvar Produto
+                            </button>
+                        </div>
+
                     </form>
+
                 </div>
             </div>
+
         </div>
     </div>
 </div>
 
-{{-- Script para preview de imagem --}}
+
+{{-- Script Preview --}}
 <script>
 document.getElementById('image').addEventListener('change', function(event) {
     const input = event.target;
@@ -94,4 +217,5 @@ document.getElementById('image').addEventListener('change', function(event) {
     }
 });
 </script>
+
 @endsection

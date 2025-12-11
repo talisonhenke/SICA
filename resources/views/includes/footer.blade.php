@@ -14,6 +14,7 @@
     --}}
 
     @auth
+    @if (!auth()->user()->isAdmin())
         @php
             $myReview = App\Models\SiteReview::where('user_id', auth()->id())->first();
         @endphp
@@ -26,8 +27,7 @@
                 <div>
                     <div class="mb-2">
                         @for ($i = 1; $i <= 5; $i++)
-                            <i
-                                class="bi bi-star{{ $i <= $myReview->rating ? '-fill text-warning' : ' text-secondary' }}"></i>
+                            <i class="bi bi-star{{ $i <= $myReview->rating ? '-fill text-warning' : ' text-secondary' }}"></i>
                         @endfor
                     </div>
 
@@ -37,22 +37,19 @@
                         Alterar avaliação
                     </button>
                 </div>
-
-                {{-- SE AINDA NÃO AVALIOU --}}
             @else
+                {{-- SE AINDA NÃO AVALIOU --}}
                 <form action="{{ route('review.store') }}" method="POST" class="d-inline-block">
                     @csrf
 
                     <div class="star-rating mb-2">
                         @for ($i = 5; $i >= 1; $i--)
-                            <input type="radio" name="rating" id="star{{ $i }}" value="{{ $i }}"
-                                required>
+                            <input type="radio" name="rating" id="star{{ $i }}" value="{{ $i }}" required>
                             <label for="star{{ $i }}"><i class="bi bi-star-fill"></i></label>
                         @endfor
                     </div>
 
-                    <textarea name="comment" class="form-control bg-dark text-white mb-2" placeholder="Comentário (opcional)"
-                        rows="2"></textarea>
+                    <textarea name="comment" class="form-control bg-dark text-white mb-2" placeholder="Comentário (opcional)" rows="2"></textarea>
 
                     <button class="btn btn-success btn-sm">Enviar</button>
                 </form>
@@ -75,8 +72,8 @@
                             <label>Nova nota:</label>
                             <div class="star-rating mb-3">
                                 @for ($i = 1; $i <= 5; $i++)
-                                    <input type="radio" name="rating" id="staru{{ $i }}"
-                                        value="{{ $i }}" {{ $myReview->rating == $i ? 'checked' : '' }}>
+                                    <input type="radio" name="rating" id="staru{{ $i }}" value="{{ $i }}"
+                                        {{ $myReview->rating == $i ? 'checked' : '' }}>
                                     <label for="staru{{ $i }}"><i class="bi bi-star-fill"></i></label>
                                 @endfor
                             </div>
@@ -93,7 +90,9 @@
             </div>
         @endif
 
-    @endauth
+    @endif
+@endauth
+
 
     <div class="col-12 text-center mt-2">
         <span class="text-white">&copy; 2025 S.I.C.A</span>

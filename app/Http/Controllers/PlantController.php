@@ -351,7 +351,7 @@ class PlantController extends Controller
 
             // Gerencia imagens
 
-             if (!$request->hasFile('images')) {
+            if (!$request->hasFile('images')) {
                 return back()
                     ->withErrors(['images' => 'É obrigatório enviar ao menos uma imagem da planta.'])
                     ->withInput();

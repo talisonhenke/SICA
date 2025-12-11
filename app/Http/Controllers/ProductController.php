@@ -24,8 +24,6 @@ class ProductController extends Controller
         return view('products.show', compact('product'));
     }
 
-
-
     /**
      * Exibe o formulário de criação.
      */
@@ -40,15 +38,42 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'plant_id' => 'required|exists:plants,id',
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'status' => 'required|boolean',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+        $validated = $request->validate(
+            [
+                'plant_id' => 'required|exists:plants,id',
+                'name' => 'required|string|max:255',
+                'description' => 'required|string',
+                'price' => 'required|numeric|min:0',
+                'stock' => 'required|integer|min:0',
+                'status' => 'required|boolean',
+                'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5021',
+            ],
+            [
+                'plant_id.required' => 'Selecione a planta relacionada ao produto.',
+                'plant_id.exists' => 'A planta selecionada não é válida.',
+
+                'name.required' => 'O nome do produto é obrigatório.',
+                'name.max' => 'O nome do produto não pode ultrapassar 255 caracteres.',
+
+                'description.required' => 'Informe a descrição do produto',
+
+                'price.required' => 'Informe o preço do produto.',
+                'price.numeric' => 'O preço deve ser um número válido.',
+                'price.min' => 'O preço não pode ser negativo.',
+
+                'stock.required' => 'Informe a quantidade em estoque.',
+                'stock.integer' => 'O estoque deve ser um número inteiro.',
+                'stock.min' => 'O estoque não pode ser negativo.',
+
+                'status.required' => 'Selecione o status do produto.',
+                'status.boolean' => 'O status informado é inválido.',
+
+                'image.required' => 'Envie uma imagem do produto.',
+                'image.image' => 'O arquivo enviado deve ser uma imagem.',
+                'image.mimes' => 'A imagem deve ser JPEG, PNG, JPG ou GIF.',
+                'image.max' => 'A imagem não pode ter mais que 2MB.',
+            ],
+        );
 
         $product = Product::create($validated);
 
@@ -86,19 +111,49 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        $validated = $request->validate([
-            'plant_id' => 'required|exists:plants,id',
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'status' => 'required|boolean',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+        // Validações com mensagens traduzidas
+        $validated = $request->validate(
+            [
+                'plant_id' => ['required', 'exists:plants,id'],
+                'name' => ['required', 'string', 'max:255'],
+                'description' => ['nullable', 'string'],
+                'price' => ['required', 'numeric', 'min:0'],
+                'stock' => ['required', 'integer', 'min:0'],
+                'status' => ['required', 'boolean'],
+                'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            ],
+            [
+                // Traduções
+                'plant_id.required' => 'Selecione a planta relacionada.',
+                'plant_id.exists' => 'A planta selecionada é inválida.',
 
+                'name.required' => 'O nome do produto é obrigatório.',
+                'name.string' => 'O nome precisa ser um texto válido.',
+                'name.max' => 'O nome pode ter no máximo 255 caracteres.',
+
+                'description.string' => 'A descrição deve ser um texto válido.',
+
+                'price.required' => 'Informe o preço do produto.',
+                'price.numeric' => 'O preço deve ser um valor numérico.',
+                'price.min' => 'O preço não pode ser negativo.',
+
+                'stock.required' => 'Informe o estoque do produto.',
+                'stock.integer' => 'O estoque deve ser um número inteiro.',
+                'stock.min' => 'O estoque não pode ser negativo.',
+
+                'status.required' => 'Selecione o status do produto.',
+                'status.boolean' => 'O status informado é inválido.',
+
+                'image.image' => 'O arquivo enviado deve ser uma imagem.',
+                'image.mimes' => 'A imagem deve ser do tipo: jpeg, png, jpg ou gif.',
+                'image.max' => 'A imagem deve ter no máximo 2MB.',
+            ],
+        );
+
+        // Atualiza campos básicos
         $product->update($validated);
 
-        // Atualizar imagem (substituir e apagar a antiga)
+        // Atualização da imagem
         if ($request->hasFile('image')) {
             $folderPath = public_path('images/products/' . $product->id);
 
@@ -107,7 +162,7 @@ class ProductController extends Controller
                 File::makeDirectory($folderPath, 0755, true);
             }
 
-            // Apaga imagem antiga se existir
+            // Remove imagem antiga
             if ($product->image && File::exists(public_path($product->image))) {
                 File::delete(public_path($product->image));
             }
@@ -117,6 +172,7 @@ class ProductController extends Controller
             $filename = time() . '.' . $file->getClientOriginalExtension();
             $file->move($folderPath, $filename);
 
+            // Atualiza caminho no banco
             $product->image = 'images/products/' . $product->id . '/' . $filename;
             $product->save();
         }
@@ -152,5 +208,4 @@ class ProductController extends Controller
 
         return response()->json(['success' => true]);
     }
-
 }

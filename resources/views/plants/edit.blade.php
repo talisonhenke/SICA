@@ -297,7 +297,9 @@
             {{-- Imagens --}}
             <div class="form-group mb-3">
                 <label for="images" class="file-label">📸 Atualizar Imagens (máximo 5)</label>
-                <input type="file" class="form-control @error('images') is-invalid @enderror @error('images.*') is-invalid @enderror" id="images" name="images[]" accept="image/*" multiple required>
+                <input type="file"
+                    class="form-control @error('images') is-invalid @enderror @error('images.*') is-invalid @enderror"
+                    id="images" name="images[]" accept="image/*" multiple required>
                 @error('images')
                     <small class="invalid-feedback">{{ $message }}</small>
                 @enderror
@@ -381,7 +383,7 @@
             </div>
 
             {{-- INPUT HIDDEN PARA ENVIAR TAGS SELECIONADAS --}}
-            <input type="hidden" name="tags" id="tagsInput" value="{{ implode(',', $plantTagIds) }}">
+            <input type="hidden" name="tags" id="tagsInput" value="{{ implode(',', $selectedTags) }}">
 
             <button type="submit" class="btn-submit">💾 Salvar Alterações</button>
             <a href="{{ route('plants.index') }}" class="btn-cancel">❌ Cancelar</a>
@@ -395,28 +397,57 @@
             const tagsInput = document.getElementById('tagsInput');
             const selectedContainer = document.getElementById('selectedTagsContainer');
 
+            if (!saveBtn || !tagsInput || !selectedContainer) return;
+
+            // --- 1) LER VALORES INICIAIS (old + banco) ---
+            const initial = tagsInput.value.trim();
+            const initialIds = initial ? initial.split(',').map(id => id.trim()).filter(Boolean) : [];
+
+            // --- 2) MARCAR CHECKBOXES QUE BATEM COM initialIds ---
+            initialIds.forEach(id => {
+                const cb = document.getElementById('tag_' + id);
+                if (cb) cb.checked = true;
+            });
+
+            // --- 3) RENDERIZAR VISUAL INICIAL ---
+            function renderSelected() {
+                selectedContainer.innerHTML = '';
+
+                const selected = Array.from(document.querySelectorAll('.tag-checkbox:checked'));
+                selected.forEach(cb => {
+                    const label = document.querySelector(`label[for="${cb.id}"]`);
+                    if (!label) return;
+
+                    const span = document.createElement('span');
+                    span.className = 'badge bg-success me-1';
+                    span.innerText = label.innerText.trim();
+                    selectedContainer.appendChild(span);
+                });
+            }
+
+            if (initialIds.length) {
+                renderSelected();
+            }
+
+            // --- 4) SALVAR TAGS QUANDO CLICAR NO BOTÃO DO MODAL ---
             saveBtn.addEventListener('click', function() {
                 const selected = Array.from(document.querySelectorAll('.tag-checkbox:checked')).map(cb => cb
                     .value);
+
+                // Atualiza hidden como string
                 tagsInput.value = selected.join(',');
 
-                // Atualiza a visualização das tags selecionadas
-                selectedContainer.innerHTML = '';
-                Array.from(document.querySelectorAll('.tag-checkbox:checked')).forEach(cb => {
-                    const label = document.querySelector(`label[for="${cb.id}"]`).innerText;
-                    const span = document.createElement('span');
-                    span.className = 'badge bg-success me-1';
-                    span.innerText = label;
-                    selectedContainer.appendChild(span);
-                });
+                // Atualiza visual
+                renderSelected();
 
-                // Fecha o modal
+                // Fecha modal
                 const modalEl = document.getElementById('tagsModal');
                 const modal = bootstrap.Modal.getInstance(modalEl);
-                modal.hide();
+                if (modal) modal.hide();
             });
         });
     </script>
+
 
     {{-- Scripts (iguais ao Create, com suporte a imagens existentes e novas) --}}
     <script>

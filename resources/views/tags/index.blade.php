@@ -89,10 +89,6 @@
                 </div>
             @endforeach
         </div>
-
-        <!-- PAGINAÇÃO -->
-        {{ $tags->links() }}
-
     </div>
 </div>
 

@@ -56,4 +56,10 @@ class User extends Authenticatable
             ->orderBy('id');
     }
 
+    public function isAdmin()
+    {
+        return $this->user_lvl === 'admin';
+    }
+
+
 }
