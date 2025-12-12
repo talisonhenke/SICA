@@ -32,6 +32,14 @@ class PlantController extends Controller
         $product = Product::where('plant_id', $plant->id)->first();
         $actualSlug = $plant->slug ?? Str::slug($plant->popular_name, '-');
 
+        // 🔥 Garantir que a pasta existe
+        $dir = public_path('images/plants/' . $plant->id);
+
+        if (!File::exists($dir)) {
+            File::makeDirectory($dir, 0755, true);
+        }
+
+        // Redirecionamento de slug
         if ($slug === null || $slug !== $actualSlug) {
             return redirect()->to(url("/plant/{$plant->id}/{$actualSlug}"));
         }
@@ -350,21 +358,14 @@ class PlantController extends Controller
             $plant->qr_code = $request->qr_code ? $request->qr_code : url("/plant/{$plant->id}/{$plant->slug}");
 
             // Gerencia imagens
+            $existingImages = json_decode($plant->images, true) ?? [];
 
-            if (!$request->hasFile('images')) {
+            if (!$request->hasFile('images') && $existingImages === "") {
                 return back()
                     ->withErrors(['images' => 'É obrigatório enviar ao menos uma imagem da planta.'])
                     ->withInput();
             }
 
-            // SE VEIO O CAMPO MAS VAZIO (raro, mas possível)
-            if (empty($request->file('images'))) {
-                return back()
-                    ->withErrors(['images' => 'Envie pelo menos uma imagem.'])
-                    ->withInput();
-            }
-
-            $existingImages = json_decode($plant->images, true) ?? [];
             $dir = public_path('images/plants/' . $plant->id);
 
             if (!File::exists($dir)) {

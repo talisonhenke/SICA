@@ -167,7 +167,7 @@
                             @if ($plant->tags->count())
                                 <div class="plant-tags mt-1">
                                     @foreach ($plant->tags as $tag)
-                                        <span class="badge bg-secondary">{{ $tag->name }}</span>
+                                        <span class="badge bg-secondary mb-1">{{ $tag->name }}</span>
                                     @endforeach
                                 </div>
                             @endif
