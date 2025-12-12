@@ -103,7 +103,7 @@
         }
 
         #no-result {
-            background-color: var(--color-bg);
+            background-color: var(--color-surface);
             color: var(--color-text);
             border-radius: 0.75rem;
             border: 1px solid var(--color-border);
@@ -147,7 +147,6 @@
             position: absolute;
             top: 26px;
             left: 0;
-            z-index: 9999;
             background: #fff;
             padding: 10px;
             width: 220px;
@@ -158,6 +157,7 @@
 
         .tag-tooltip:hover .tooltip-box {
             display: block;
+            z-index: 9999;
         }
     </style>
 
