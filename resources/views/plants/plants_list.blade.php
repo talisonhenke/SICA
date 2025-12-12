@@ -65,6 +65,7 @@
             margin-bottom: 0.6rem;
             transition: all 0.2s ease-in-out;
             text-decoration: none;
+            overflow: visible !important;
         }
 
         .plant-item:hover {
@@ -140,6 +141,7 @@
         .tag-tooltip {
             position: relative;
             display: inline-block;
+            z-index: 10;
         }
 
         .tooltip-box {
@@ -153,6 +155,7 @@
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
             font-size: 0.85rem;
+            z-index: 10;
         }
 
         .tag-tooltip:hover .tooltip-box {
