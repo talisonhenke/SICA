@@ -136,6 +136,29 @@
             background-color: var(--color-bottom-nav-bg);
             transform: scale(1.05);
         }
+
+        .tag-tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip-box {
+            display: none;
+            position: absolute;
+            top: 26px;
+            left: 0;
+            z-index: 9999;
+            background: #fff;
+            padding: 10px;
+            width: 220px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+            font-size: 0.85rem;
+        }
+
+        .tag-tooltip:hover .tooltip-box {
+            display: block;
+        }
     </style>
 
     <div class="plants-container col-sm-12 col-md-10 col-lg-8">
@@ -167,10 +190,20 @@
                             @if ($plant->tags->count())
                                 <div class="plant-tags mt-1">
                                     @foreach ($plant->tags as $tag)
-                                        <span class="badge bg-secondary mb-1">{{ $tag->name }}</span>
+                                        <span class="tag-tooltip me-1 mb-1">
+                                            <span class="badge bg-secondary">
+                                                {{ $tag->name }}
+                                            </span>
+
+                                            <span class="tooltip-box">
+                                                <strong>{{ $tag->name }}</strong><br>
+                                                {{ $tag->description }}
+                                            </span>
+                                        </span>
                                     @endforeach
                                 </div>
                             @endif
+
                         </div>
 
                         <div class="plant_actions d-flex gap-2">

@@ -313,6 +313,47 @@
         .comment-box {
             background: var(--color-surface-primary);
         }
+
+        .tag-tooltip {
+            position: relative;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        .tooltip-box {
+            display: none;
+            position: absolute;
+            top: 28px;
+            /* distancia do badge */
+            left: 0;
+            z-index: 9999;
+            background: #fff;
+            color: #333;
+            padding: 10px;
+            width: 220px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+            font-size: 0.85rem;
+            line-height: 1.2rem;
+            border: 1px solid #ddd;
+        }
+
+        .tag-tooltip:hover .tooltip-box {
+            display: block;
+            animation: fadeIn 0.15s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-3px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 
     <div class="article-container">
@@ -519,9 +560,16 @@
                 <p class="text-info-custom"><strong>Referências:</strong> {{ $plant->info_references }}</p>
                 <p class="text-info-custom"><strong>Tags:</strong>
                     @foreach ($plant->tags as $tag)
-                        <span class="badge bg-success">{{ $tag->name }}</span>
+                        <span class="tag-tooltip">
+                            <span class="badge bg-success">{{ $tag->name }}</span>
+                            <span class="tooltip-box">
+                                <strong>{{ $tag->name }}</strong><br>
+                                {{ $tag->description }}
+                            </span>
+                        </span>
                     @endforeach
                 </p>
+
             </div>
         </div>
 

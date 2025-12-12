@@ -77,11 +77,33 @@ class PlantController extends Controller
     public function search(Request $request)
     {
         $query = $request->input('q');
-        $plants = Plant::where('popular_name', 'LIKE', "%{$query}%")
-            ->orWhere('scientific_name', 'LIKE', "%{$query}%")
-            ->get(['id', 'popular_name', 'scientific_name']);
 
-        return response()->json($plants);
+        $plants = Plant::with('tags')
+            ->where(function ($q) use ($query) {
+                $q->where('popular_name', 'LIKE', "%{$query}%")
+                    ->orWhere('scientific_name', 'LIKE', "%{$query}%")
+                    ->orWhereHas('tags', function ($tagQuery) use ($query) {
+                        $tagQuery->where('name', 'LIKE', "%{$query}%");
+                    });
+            })
+            ->get();
+
+        return response()->json(
+            $plants->map(function ($plant) {
+                return [
+                    'id' => $plant->id,
+                    'popular_name' => $plant->popular_name,
+                    'scientific_name' => $plant->scientific_name,
+                    'slug' => $plant->slug,
+                    'tags' => $plant->tags->map(function ($tag) {
+                        return [
+                            'name' => $tag->name,
+                            'description' => $tag->description,
+                        ];
+                    }),
+                ];
+            }),
+        );
     }
 
     // ✅ Cria um novo registro
@@ -360,7 +382,7 @@ class PlantController extends Controller
             // Gerencia imagens
             $existingImages = json_decode($plant->images, true) ?? [];
 
-            if (!$request->hasFile('images') && $existingImages === "") {
+            if (!$request->hasFile('images') && $existingImages === '') {
                 return back()
                     ->withErrors(['images' => 'É obrigatório enviar ao menos uma imagem da planta.'])
                     ->withInput();

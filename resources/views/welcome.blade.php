@@ -133,18 +133,88 @@
     a.text-dark:hover {
         color: var(--color-secondary) !important;
     }
+
+    .tag-tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip-box {
+    display: none;
+    position: absolute;
+    top: 26px;
+    left: 0;
+    z-index: 9999;
+    background: #fff;
+    padding: 10px;
+    width: 220px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    font-size: 0.85rem;
+}
+
+.tag-tooltip:hover .tooltip-box {
+    display: block;
+}
+
+.search-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 100%;
+    max-height: 360px;
+    overflow-y: auto;
+    z-index: 1050;
+
+    background-color: var(--color-surface-primary);
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+}
+
+/* Remove borda duplicada nos itens */
+.search-dropdown .list-group-item {
+    border-left: none;
+    border-right: none;
+}
+
+.search-dropdown .list-group-item:first-child {
+    border-top: none;
+}
+
+.search-dropdown .list-group-item:last-child {
+    border-bottom: none;
+}
+
+
 </style>
 
 {{-- Seção principal com busca --}}
-<div class="container text-center mt-5 mb-5">
-    <h2 class="mb-4 primaryTitles">Busque por plantas medicinais</h2>
-    <div class="input-group mb-3 mx-auto col-sm-12 col-md-8 col-lg-6">
-        <input type="text" id="homeSearchInput" class="form-control form-control-lg" placeholder="Digite o nome da planta...">
-        <button class="btn btn-lg" type="button" id="searchButton">
-            <i class="bi bi-search"></i> Buscar
-        </button>
+<div class="mx-auto col-sm-12 col-md-8 col-lg-6">
+    <div class="position-relative">
+
+        <div class="input-group mt-4">
+            <input type="text"
+                   id="homeSearchInput"
+                   class="form-control form-control-lg"
+                   placeholder="Digite o nome da planta...">
+
+            <button class="btn btn-lg" type="button" id="searchButton">
+                <i class="bi bi-search"></i> Buscar
+            </button>
+        </div>
+
+        <!-- DROPDOWN -->
+        <div id="searchDropdown"
+             class="list-group shadow d-none search-dropdown">
+            <div class="list-group-item text-muted text-center">
+                Digite algo para buscar...
+            </div>
+        </div>
+
     </div>
 </div>
+
+
 
 {{-- Modal para exibir resultados --}}
 <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
@@ -231,7 +301,7 @@ $(document).ready(function() {
         clearTimeout(searchTimeout);
 
         if (query.length === 0) {
-            $("#searchModal").modal("hide");
+            $("#searchDropdown").addClass("d-none");
             return;
         }
 
@@ -241,35 +311,69 @@ $(document).ready(function() {
                 method: "GET",
                 data: { q: query },
                 success: function(response) {
-                    $("#searchResults").empty();
+                    const $dropdown = $("#searchDropdown");
+                    $dropdown.empty();
 
                     if (response.length > 0) {
                         response.forEach(plant => {
-                            $("#searchResults").append(`
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <a href="/plant/${plant.id}/${plant.popular_name}" 
-                                       class="text-decoration-none text-dark w-100">
-                                        ${plant.popular_name} <br><small class="text-muted">${plant.scientific_name}</small>
-                                    </a>
-                                </li>
+
+                            let tagsHtml = '';
+                            if (plant.tags && plant.tags.length > 0) {
+                                plant.tags.forEach(tag => {
+                                    tagsHtml += `
+                                        <span class="badge bg-success me-1">
+                                            ${tag.name}
+                                        </span>
+                                    `;
+                                });
+                            }
+
+                            $dropdown.append(`
+                                <a href="/plant/${plant.id}/${plant.slug}"
+                                   class="list-group-item list-group-item-action">
+
+                                    <strong>${plant.popular_name}</strong><br>
+                                    <small class="text-muted">
+                                        ${plant.scientific_name}
+                                    </small>
+
+                                    <div class="mt-2">
+                                        ${tagsHtml}
+                                    </div>
+                                </a>
                             `);
                         });
                     } else {
-                        $("#searchResults").append(`<li class="list-group-item text-center text-muted">Nenhum resultado encontrado.</li>`);
+                        $dropdown.append(`
+                            <div class="list-group-item text-center text-muted">
+                                Nenhum resultado encontrado.
+                            </div>
+                        `);
                     }
 
-                    if (!$('#searchModal').hasClass('show')) {
-                        $("#searchModal").modal("show");
-                    }
+                    $dropdown.removeClass("d-none");
                 },
                 error: function() {
-                    $("#searchResults").html('<li class="list-group-item text-center text-danger">Erro na busca. Tente novamente.</li>');
-                    if (!$('#searchModal').hasClass('show')) {
-                        $("#searchModal").modal("show");
-                    }
+                    $("#searchDropdown")
+                        .html(`
+                            <div class="list-group-item text-center text-danger">
+                                Erro na busca.
+                            </div>
+                        `)
+                        .removeClass("d-none");
                 }
             });
         }, 300);
     });
+
+    // Fecha dropdown ao clicar fora
+    $(document).on("click", function(e) {
+        if (!$(e.target).closest("#homeSearchInput, #searchDropdown").length) {
+            $("#searchDropdown").addClass("d-none");
+        }
+    });
 });
 </script>
+
+
+
