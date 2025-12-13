@@ -71,8 +71,9 @@
         .plant-item:hover {
             background-color: var(--color-surface-secondary);
             color: var(--color-text);
-            transform: translateY(-2px);
+            transform: translateY(2px);
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            z-index: 9999;
         }
 
         /* Botões de ação */
@@ -138,30 +139,36 @@
             transform: scale(1.05);
         }
 
+        .plant-tags {
+            position: relative;
+        }
+
         .tag-tooltip {
             position: relative;
             display: inline-block;
-            z-index: 10;
+            z-index: 1;
         }
 
-        .tooltip-box {
+        .tag-tooltip .tooltip-box {
             display: none;
             position: absolute;
-            top: 26px;
+            top: calc(100% + 6px);
             left: 0;
+            width: 220px;
             background: #fff;
             padding: 10px;
-            width: 220px;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
             font-size: 0.85rem;
-            z-index: 10;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            /* baixo mesmo */
         }
 
+        /* /TODO: Mostrar descrição da tag ao passar mouse
         .tag-tooltip:hover .tooltip-box {
             display: block;
-            z-index: 9999;
-        }
+            z-index: 99;
+        }*/
     </style>
 
     <div class="plants-container col-sm-12 col-md-10 col-lg-8">
