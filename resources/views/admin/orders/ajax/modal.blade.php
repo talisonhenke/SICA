@@ -1,11 +1,12 @@
 @php
-    $statusColor = [
-        'pending' => 'warning',
-        'preparing' => 'info',
-        'shipped' => 'primary',
-        'delivered' => 'success',
-        'canceled' => 'dark',
-    ][$order->status] ?? 'secondary';
+    $statusColor =
+        [
+            'pending' => 'warning',
+            'preparing' => 'info',
+            'shipped' => 'primary',
+            'delivered' => 'success',
+            'canceled' => 'dark',
+        ][$order->status] ?? 'secondary';
 
     $statusTranslations = [
         'pending' => 'Pendente',
@@ -15,25 +16,42 @@
         'canceled' => 'Cancelado',
     ];
 
-    function formatPhone($phone) {
-        if (!$phone) return null;
+    function formatPhone($phone)
+    {
+        if (!$phone) {
+            return null;
+        }
         $digits = preg_replace('/\D/', '', $phone);
-        if (strlen($digits) !== 11) return $phone;
+        if (strlen($digits) !== 11) {
+            return $phone;
+        }
 
         return sprintf(
             '(%s) %s %s-%s',
-            substr($digits,0,2),
-            substr($digits,2,1),
-            substr($digits,3,4),
-            substr($digits,7,4)
+            substr($digits, 0, 2),
+            substr($digits, 2, 1),
+            substr($digits, 3, 4),
+            substr($digits, 7, 4),
         );
     }
 @endphp
 
-{{-- TÍTULO --}}
-<h4 class="fw-bold mb-4">
-    Pedido #{{ str_pad($order->id, 4, '0', STR_PAD_LEFT) }}
-</h4>
+{{-- TÍTULO + AÇÃO --}}
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <h4 class="fw-bold mb-0">
+        Pedido #{{ str_pad($order->id, 4, '0', STR_PAD_LEFT) }}
+    </h4>
+
+    @if (in_array($order->status, ['preparing', 'shipped']) && !empty($whatsappMessage) && !empty($whatsappNumber))
+        <button class="btn btn-success btn-sm js-open-whatsapp" data-message="{{ $whatsappMessage }}"
+            data-phone="{{ $whatsappNumber }}">
+            <i class="bi bi-whatsapp"></i> Enviar status do pedido
+        </button>
+    @endif
+
+</div>
+
 
 {{-- ================= CLIENTE ================= --}}
 <div class="card mb-3">
@@ -93,10 +111,10 @@
                             <td>{{ $item->product->name ?? 'Produto removido' }}</td>
                             <td class="text-center">{{ $item->quantity }}</td>
                             <td class="text-end">
-                                R$ {{ number_format($item->price,2,',','.') }}
+                                R$ {{ number_format($item->price, 2, ',', '.') }}
                             </td>
                             <td class="text-end">
-                                R$ {{ number_format($item->price * $item->quantity,2,',','.') }}
+                                R$ {{ number_format($item->price * $item->quantity, 2, ',', '.') }}
                             </td>
                         </tr>
                     @endforeach
@@ -105,7 +123,7 @@
                     <tr>
                         <th colspan="3" class="text-end">Total</th>
                         <th class="text-end">
-                            R$ {{ number_format($order->total_amount,2,',','.') }}
+                            R$ {{ number_format($order->total_amount, 2, ',', '.') }}
                         </th>
                     </tr>
                 </tfoot>
@@ -129,12 +147,10 @@
                 {{ $address['city'] ?? '' }}
             </p>
 
-            <div id="orderMap"
-                data-lat="{{ $address['latitude'] ?? '' }}"
+            <div id="orderMap" data-lat="{{ $address['latitude'] ?? '' }}"
                 data-lng="{{ $address['longitude'] ?? '' }}"
                 style="width:100%; height:300px; border-radius:10px; overflow:hidden;">
             </div>
-
         @else
             <p class="text-muted">Endereço não disponível.</p>
         @endif
@@ -146,26 +162,26 @@
 <div class="text-end mt-3">
 
     @if ($order->status === 'pending')
-        <form action="{{ route('admin.orders.markPaid',$order->id) }}" method="POST" class="d-inline">
-            @csrf
-            <button class="btn btn-success">Marcar como Pago</button>
-        </form>
+        <button class="btn btn-success js-mark-paid" data-url="{{ route('admin.orders.ajax.markPaid', $order->id) }}">
+            Marcar como pago
+        </button>
 
-        <form action="{{ route('admin.orders.cancel',$order->id) }}" method="POST" class="d-inline">
-            @csrf
-            <button class="btn btn-dark">Cancelar</button>
-        </form>
+        <button class="btn btn-outline-danger ms-2 js-cancel-order"
+            data-url="{{ route('admin.orders.ajax.cancel', $order->id) }}">
+            Cancelar pedido
+        </button>
     @endif
+
 
     @if ($order->status === 'preparing')
-        <form action="{{ route('admin.orders.ship',$order->id) }}" method="POST" class="d-inline">
-            @csrf
-            <button class="btn btn-primary">Enviar Pedido</button>
-        </form>
+        <button class="btn btn-primary js-mark-shipped" data-url="{{ route('admin.orders.ajax.ship', $order) }}">
+            Enviar pedido
+        </button>
     @endif
 
+
     @if ($order->status === 'shipped')
-        <form action="{{ route('admin.orders.deliver',$order->id) }}" method="POST" class="d-inline">
+        <form action="{{ route('admin.orders.deliver', $order->id) }}" method="POST" class="d-inline">
             @csrf
             <button class="btn btn-success">Confirmar Entrega</button>
         </form>

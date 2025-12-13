@@ -101,6 +101,62 @@ class OrderAdminController extends Controller
         return back()->with('msg', 'Pedido marcado como pago e movido para Preparando.')->with('whatsapp_message', $message)->with('whatsapp_number', $phone);
     }
 
+    public function ajaxMarkPaid(Order $order)
+    {
+        if ($order->status !== 'pending') {
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Este pedido não pode ser marcado como pago.',
+                ],
+                422,
+            );
+        }
+
+        $order->load('user', 'items.product');
+
+        $order->status = 'preparing';
+        $order->save();
+
+        // WhatsApp
+        $phone = preg_replace('/\D/', '', $order->user->phone_number);
+
+        $whatsappMessage = null;
+
+        if ($order->status === 'preparing') {
+            $whatsappMessage = $this->buildPaymentConfirmedMessage($order);
+        }
+
+        if ($order->status === 'shipped') {
+            $whatsappMessage = $this->buildOrderShippedMessage($order);
+        }
+
+        // Re-renderiza o modal inteiro
+        $html = view('admin.orders.ajax.modal', [
+            'order' => $order->fresh(['user', 'items.product']),
+            'address' => $order->order_address,
+        ])->render();
+
+        return response()->json([
+            'success' => true,
+            'html' => $html,
+            'whatsappNumber' => $phone,
+            'whatsappMessage' => $whatsappMessage,
+        ]);
+    }
+
+    private function buildPaymentConfirmedMessage($order)
+    {
+        $items = $order->items->map(fn($i) => "- {$i->product->name} (x{$i->quantity})")->implode("\n");
+
+        return "Olá *{$order->user->name}*, seu pagamento foi confirmado! 🎉\n\n" . "Seu pedido está sendo preparado.\n\n" . "Resumo do pedido:\n{$items}\n\n" . "Total: *R$ " . number_format($order->total_amount, 2, ',', '.') . "*\n\n" . 'Obrigado pela preferência 😊';
+    }
+
+    private function buildOrderShippedMessage($order)
+    {
+        return "Olá *{$order->user->name}*! 🚚\n\n" . "Seu pedido #{$order->id} já foi enviado.\n" . "Fique atento(a), a entrega deve ocorrer em breve.\n\n" . 'Qualquer dúvida, estamos à disposição 😊';
+    }
+
     // 2. Enviar pedido → shipped
     public function ship($id)
     {
@@ -130,6 +186,43 @@ class OrderAdminController extends Controller
         $message .= "\nQualquer dúvida, estou à disposição! 😊";
 
         return back()->with('msg', 'Pedido marcado como Enviado.')->with('whatsapp_message', $message)->with('whatsapp_number', $phone);
+    }
+
+    public function ajaxShip(Order $order)
+    {
+        if ($order->status !== 'preparing') {
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'O pedido só pode ser enviado se estiver em preparação.',
+                ],
+                422,
+            );
+        }
+
+        $order->load('user', 'items.product');
+
+        // Atualiza status
+        $order->status = 'shipped';
+        $order->save();
+
+        // WhatsApp
+        $phone = preg_replace('/\D/', '', $order->user->phone_number);
+
+        $whatsappMessage = $this->buildOrderShippedMessage($order);
+
+        // Re-renderiza o modal inteiro
+        $html = view('admin.orders.ajax.modal', [
+            'order' => $order->fresh(['user', 'items.product']),
+            'address' => $order->address_data,
+        ])->render();
+
+        return response()->json([
+            'success' => true,
+            'html' => $html,
+            'whatsappNumber' => $phone,
+            'whatsappMessage' => $whatsappMessage,
+        ]);
     }
 
     // 3. Pedido entregue pedido → delivered
@@ -162,36 +255,78 @@ class OrderAdminController extends Controller
         return back()->with('msg', 'Pedido cancelado com sucesso.');
     }
 
+    public function ajaxCancel(Order $order)
+    {
+        if ($order->status !== 'pending') {
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Este pedido não pode mais ser cancelado.',
+                ],
+                422,
+            );
+        }
+
+        $order->load('user', 'items.product');
+
+        $order->status = 'canceled';
+        $order->save();
+
+        // Re-renderiza o modal inteiro
+        $html = view('admin.orders.ajax.modal', [
+            'order' => $order->fresh(['user', 'items.product']),
+            'address' => $order->address_data,
+        ])->render();
+
+        return response()->json([
+            'success' => true,
+            'html' => $html,
+        ]);
+    }
+
     public function orderModal($id)
     {
         try {
             Log::info('[OrderModal] Iniciando carregamento', ['order_id' => $id]);
 
-            // Carrega pedido com usuário, itens e produtos
             $order = Order::with(['user', 'items.product'])->findOrFail($id);
-
-            // Carrega o endereço do pedido (como antes)
             $address = $order->order_address;
+
+            $whatsappMessage = null;
+            $whatsappNumber = null;
+
+            if (in_array($order->status, ['preparing', 'shipped'])) {
+                $whatsappNumber = preg_replace('/\D/', '', $order->user->phone_number);
+
+                if ($order->status === 'preparing') {
+                    $whatsappMessage = $this->buildPaymentConfirmedMessage($order);
+                }
+
+                if ($order->status === 'shipped') {
+                    $whatsappMessage = $this->buildOrderShippedMessage($order);
+                }
+            }
 
             Log::info('[OrderModal] Pedido carregado com sucesso', [
                 'order_id' => $order->id,
-                'items_count' => $order->items->count(),
+                'status' => $order->status,
             ]);
 
-            // Passa order e address para a view do modal
-            return view('admin.orders.ajax.modal', compact('order', 'address'));
+            return view('admin.orders.ajax.modal', [
+                'order' => $order,
+                'address' => $address,
+                'whatsappMessage' => $whatsappMessage,
+                'whatsappNumber' => $whatsappNumber,
+            ]);
         } catch (\Throwable $e) {
             Log::error('[OrderModal] ERRO AO CARREGAR PEDIDO', [
                 'order_id' => $id,
                 'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
             ]);
 
             return response()->json(
                 [
                     'message' => 'Erro ao carregar pedido.',
-                    'error' => $e->getMessage(),
                 ],
                 500,
             );
