@@ -167,14 +167,19 @@ class OrderAdminController extends Controller
         try {
             Log::info('[OrderModal] Iniciando carregamento', ['order_id' => $id]);
 
+            // Carrega pedido com usuário, itens e produtos
             $order = Order::with(['user', 'items.product'])->findOrFail($id);
+
+            // Carrega o endereço do pedido (como antes)
+            $address = $order->order_address;
 
             Log::info('[OrderModal] Pedido carregado com sucesso', [
                 'order_id' => $order->id,
                 'items_count' => $order->items->count(),
             ]);
 
-            return view('admin.orders.ajax.modal', compact('order'));
+            // Passa order e address para a view do modal
+            return view('admin.orders.ajax.modal', compact('order', 'address'));
         } catch (\Throwable $e) {
             Log::error('[OrderModal] ERRO AO CARREGAR PEDIDO', [
                 'order_id' => $id,

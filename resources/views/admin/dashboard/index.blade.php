@@ -63,42 +63,16 @@
     </div>
 
     <div class="modal fade" id="orderModal" tabindex="-1">
-    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-body" id="orderModalContent">
-                <div class="text-center p-5 text-muted">
-                    Carregando pedido...
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-body" id="orderModalContent">
+                    <div class="text-center p-5 text-muted">
+                        Carregando pedido...
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-<script>
-document.addEventListener('click', function (e) {
-    const btn = e.target.closest('.js-open-order');
-    if (!btn) return;
-
-    const url = btn.dataset.url;
-    console.log("URL ", url);
-
-    fetch(url)
-        .then(res => {
-            if (!res.ok) throw new Error('Erro ao carregar pedido');
-            return res.text();
-        })
-        .then(html => {
-            document.getElementById('orderModalContent').innerHTML = html;
-            new bootstrap.Modal(document.getElementById('orderModal')).show();
-        })
-        .catch(() => {
-            document.getElementById('orderModalContent').innerHTML =
-                '<div class="p-4 text-danger">Erro ao carregar pedido.</div>';
-        });
-});
-</script>
-
-
 
     <script>
         document.querySelectorAll('.dashboard-link').forEach(btn => {
@@ -118,4 +92,82 @@ document.addEventListener('click', function (e) {
         });
     </script>
 
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_KEY') }}"></script>
+
+    <script>
+        function initOrderMap() {
+            console.log('[Map] INIT');
+
+            const mapEl = document.getElementById('orderMap');
+
+            if (!mapEl) {
+                console.warn('[Map] #orderMap não encontrado');
+                return;
+            }
+
+            const lat = mapEl.dataset.lat;
+            const lng = mapEl.dataset.lng;
+
+            console.log('[Map] lat:', lat, 'lng:', lng);
+
+            if (!lat || !lng) {
+                console.warn('[Map] Coordenadas ausentes');
+                return;
+            }
+
+            const position = {
+                lat: Number(lat),
+                lng: Number(lng)
+            };
+
+            const map = new google.maps.Map(mapEl, {
+                center: position,
+                zoom: 17,
+                streetViewControl: false,
+                fullscreenControl: false,
+                mapTypeControl: false
+            });
+
+            new google.maps.Marker({
+                position,
+                map
+            });
+
+            google.maps.event.trigger(map, 'resize');
+        }
+
+
+
+        document
+            .getElementById('orderModal')
+            .addEventListener('shown.bs.modal', initOrderMap);
+    </script>
+
+    <script>
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('.js-open-order');
+            if (!btn) return;
+
+            const url = btn.dataset.url;
+            console.log("URL ", url);
+
+            fetch(url)
+                .then(res => {
+                    if (!res.ok) throw new Error('Erro ao carregar pedido');
+                    return res.text();
+                })
+                .then(html => {
+                    document.getElementById('orderModalContent').innerHTML = html;
+
+                    const modal = new bootstrap.Modal(
+                        document.getElementById('orderModal')
+                    );
+                    modal.show();
+                })
+                .catch(() => {
+                    document.getElementById('orderModalContent').innerHTML =
+                        '<div class="p-4 text-danger">Erro ao carregar pedido.</div>';
+                });
+        });
+    </script>
 @endsection
