@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 use App\Models\Order;
 use Illuminate\Http\Request;
 
@@ -126,7 +127,6 @@ class OrderAdminController extends Controller
 
         $message .= "\nTotal do pedido: *R$ " . number_format($order->total_amount, 2, ',', '.') . "*\n";
 
-
         $message .= "\nQualquer dúvida, estou à disposição! 😊";
 
         return back()->with('msg', 'Pedido marcado como Enviado.')->with('whatsapp_message', $message)->with('whatsapp_number', $phone);
@@ -160,5 +160,36 @@ class OrderAdminController extends Controller
         $order->save();
 
         return back()->with('msg', 'Pedido cancelado com sucesso.');
+    }
+
+    public function orderModal($id)
+    {
+        try {
+            Log::info('[OrderModal] Iniciando carregamento', ['order_id' => $id]);
+
+            $order = Order::with(['user', 'items.product'])->findOrFail($id);
+
+            Log::info('[OrderModal] Pedido carregado com sucesso', [
+                'order_id' => $order->id,
+                'items_count' => $order->items->count(),
+            ]);
+
+            return view('admin.orders.ajax.modal', compact('order'));
+        } catch (\Throwable $e) {
+            Log::error('[OrderModal] ERRO AO CARREGAR PEDIDO', [
+                'order_id' => $id,
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return response()->json(
+                [
+                    'message' => 'Erro ao carregar pedido.',
+                    'error' => $e->getMessage(),
+                ],
+                500,
+            );
+        }
     }
 }

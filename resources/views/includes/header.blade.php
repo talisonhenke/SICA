@@ -210,9 +210,20 @@
 
                     </li>
 
+                    <li class="nav-item"><a href="{{ route('admin.ajax.dashboard') }}" class="nav-link">
+                            Painel do Administrador
+
+                            {{-- @if ($adminNotifications > 0)
+                                <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
+                                    {{ $adminNotifications }}
+                                </span>
+                            @endif --}}
+                        </a></li>
+
                     <li class="nav-item"><a class="nav-link" href="/users_list">Usuários</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('tags.index') }}">Tags</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('admin.reviews.index') }}">Avaliações</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('admin.reviews.index') }}">Avaliações</a>
+                    </li>
                 @endif
 
                 <li class="nav-item d-none d-lg-block">

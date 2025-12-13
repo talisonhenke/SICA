@@ -22,6 +22,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\AddressesController;
 use App\Http\Controllers\Admin\OrderAdminController;
+use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SiteReviewController;
 use App\Http\Controllers\TagController;
@@ -246,7 +247,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/addresses/storeByCheckout', [AddressesController::class, 'storeByCheckout'])
     ->name('addresses.storeByCheckout');
 
-// Admin routes
+// Admin Order routes
 
 Route::prefix('admin')->middleware(['auth', 'is_admin'])->group(function () {
 
@@ -273,6 +274,38 @@ Route::prefix('admin')->middleware(['auth', 'is_admin'])->group(function () {
         Route::post('/admin/orders/{id}/deliver', [OrderAdminController::class, 'deliver'])
             ->name('admin.orders.deliver');         
 });
+
+// Admim Dashboard routes 
+
+Route::middleware(['auth', 'is_admin'])
+    ->prefix('admin/ajax')
+    ->name('admin.ajax.')
+    ->group(function () {
+
+        // DASHBOARD
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])
+            ->name('dashboard');
+
+        // PEDIDOS
+        Route::get('/orders', [OrderAdminController::class, 'index'])
+            ->name('orders.index');
+
+        // MODERAÇÃO
+        Route::get('/moderation', [AdminController::class, 'moderationIndex'])
+            ->name('moderation.index');
+
+        // TAGS
+        Route::get('/tags', [TagController::class, 'index'])
+            ->name('tags.index');
+
+        // // USUÁRIOS
+        // Route::get('/users', [AdminUserController::class, 'index'])
+        //     ->name('users.index');
+    });
+
+    Route::get('/orders/{order}', [OrderAdminController::class, 'orderModal'])
+            ->name('admin.orders.ajax.modal');
+
 
 // Atualizações moderação 
 
