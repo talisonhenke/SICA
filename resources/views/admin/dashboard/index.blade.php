@@ -2,42 +2,87 @@
 
 @section('content')
     <style>
-        .admin-dashboard {
-            display: flex;
-            gap: 1.5rem;
+        body {
+            background: #f4f6f9;
         }
 
+        .admin-dashboard {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: calc(100vh - 70px);
+            gap: 1.5rem;
+            padding: 1.5rem;
+        }
+
+        /* SIDEBAR */
         .dashboard-sidebar {
-            width: 220px;
+            background-color: var(--color-surface-primary);
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .05);
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
         }
 
         .dashboard-link {
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            width: 100%;
-            margin-bottom: .5rem;
-            padding: .5rem .75rem;
+            padding: .75rem 1rem;
+            border-radius: 8px;
             border: none;
-            background: #f5f5f5;
+            background: transparent;
+            font-weight: 500;
+            color: #444;
+            transition: .2s;
             cursor: pointer;
         }
 
+        .dashboard-link:hover {
+            background: #f1f3f5;
+        }
+
         .dashboard-link.active {
-            background: #e0e0e0;
-            font-weight: bold;
+            background: #e9ecef;
+            font-weight: 600;
+            color: #000;
+        }
+
+        /* CONTEÚDO */
+        .dashboard-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            background-color: var(--color-surface-primary);
+            border-radius: 12px;
         }
 
         .dashboard-panel {
             display: none;
+            animation: fadeIn .25s ease-in-out;
         }
 
         .dashboard-panel.active {
             display: block;
         }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
+
     <div class="admin-dashboard">
 
-        {{-- SIDEBAR INTERNA --}}
+        {{-- SIDEBAR --}}
         @include('admin.dashboard._sidebar')
 
         {{-- CONTEÚDO --}}
@@ -62,35 +107,35 @@
         </div>
     </div>
 
+    {{-- MODAL PEDIDO --}}
     <div class="modal fade" id="orderModal" tabindex="-1">
         <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
+            <div class="modal-content rounded-4">
                 <div class="modal-body" id="orderModalContent">
-                    <div class="text-center p-5 text-muted">
-                        Carregando pedido...
-                    </div>
+                    <div class="text-center p-5 text-muted">Carregando pedido...</div>
                 </div>
             </div>
         </div>
     </div>
 
+    {{-- MODAL WHATSAPP --}}
     <div class="modal fade" id="whatsModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4">
 
                 <div class="modal-header">
-                    <h5 class="modal-title">Enviar mensagem ao cliente</h5>
+                    <h5 class="modal-title">Mensagem para o cliente</h5>
                     <button class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
                 <div class="modal-body">
-                    <label for="whatsMsg" class="form-label">Mensagem:</label>
+                    <label class="form-label">Mensagem:</label>
                     <textarea id="whatsMsg" class="form-control" rows="8"></textarea>
                 </div>
 
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" id="btnCopyWhats">
-                        Copiar mensagem
+                    <button class="btn btn-outline-secondary" id="btnCopyWhats">
+                        Copiar
                     </button>
 
                     <a id="btnOpenWhats" class="btn btn-success" target="_blank">
@@ -101,7 +146,6 @@
             </div>
         </div>
     </div>
-
 
     <script>
         document.querySelectorAll('.dashboard-link').forEach(btn => {
@@ -182,31 +226,30 @@
     </script>
 
     <script>
-       function updateOrderModal(html) {
-    const container = document.getElementById('orderModalContent');
+        function updateOrderModal(html) {
+            const container = document.getElementById('orderModalContent');
 
-    if (!container) {
-        console.warn('[Modal] #orderModalContent não encontrado');
-        return;
-    }
+            if (!container) {
+                console.warn('[Modal] #orderModalContent não encontrado');
+                return;
+            }
 
-    container.innerHTML = html;
+            container.innerHTML = html;
 
-    // Aguarda o DOM renderizar
-    requestAnimationFrame(() => {
-        const mapEl = container.querySelector('#orderMap');
+            // Aguarda o DOM renderizar
+            requestAnimationFrame(() => {
+                const mapEl = container.querySelector('#orderMap');
 
-        if (!mapEl) {
-            console.info('[Map] HTML atualizado sem mapa — init ignorado');
-            return;
+                if (!mapEl) {
+                    console.info('[Map] HTML atualizado sem mapa — init ignorado');
+                    return;
+                }
+
+                if (typeof window.initOrderMap === 'function') {
+                    window.initOrderMap();
+                }
+            });
         }
-
-        if (typeof window.initOrderMap === 'function') {
-            window.initOrderMap();
-        }
-    });
-}
-
     </script>
 
 
@@ -259,16 +302,6 @@
                 .then(res => res.json())
                 .then(data => {
 
-                    console.group('[AJAX MARK PAID]');
-                    console.log('Resposta completa:', data);
-                    console.log('success:', data.success);
-                    console.log('html existe?', 'html' in data);
-                    console.log('html tipo:', typeof data.html);
-                    console.log('html tamanho:', data.html ? data.html.length : 'NULL');
-                    console.log('whatsappMessage:', data.whatsappMessage);
-                    console.log('whatsappNumber:', data.whatsappNumber);
-                    console.groupEnd();
-
                     if (!data.success) {
                         alert(data.message || 'Erro ao marcar como pago');
                         btn.disabled = false;
@@ -276,7 +309,6 @@
                         return;
                     }
 
-                    // ⚠️ TESTE CRÍTICO
                     if (!data.html) {
                         console.error('[ERRO] data.html não veio do backend');
                         btn.disabled = false;
@@ -339,6 +371,21 @@
 
                     // ✅ USO PADRÃO
                     updateOrderModal(data.html);
+
+                    if (data.whatsappMessage && data.whatsappNumber) {
+                        const msgEl = document.getElementById('whatsMsg');
+                        const linkEl = document.getElementById('btnOpenWhats');
+
+                        if (msgEl && linkEl) {
+                            msgEl.value = data.whatsappMessage;
+                            linkEl.href = `https://wa.me/${data.whatsappNumber}`;
+
+                            const whatsModalEl = document.getElementById('whatsModal');
+                            if (whatsModalEl) {
+                                new bootstrap.Modal(whatsModalEl).show();
+                            }
+                        }
+                    }
                 })
                 .catch(() => {
                     alert('Erro inesperado.');

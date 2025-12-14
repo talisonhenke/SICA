@@ -17,70 +17,91 @@
 
     .btn-filter.active {
         color: #fff !important;
-    }
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
 
+    }
     .btn-filter .badge {
         font-size: 0.65rem;
-        padding: 3px 6px;
     }
 
-    .btn-filter-pending {
+    .btn-filter-pending, .btn-filter-pending .badge {
         border-color: var(--color-warning);
         color: #000;
     }
 
     .btn-filter-pending:hover,
-    .btn-filter-pending.active {
+    .btn-filter-pending.active,
+    .btn-filter-pending:hover .badge,
+    .btn-filter-pending.active .badge {
         background: var(--color-warning);
         color: #000 !important;
     }
 
-    .btn-filter-preparing {
+    .btn-filter-preparing, .btn-filter-preparing .badge {
         border-color: var(--color-primary-dark);
         color: #000;
     }
 
     .btn-filter-preparing:hover,
-    .btn-filter-preparing.active {
+    .btn-filter-preparing.active,
+    .btn-filter-preparing:hover .badge,
+    .btn-filter-preparing.active .badge {
         background: var(--color-primary-dark);
         color: #fff !important;
     }
 
-    .btn-filter-shipped {
+    .btn-filter-shipped, .btn-filter-shipped .badge {
         border-color: var(--color-info);
         color: #000;
     }
 
     .btn-filter-shipped:hover,
-    .btn-filter-shipped.active {
+    .btn-filter-shipped.active,
+    .btn-filter-shipped:hover .badge,
+    .btn-filter-shipped:active .badge  {
         background: var(--color-info);
         color: #000 !important;
     }
 
-    .btn-filter-delivered {
+    .btn-filter-delivered, .btn-filter-delivered .badge {
         border-color: var(--color-success);
         color: #000;
     }
 
     .btn-filter-delivered:hover,
-    .btn-filter-delivered.active {
+    .btn-filter-delivered.active,
+    .btn-filter-delivered:hover .badge,
+    .btn-filter-delivered.active .badge {
         background: var(--color-success);
         color: #000;
     }
 
-    .btn-filter-canceled {
+    .btn-filter-canceled, .btn-filter-canceled .badge{
         border-color: var(--color-danger);
         color: #000;
     }
 
     .btn-filter-canceled:hover,
-    .btn-filter-canceled.active {
+    .btn-filter-canceled.active,
+    .btn-filter-canceled:hover .badge,
+    .btn-filter-canceled.active .badge {
         background: var(--color-danger);
         color: #fff !important;
     }
+        .orders-filters {
+        background: var(--color-surface-secondary);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    }
+
+    .orders-filters .btn-group {
+        gap: 6px;
+    }
 </style>
 
-<h4 class="fw-bold mb-3">
+
+<h4 class="fw-bold ms-2 my-3">
     Pedidos
     @if ($orderStats['pending'] > 0)
         <span class="badge bg-danger ms-2" style="font-size: 0.7rem;">
@@ -102,7 +123,7 @@
 {{-- ========================== --}}
 {{-- FILTROS --}}
 {{-- ========================== --}}
-<div class="mb-3">
+<div class="mb-4 orders-filters">
     <div class="btn-group flex-wrap">
         @foreach ($filters as $value => $data)
             <a href="{{ route('admin.ajax.dashboard', ['status' => $value]) }}"

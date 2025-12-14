@@ -49,7 +49,6 @@
             <i class="bi bi-whatsapp"></i> Enviar status do pedido
         </button>
     @endif
-
 </div>
 
 

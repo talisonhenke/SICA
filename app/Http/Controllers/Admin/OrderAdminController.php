@@ -127,10 +127,6 @@ class OrderAdminController extends Controller
             $whatsappMessage = $this->buildPaymentConfirmedMessage($order);
         }
 
-        if ($order->status === 'shipped') {
-            $whatsappMessage = $this->buildOrderShippedMessage($order);
-        }
-
         // Re-renderiza o modal inteiro
         $html = view('admin.orders.ajax.modal', [
             'order' => $order->fresh(['user', 'items.product']),
@@ -206,15 +202,17 @@ class OrderAdminController extends Controller
         $order->status = 'shipped';
         $order->save();
 
+        if ($order->status === 'shipped') {
+            $whatsappMessage = $this->buildOrderShippedMessage($order);
+        }
+
         // WhatsApp
         $phone = preg_replace('/\D/', '', $order->user->phone_number);
-
-        $whatsappMessage = $this->buildOrderShippedMessage($order);
 
         // Re-renderiza o modal inteiro
         $html = view('admin.orders.ajax.modal', [
             'order' => $order->fresh(['user', 'items.product']),
-            'address' => $order->address_data,
+            'address' => $order->order_address,
         ])->render();
 
         return response()->json([
@@ -275,7 +273,7 @@ class OrderAdminController extends Controller
         // Re-renderiza o modal inteiro
         $html = view('admin.orders.ajax.modal', [
             'order' => $order->fresh(['user', 'items.product']),
-            'address' => $order->address_data,
+            'address' => $order->order_address,
         ])->render();
 
         return response()->json([
