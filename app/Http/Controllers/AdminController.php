@@ -163,4 +163,60 @@ class AdminController extends Controller
 
         return view('admin.moderation.index', compact('comments', 'filter'));
     }
+
+    public function moderationIndexAjax(Request $request)
+    {
+        [$comments, $filter] = $this->buildModerationList($request);
+
+        return view('admin.moderation.ajax.index', compact('comments', 'filter'));
+    }
+
+    protected function buildModerationList(Request $request)
+    {
+        $filter = $request->input('filter', 'all');
+
+        // TOPIC
+        $topicQuery = TopicComment::with('user', 'topic')
+            ->where('moderated', 0)
+            ->where(fn ($q) =>
+                $q->where('toxicity_level', '>=', 0.1)
+                  ->orWhere('reported', 1)
+            );
+
+        // PLANT
+        $plantQuery = PlantComment::with('user', 'plant')
+            ->where('moderated', 0)
+            ->where(fn ($q) =>
+                $q->where('toxicity_level', '>=', 0.1)
+                  ->orWhere('reported', 1)
+            );
+
+        // filtros
+        match ($filter) {
+            'suspect' => [$topicQuery, $plantQuery]->each->where('toxicity_level', '>=', 0.1),
+            'high'    => [$topicQuery, $plantQuery]->each->where('toxicity_level', '>=', 0.7),
+            'reported'=> [$topicQuery, $plantQuery]->each->where('reported', 1),
+            default   => null,
+        };
+
+        $topic = $topicQuery->get()->map(fn ($c) => tap($c)->comment_type = 'topic');
+        $plant = $plantQuery->get()->map(fn ($c) => tap($c)->comment_type = 'plant');
+
+        $all = $topic->merge($plant)->sortByDesc('created_at')->values();
+
+        // paginação manual
+        $perPage = 20;
+        $page = LengthAwarePaginator::resolveCurrentPage();
+        $items = $all->slice(($page - 1) * $perPage, $perPage)->values();
+
+        $comments = new LengthAwarePaginator(
+            $items,
+            $all->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
+        return [$comments, $filter];
+    }
 }

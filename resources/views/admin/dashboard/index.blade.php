@@ -86,9 +86,16 @@
         @include('admin.dashboard._sidebar')
 
         {{-- CONTEÚDO --}}
-        <div class="dashboard-content">
+        <div id="dashboard-panel" class="dashboard-content">
 
-            <div id="panel-orders" class="dashboard-panel active">
+            <div id="panel-init"class="dashboard-panel">
+                <div class="text-muted p-4">
+                    Selecione um painel no menu.
+                </div>
+            </div>
+
+
+            {{-- <div id="panel-orders" class="dashboard-panel active">
                 @include('admin.dashboard.panels.orders')
             </div>
 
@@ -102,7 +109,7 @@
 
             <div id="panel-users" class="dashboard-panel">
                 @include('admin.dashboard.panels.users')
-            </div>
+            </div> --}}
 
         </div>
     </div>
@@ -147,23 +154,51 @@
         </div>
     </div>
 
-    <script>
-        document.querySelectorAll('.dashboard-link').forEach(btn => {
-            btn.addEventListener('click', () => {
+    {{-- admin/dashboard/index.blade.php --}}
+<script>
+function loadPanel(panel, query = '') {
+    fetch(`/admin/panels/${panel}?${query}`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.text())
+    .then(html => {
+        document.getElementById('dashboard-panel').innerHTML = html;
+    })
+    .catch(() => {
+        document.getElementById('dashboard-panel').innerHTML =
+            '<div class="p-4 text-danger">Erro ao carregar painel.</div>';
+    });
+}
+</script>
 
-                document.querySelectorAll('.dashboard-link')
-                    .forEach(b => b.classList.remove('active'));
+<script>
+document.addEventListener('change', function (e) {
 
-                document.querySelectorAll('.dashboard-panel')
-                    .forEach(p => p.classList.remove('active'));
+    if (e.target && e.target.id === 'filterSelect') {
 
-                btn.classList.add('active');
-                document
-                    .getElementById('panel-' + btn.dataset.panel)
-                    .classList.add('active');
-            });
-        });
-    </script>
+        const filter = encodeURIComponent(e.target.value);
+
+        loadPanel('moderation', 'filter=' + filter);
+    }
+
+});
+</script>
+
+
+
+<script>
+document.querySelectorAll('.dashboard-link').forEach(button => {
+    button.addEventListener('click', () => {
+        const panel = button.dataset.panel;
+
+        if (!panel) return;
+
+        loadPanel(panel);
+    });
+});
+</script>
 
     <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_KEY') }}"></script>
 

@@ -1,12 +1,3 @@
-<h4 class="fw-bold ms-2 my-3">
-    Moderação
-
-    @if ($moderationCount > 0)
-        <span class="badge bg-danger ms-2">
-            {{ $moderationCount }} pendente(s)
-        </span>
-    @endif
-</h4>
 <div class="mb-3 orders-filters">
     <select id="filterSelect" class="form-select form-select-sm" style="max-width: 260px;">
         <option value="all" {{ $filter === 'all' ? 'selected' : '' }}>Todos</option>
@@ -206,4 +197,19 @@
             }
         });
     });
+</script>
+<script>
+document.getElementById('filterSelect').addEventListener('change', async function () {
+
+    const filter = this.value;
+
+    const response = await fetch(
+        "{{ route('admin.dashboard.moderation.ajax') }}?filter=" + filter,
+        { headers: { 'X-Requested-With': 'XMLHttpRequest' } }
+    );
+
+    const html = await response.text();
+
+    document.getElementById('moderation-panel-content').innerHTML = html;
+});
 </script>

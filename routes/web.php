@@ -26,6 +26,7 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SiteReviewController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\ModerationPanelController;
 
 // QR-Code
 
@@ -273,6 +274,24 @@ Route::get('/api/counters', [AdminController::class, 'counters'])->name('admin.c
 Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::get('/moderation', [AdminController::class, 'moderationIndex'])->name('admin.moderation.index');
 });
+
+// Moderação ajax
+
+Route::get('/admin/panels/moderation', [ModerationPanelController::class, 'index'])->name('admin.panels.moderation');
+
+Route::get('/admin/dashboard/moderation-panel', [AdminDashboardController::class, 'moderationPanelAjax'])->name('admin.dashboard.moderation.ajax');
+
+Route::delete('/admin/comments/{id}/ajax/moderate-delete', [TopicCommentController::class, 'moderateDeleteAjax'])
+    ->middleware(['auth', 'is_admin'])
+    ->name('topic-comments.ajax.moderateDelete');
+
+Route::post('/topic-comments/ajax/block-user/{userId}', [TopicCommentController::class, 'blockUserAjax'])
+    ->middleware(['auth', 'is_admin'])
+    ->name('topic-comments.ajax.blockUser');
+
+Route::post('/topic-comments/{id}/ajax/allow', [TopicCommentController::class, 'allowAjax'])
+    ->middleware(['auth', 'is_admin'])
+    ->name('topic-comments.ajax.allow');
 
 // Rotas de avaliação do site
 

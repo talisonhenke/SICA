@@ -64,14 +64,13 @@ class TopicCommentController extends Controller
     }
 
     private function containsWord($text, $word)
-{
-    // Escapar caracteres especiais
-    $escaped = preg_quote($word, '/');
+    {
+        // Escapar caracteres especiais
+        $escaped = preg_quote($word, '/');
 
-    // Regex para palavra inteira (Unicode)
-    return preg_match('/\b' . $escaped . '\b/u', $text);
-}
-
+        // Regex para palavra inteira (Unicode)
+        return preg_match('/\b' . $escaped . '\b/u', $text);
+    }
 
     public function update(Request $request, TopicComment $comment)
     {
@@ -186,6 +185,50 @@ class TopicCommentController extends Controller
         return back()->with('success', 'Comentário excluído e strike aplicado.');
     }
 
+    public function moderateDeleteAjax($commentId)
+    {
+        // Segurança básica
+        if (!auth()->check() || auth()->user()->user_lvl !== 'admin') {
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Apenas administradores podem moderar comentários.',
+                ],
+                403,
+            );
+        }
+
+        // Busca comentário
+        $comment = TopicComment::with('user')->find($commentId);
+
+        if (!$comment) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Comentário não encontrado.',
+                ],
+                404,
+            );
+        }
+
+        // Aplica strike no usuário
+        $user = $comment->user;
+
+        if ($user) {
+            $user->comment_strikes = ($user->comment_strikes ?? 0) + 1;
+            $user->save();
+        }
+
+        // Remove comentário
+        $comment->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Comentário excluído e strike aplicado com sucesso.',
+            'comment_id' => $commentId,
+        ]);
+    }
+
     private function checkToxicity($text)
     {
         $apiKey = env('PERSPECTIVE_API_KEY');
@@ -238,7 +281,7 @@ class TopicCommentController extends Controller
                 $extra += 0.4; // cada palavra suspeita soma valor de "toxicidade" no comentario
 
                 if ($extra >= 0.7) {
-                    return $extra; 
+                    return $extra;
                 }
             }
         }
@@ -272,6 +315,44 @@ class TopicCommentController extends Controller
         return back()->with('success', 'Comentário permitido e removido da moderação.');
     }
 
+    public function allowAjax($id)
+    {
+        // Segurança
+        if (!auth()->check() || auth()->user()->user_lvl !== 'admin') {
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Apenas administradores podem moderar comentários.',
+                ],
+                403,
+            );
+        }
+
+        // Busca comentário
+        $comment = TopicComment::find($id);
+
+        if (!$comment) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Comentário não encontrado.',
+                ],
+                404,
+            );
+        }
+
+        // Permite o comentário
+        $comment->moderated = 1;
+        $comment->reported = 0; // limpa denúncia
+        $comment->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Comentário permitido e removido da moderação.',
+            'comment_id' => $comment->id,
+        ]);
+    }
+
     public function blockUser($userId)
     {
         $user = User::findOrFail($userId);
@@ -281,5 +362,41 @@ class TopicCommentController extends Controller
         $user->save();
 
         return back()->with('success', 'Usuário bloqueado para fazer comentários.');
+    }
+    public function blockUserAjax($userId)
+    {
+        // Segurança básica
+        if (!auth()->check() || auth()->user()->user_lvl !== 'admin') {
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Apenas administradores podem bloquear usuários.',
+                ],
+                403,
+            );
+        }
+
+        $user = User::find($userId);
+
+        if (!$user) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Usuário não encontrado.',
+                ],
+                404,
+            );
+        }
+
+        // Força o limite de strikes (bloqueio)
+        $user->comment_strikes = 3;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuário bloqueado para fazer comentários.',
+            'user_id' => $userId,
+            'comment_strikes' => $user->comment_strikes,
+        ]);
     }
 }
