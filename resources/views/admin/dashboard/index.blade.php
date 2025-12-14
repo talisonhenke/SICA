@@ -155,50 +155,50 @@
     </div>
 
     {{-- admin/dashboard/index.blade.php --}}
-<script>
-function loadPanel(panel, query = '') {
-    fetch(`/admin/panels/${panel}?${query}`, {
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
+    <script>
+        function loadPanel(panel, query = '') {
+            fetch(`/admin/panels/${panel}?${query}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('dashboard-panel').innerHTML = html;
+                })
+                .catch(() => {
+                    document.getElementById('dashboard-panel').innerHTML =
+                        '<div class="p-4 text-danger">Erro ao carregar painel.</div>';
+                });
         }
-    })
-    .then(response => response.text())
-    .then(html => {
-        document.getElementById('dashboard-panel').innerHTML = html;
-    })
-    .catch(() => {
-        document.getElementById('dashboard-panel').innerHTML =
-            '<div class="p-4 text-danger">Erro ao carregar painel.</div>';
-    });
-}
-</script>
+    </script>
 
-<script>
-document.addEventListener('change', function (e) {
+    <script>
+        document.addEventListener('change', function(e) {
 
-    if (e.target && e.target.id === 'filterSelect') {
+            if (e.target && e.target.id === 'filterSelect') {
 
-        const filter = encodeURIComponent(e.target.value);
+                const filter = encodeURIComponent(e.target.value);
 
-        loadPanel('moderation', 'filter=' + filter);
-    }
+                loadPanel('moderation', 'filter=' + filter);
+            }
 
-});
-</script>
+        });
+    </script>
 
 
 
-<script>
-document.querySelectorAll('.dashboard-link').forEach(button => {
-    button.addEventListener('click', () => {
-        const panel = button.dataset.panel;
+    <script>
+        document.querySelectorAll('.dashboard-link').forEach(button => {
+            button.addEventListener('click', () => {
+                const panel = button.dataset.panel;
 
-        if (!panel) return;
+                if (!panel) return;
 
-        loadPanel(panel);
-    });
-});
-</script>
+                loadPanel(panel);
+            });
+        });
+    </script>
 
     <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_KEY') }}"></script>
 
@@ -519,4 +519,62 @@ document.querySelectorAll('.dashboard-link').forEach(button => {
                 alert('Mensagem copiada!');
             });
     </script>
+
+    <script>
+document.addEventListener('click', async function (e) {
+
+    const actionButton =
+        e.target.closest('.js-moderate-delete') ||
+        e.target.closest('.js-allow-comment') ||
+        e.target.closest('.js-block-user');
+
+    if (!actionButton) return;
+
+    e.preventDefault();
+
+    let confirmMessage = '';
+
+    if (actionButton.classList.contains('js-moderate-delete')) {
+        confirmMessage = 'Excluir o comentário e aplicar STRIKE ao usuário?';
+    }
+
+    if (actionButton.classList.contains('js-allow-comment')) {
+        confirmMessage = 'Deseja permitir este comentário?';
+    }
+
+    if (actionButton.classList.contains('js-block-user')) {
+        confirmMessage = 'Bloquear este usuário definitivamente para comentários?';
+    }
+
+    if (!confirm(confirmMessage)) return;
+
+    const modalElement = actionButton.closest('.modal');
+    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+
+    const response = await fetch(actionButton.dataset.url, {
+        method: actionButton.classList.contains('js-moderate-delete') ? 'DELETE' : 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        }
+    });
+
+    const data = await response.json();
+
+    if (!data.success) {
+        alert(data.message || 'Erro ao executar ação.');
+        return;
+    }
+
+    // 1️⃣ Fecha o modal corretamente
+    modalInstance.hide();
+
+    // 2️⃣ Só recarrega o painel depois que o Bootstrap limpou tudo
+    modalElement.addEventListener('hidden.bs.modal', function () {
+        loadPanel('moderation');
+    }, { once: true });
+
+});
+</script>
+
 @endsection
