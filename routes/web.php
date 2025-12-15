@@ -8,6 +8,9 @@ use App\Http\Controllers\Auth\RegisterController;
 
 use App\Http\Controllers\Auth\LoginController;
 
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
+
 // Data Controllers
 
 use App\Http\Controllers\PlantController;
@@ -51,9 +54,35 @@ use App\Models\Topic;
 |
 */
 
-// Route::get('/', function(){
-//     return view('welcome');
-// });
+// TESTE DE ENVIO DE EMAIL 
+
+Route::get('/test-email', function () {
+    \Mail::raw('Teste SMTP Hostinger', function ($message) {
+        $message->to('talisonhenke.pl318@academico.ifsul.edu.br')
+                ->subject('Teste SMTP');
+    });
+
+    return 'Email enviado (ou tentou)';
+});
+
+// ROTAS DE VEIFICAÇÃO 
+
+Auth::routes(['verify' => true]);
+
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Link de verificação reenviado!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
 Route::get('/', function () {
     // Pega até 2 tópicos em destaque
     $featuredTopics = Topic::where('featured', true)->latest()->take(2)->get();

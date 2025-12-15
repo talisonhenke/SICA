@@ -20,22 +20,27 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email'    => 'required|email',
+            'email' => 'required|email',
             'password' => 'required|min:6',
         ]);
 
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-
             $user = Auth::user();
 
-            // Admin vai para o dashboard
+            if (!$user->hasVerifiedEmail()) {
+                Auth::logout();
+
+                return back()->withErrors([
+                    'email' => 'Você precisa verificar seu e-mail antes de fazer login.',
+                ]);
+            }
+
             if ($user->user_lvl === 'admin') {
                 return redirect()->intended('/admin/ajax/dashboard');
             }
 
-            // Usuário comum vai para a homepage
             return redirect()->intended('/');
         }
 
@@ -67,12 +72,12 @@ class LoginController extends Controller
 
             if (!$user) {
                 $user = new User();
-                $user->name       = $googleUser->getName();
-                $user->email      = $googleUser->getEmail();
-                $user->user_lvl   = 'user';
+                $user->name = $googleUser->getName();
+                $user->email = $googleUser->getEmail();
+                $user->user_lvl = 'user';
                 $user->permissions = 'user';
-                $user->is_owner   = false;
-                $user->password   = Hash::make(uniqid());
+                $user->is_owner = false;
+                $user->password = Hash::make(uniqid());
                 $user->save();
             }
 
@@ -84,10 +89,9 @@ class LoginController extends Controller
             }
 
             return redirect()->intended('/');
-
         } catch (\Exception $e) {
             return redirect('/login')->withErrors([
-                'login' => 'Ocorreu um erro ao tentar fazer login com o Google.'
+                'login' => 'Ocorreu um erro ao tentar fazer login com o Google.',
             ]);
         }
     }

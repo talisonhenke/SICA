@@ -5,38 +5,61 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Models\User;
+use Throwable;
 
 class RegisterController extends Controller
 {
-    // Método para registro convencional
     public function register(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'phone_number' => 'nullable|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
+        // ✅ Validação padrão (Laravel cuida do redirect + erros)
+        $validated = $request->validate(
+            [
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|max:255|unique:users,email',
+                'phone_number' => 'nullable|string|max:255',
+                'password' => 'required|string|min:6|confirmed',
+            ],
+            [
+                'name.required' => 'O nome é obrigatório.',
+                'name.max' => 'O nome pode ter no máximo 255 caracteres.',
 
-        // Cria o novo usuário
+                'email.required' => 'O e-mail é obrigatório.',
+                'email.email' => 'Informe um e-mail válido.',
+                'email.unique' => 'Este e-mail já está em uso.',
 
-        $user = new User;
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->phone_number = $request->phone_number;
-        $user->password = Hash::make($request->password);
-        $user->user_lvl = 'member';
-        $user->permissions = 'user';
-        $user->is_owner = false;
-        $user->save(); // <-- Essa linha é que salva de fato no banco
+                'password.required' => 'A senha é obrigatória.',
+                'password.min' => 'A senha deve ter no mínimo 6 caracteres.',
+                'password.confirmed' => 'A confirmação da senha não confere.',
+            ],
+        );
 
+        try {
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'phone_number' => $validated['phone_number'] ?? null,
+                'password' => Hash::make($validated['password']),
+                'user_lvl' => 'user',
+                'permissions' => 'user',
+                'is_owner' => false,
+            ]);
 
-        // Autentica o usuário
-        Auth::login($user);
+            // Envio do e-mail
+            $user->sendEmailVerificationNotification();
 
-        // Redireciona para o dashboard
-        return redirect()->intended('/'); //route to homepage
+            return redirect('/login')->with('status', 'Enviamos um link de verificação para o seu e-mail.');
+        } catch (Throwable $e) {
+            Log::error('Erro no registro (não validação)', [
+                'message' => $e->getMessage(),
+            ]);
+
+            return back()
+                ->withErrors([
+                    'register' => 'Erro interno ao criar conta. Tente novamente mais tarde.',
+                ])
+                ->withInput();
+        }
     }
 }
