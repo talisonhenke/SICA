@@ -88,29 +88,11 @@
         {{-- CONTEÚDO --}}
         <div id="dashboard-panel" class="dashboard-content">
 
-            <div id="panel-init"class="dashboard-panel">
+            <div id="panel-init" class="dashboard-panel">
                 <div class="text-muted p-4">
                     Selecione um painel no menu.
                 </div>
             </div>
-
-
-            {{-- <div id="panel-orders" class="dashboard-panel active">
-                @include('admin.dashboard.panels.orders')
-            </div>
-
-            <div id="panel-moderation" class="dashboard-panel">
-                @include('admin.dashboard.panels.moderation')
-            </div>
-
-            <div id="panel-tags" class="dashboard-panel">
-                @include('admin.dashboard.panels.tags')
-            </div>
-
-            <div id="panel-users" class="dashboard-panel">
-                @include('admin.dashboard.panels.users')
-            </div> --}}
-
         </div>
     </div>
 
@@ -157,26 +139,26 @@
     {{-- FILTRO DE PEDIDOS  --}}
 
     <script>
-document.addEventListener('click', function (e) {
+        document.addEventListener('click', function(e) {
 
-    const filterButton = e.target.closest('.btn-filter');
-    if (!filterButton) return;
+            const filterButton = e.target.closest('.btn-filter');
+            if (!filterButton) return;
 
-    const status = filterButton.dataset.status;
+            const status = filterButton.dataset.status;
 
-    // Remove active de todos
-    document.querySelectorAll('.btn-filter').forEach(btn => {
-        btn.classList.remove('active');
-    });
+            // Remove active de todos
+            document.querySelectorAll('.btn-filter').forEach(btn => {
+                btn.classList.remove('active');
+            });
 
-    // Marca o atual
-    filterButton.classList.add('active');
+            // Marca o atual
+            filterButton.classList.add('active');
 
-    // Carrega painel com filtro
-    loadPanel('orders', 'status=' + status);
+            // Carrega painel com filtro
+            loadPanel('orders', 'status=' + status);
 
-});
-</script>
+        });
+    </script>
 
     {{-- admin/dashboard/index.blade.php --}}
     <script>
@@ -209,9 +191,28 @@ document.addEventListener('click', function (e) {
 
         });
     </script>
+    {{-- Carrega painel de pedidos ao iniciar o index do dashboard --}}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // 1️⃣ Carrega o painel inicial (Orders)
+            loadPanel('orders');
+
+            // 2️⃣ Mantém o comportamento dos botões
+            document.querySelectorAll('.dashboard-link').forEach(button => {
+                button.addEventListener('click', () => {
+                    const panel = button.dataset.panel;
+                    if (!panel) return;
+                    loadPanel(panel);
+                });
+            });
+
+        });
+    </script>
 
 
-
+    {{-- Carregar paineis através do menu lateral  --}}
     <script>
         document.querySelectorAll('.dashboard-link').forEach(button => {
             button.addEventListener('click', () => {
@@ -545,60 +546,156 @@ document.addEventListener('click', function (e) {
     </script>
 
     <script>
-document.addEventListener('click', async function (e) {
+        document.addEventListener('click', async function(e) {
 
-    const actionButton =
-        e.target.closest('.js-moderate-delete') ||
-        e.target.closest('.js-allow-comment') ||
-        e.target.closest('.js-block-user');
+            const actionButton =
+                e.target.closest('.js-moderate-delete') ||
+                e.target.closest('.js-allow-comment') ||
+                e.target.closest('.js-block-user');
 
-    if (!actionButton) return;
+            if (!actionButton) return;
+
+            e.preventDefault();
+
+            let confirmMessage = '';
+
+            if (actionButton.classList.contains('js-moderate-delete')) {
+                confirmMessage = 'Excluir o comentário e aplicar STRIKE ao usuário?';
+            }
+
+            if (actionButton.classList.contains('js-allow-comment')) {
+                confirmMessage = 'Deseja permitir este comentário?';
+            }
+
+            if (actionButton.classList.contains('js-block-user')) {
+                confirmMessage = 'Bloquear este usuário definitivamente para comentários?';
+            }
+
+            if (!confirm(confirmMessage)) return;
+
+            const modalElement = actionButton.closest('.modal');
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+
+            const response = await fetch(actionButton.dataset.url, {
+                method: actionButton.classList.contains('js-moderate-delete') ? 'DELETE' : 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (!data.success) {
+                alert(data.message || 'Erro ao executar ação.');
+                return;
+            }
+
+            // 1️⃣ Fecha o modal corretamente
+            modalInstance.hide();
+
+            // 2️⃣ Só recarrega o painel depois que o Bootstrap limpou tudo
+            modalElement.addEventListener('hidden.bs.modal', function() {
+                loadPanel('moderation');
+            }, {
+                once: true
+            });
+
+        });
+    </script>
+
+    <script>
+/*
+|--------------------------------------------------------------------------
+| CREATE TAG
+|--------------------------------------------------------------------------
+*/
+document.addEventListener('submit', function (e) {
+
+    if (!e.target.classList.contains('js-create-tag')) return;
 
     e.preventDefault();
 
-    let confirmMessage = '';
+    const form = e.target;
+    const url  = form.dataset.url;
+    const data = new FormData(form);
 
-    if (actionButton.classList.contains('js-moderate-delete')) {
-        confirmMessage = 'Excluir o comentário e aplicar STRIKE ao usuário?';
-    }
-
-    if (actionButton.classList.contains('js-allow-comment')) {
-        confirmMessage = 'Deseja permitir este comentário?';
-    }
-
-    if (actionButton.classList.contains('js-block-user')) {
-        confirmMessage = 'Bloquear este usuário definitivamente para comentários?';
-    }
-
-    if (!confirm(confirmMessage)) return;
-
-    const modalElement = actionButton.closest('.modal');
-    const modalInstance = bootstrap.Modal.getInstance(modalElement);
-
-    const response = await fetch(actionButton.dataset.url, {
-        method: actionButton.classList.contains('js-moderate-delete') ? 'DELETE' : 'POST',
+    fetch(url, {
+        method: 'POST',
         headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Accept': 'application/json'
-        }
+            'X-CSRF-TOKEN': document
+                .querySelector('meta[name="csrf-token"]').content
+        },
+        body: data
+    })
+    .then(res => res.json())
+    .then(() => {
+        bootstrap.Modal.getInstance(
+            document.getElementById('createTagModal')
+        ).hide();
+
+        loadPanel('tags'); // 🔥 recarrega o painel
     });
-
-    const data = await response.json();
-
-    if (!data.success) {
-        alert(data.message || 'Erro ao executar ação.');
-        return;
-    }
-
-    // 1️⃣ Fecha o modal corretamente
-    modalInstance.hide();
-
-    // 2️⃣ Só recarrega o painel depois que o Bootstrap limpou tudo
-    modalElement.addEventListener('hidden.bs.modal', function () {
-        loadPanel('moderation');
-    }, { once: true });
-
 });
 </script>
+
+<script>
+document.addEventListener('submit', function (e) {
+
+    if (!e.target.classList.contains('js-edit-tag')) return;
+
+    e.preventDefault();
+
+    const form = e.target;
+    const url  = form.dataset.url;
+    const data = new FormData(form);
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document
+                .querySelector('meta[name="csrf-token"]').content,
+            'X-HTTP-Method-Override': 'PUT'
+        },
+        body: data
+    })
+    .then(res => res.json())
+    .then(() => {
+        bootstrap.Modal.getInstance(
+            form.closest('.modal')
+        ).hide();
+
+        loadPanel('tags');
+    });
+});
+</script>
+
+<script>
+document.addEventListener('click', function (e) {
+
+    if (!e.target.classList.contains('js-delete-tag')) return;
+
+    const url = e.target.dataset.url;
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document
+                .querySelector('meta[name="csrf-token"]').content,
+            'X-HTTP-Method-Override': 'DELETE'
+        }
+    })
+    .then(res => res.json())
+    .then(() => {
+        bootstrap.Modal.getInstance(
+            e.target.closest('.modal')
+        ).hide();
+
+        loadPanel('tags');
+    });
+});
+</script>
+
+
 
 @endsection

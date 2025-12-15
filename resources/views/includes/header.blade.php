@@ -179,81 +179,105 @@
         {{-- Menu --}}
         <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
             <ul class="navbar-nav mb-2 mb-lg-0 align-items-center">
-                <li class="nav-item"><a class="nav-link" href="/">Página Inicial</a></li>
-                <li class="nav-item"><a class="nav-link" href="/plants_list">Lista de Plantas</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('topics.index') }}">Tópicos</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('products.index') }}">Produtos</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('orders.index') }}">Meus Pedidos</a></li>
 
-
+                {{-- ========================= --}}
+                {{-- ADMINISTRADOR --}}
+                {{-- ========================= --}}
                 @if (Auth::check() && Auth::user()->user_lvl === 'admin')
-                    <li class="nav-item position-relative">
-                        <a class="nav-link" href="{{ route('admin.orders.index') }}">Ver Pedidos</a>
-
-                        {{-- Badge dinâmico preenchido via AJAX --}}
-                        <span id="ordersBadge"
-                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
-                            0
-                        </span>
-                    </li>
-                    <li class="nav-item position-relative">
-
-                        <a class="nav-link" href="{{ route('admin.moderation.index') }}">
-                            Moderação
-                        </a>
-
-                        {{-- Badge dinâmico preenchido via AJAX --}}
-                        <span id="moderationBadge"
-                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
-                            0
-                        </span>
-
-                    </li>
-
-                    <li class="nav-item"><a href="{{ route('admin.ajax.dashboard') }}" class="nav-link">
+                    <li class="nav-item">
+                        <a href="{{ route('admin.ajax.dashboard') }}" class="nav-link">
                             Painel do Administrador
-
-                            {{-- @if ($adminNotifications > 0)
-                                <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
-                                    {{ $adminNotifications }}
-                                </span>
-                            @endif --}}
-                        </a></li>
-
-                    <li class="nav-item"><a class="nav-link" href="/users_list">Usuários</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('tags.index') }}">Tags</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('admin.reviews.index') }}">Avaliações</a>
+                        </a>
                     </li>
                 @endif
 
-                <li class="nav-item d-none d-lg-block">
-                    <a class="nav-link position-relative d-flex align-items-center gap-1"
-                        href="{{ route('cart.index') }}">
-                        <i class="bi bi-cart3"></i>
-                        <span>Carrinho</span>
-                        @if (session('cart') && count(session('cart')) > 0)
-                            <span
-                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                {{ count(session('cart')) }}
-                            </span>
-                        @endif
-                    </a>
+                {{-- ========================= --}}
+                {{-- PÁGINA INICIAL (NÃO ADMIN) --}}
+                {{-- ========================= --}}
+                @if (!Auth::check() || (Auth::check() && Auth::user()->user_lvl !== 'admin'))
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Página Inicial</a>
+                    </li>
+                @endif
+
+                {{-- ========================= --}}
+                {{-- CORE DO SISTEMA (TODOS) --}}
+                {{-- ========================= --}}
+                <li class="nav-item">
+                    <a class="nav-link" href="/plants_list">Lista de Plantas</a>
                 </li>
 
-                <li class="nav-item d-lg-none">
-                    <a class="nav-link position-relative d-flex align-items-center justify-content-between"
-                        href="{{ route('cart.index') }}">
-                        <span class="spanItems">Carrinho</span>
-                        <i class="bi bi-cart3"></i>
-                        @if (session('cart') && count(session('cart')) > 0)
-                            <span class="badge bg-danger ms-2">
-                                {{ count(session('cart')) }}
-                            </span>
-                        @endif
-                    </a>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('topics.index') }}">Tópicos</a>
                 </li>
 
-                {{-- Troca de temas --}}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('products.index') }}">Produtos</a>
+                </li>
+
+                {{-- ========================= --}}
+                {{-- ADMIN – ITENS EXCLUSIVOS --}}
+                {{-- ========================= --}}
+                @if (Auth::check() && Auth::user()->user_lvl === 'admin')
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('tags.index') }}">Tags</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.reviews.index') }}">Avaliações</a>
+                    </li>
+                @endif
+
+                {{-- ========================= --}}
+                {{-- USUÁRIO LOGADO (NÃO ADMIN) --}}
+                {{-- ========================= --}}
+                @if (Auth::check() && Auth::user()->user_lvl !== 'admin')
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('orders.index') }}">Meus Pedidos</a>
+                    </li>
+                @endif
+
+                {{-- ========================= --}}
+                {{-- CARRINHO (NÃO ADMIN) --}}
+                {{-- ========================= --}}
+                @if (!Auth::check() || Auth::user()->user_lvl !== 'admin')
+                    <li class="nav-item d-none d-lg-block">
+                        <a class="nav-link position-relative d-flex align-items-center gap-1"
+                            href="{{ route('cart.index') }}">
+                            <i class="bi bi-cart3"></i>
+                            <span>Carrinho</span>
+
+                            @if (session('cart') && count(session('cart')) > 0)
+                                <span
+                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    {{ count(session('cart')) }}
+                                </span>
+                            @endif
+                        </a>
+                    </li>
+                @endif
+
+                {{-- Carrinho mobile  --}}
+                @if (!Auth::check() || Auth::user()->user_lvl !== 'admin')
+                    <li class="nav-item d-lg-none">
+                        <a class="nav-link d-flex align-items-center justify-content-between"
+                            href="{{ route('cart.index') }}">
+                            <span class="spanItems">Carrinho</span>
+                            <i class="bi bi-cart3"></i>
+
+                            @if (session('cart') && count(session('cart')) > 0)
+                                <span class="badge bg-danger ms-2">
+                                    {{ count(session('cart')) }}
+                                </span>
+                            @endif
+                        </a>
+                    </li>
+                @endif
+
+
+                {{-- ========================= --}}
+                {{-- TEMA --}}
+                {{-- ========================= --}}
                 <li class="nav-item d-none d-lg-flex align-items-center ms-2">
                     <button id="themeToggleBtn" class="theme-btn">
                         <i class="bi bi-sun-fill" id="themeIcon"></i>
@@ -267,16 +291,20 @@
                     </button>
                 </li>
 
-
-                {{-- Se o usuário estiver logado --}}
+                {{-- ========================= --}}
+                {{-- SESSÃO --}}
+                {{-- ========================= --}}
                 @if (Auth::check())
                     <li class="nav-item dropdown ms-lg-3">
-                        <a class="nav-link dropdown-toggle fw-bold px-3 rounded-pill" href="#" id="userMenu"
-                            role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle fw-bold px-3 rounded-pill" href="#"
+                            data-bs-toggle="dropdown">
                             {{ strtok(Auth::user()->name, ' ') }}
                         </a>
+
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="/edit_profile">Editar Perfil</a></li>
+                            <li>
+                                <a class="dropdown-item" href="/edit_profile">Editar Perfil</a>
+                            </li>
                             <li>
                                 <a class="dropdown-item" href="{{ route('logout') }}"
                                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -287,11 +315,14 @@
                     </li>
                 @else
                     <li class="nav-item ms-lg-3">
-                        <a class="btn btn-outline-light px-3 py-1 rounded-pill mt-lg-0 mt-sm-2"
-                            href="{{ route('login') }}">Entrar</a>
+                        <a class="btn btn-outline-light px-3 py-1 rounded-pill" href="{{ route('login') }}">
+                            Entrar
+                        </a>
                     </li>
                 @endif
+
             </ul>
+
         </div>
 
         {{-- Formulário de logout oculto --}}

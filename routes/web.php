@@ -28,7 +28,7 @@ use App\Http\Controllers\SiteReviewController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\ModerationPanelController;
 use App\Http\Controllers\OrderPanelController;
-
+use App\Http\Controllers\TagPanelController;
 
 // QR-Code
 
@@ -259,15 +259,12 @@ Route::middleware(['auth', 'is_admin'])
         //     ->name('users.index');
     });
 
-    // PEDIDOS ajax 
-    Route::middleware(['auth', 'is_admin'])
+// PEDIDOS ajax
+Route::middleware(['auth', 'is_admin'])
     ->prefix('admin/panels')
     ->name('admin.panels.')
     ->group(function () {
-
-        Route::get('/orders', [OrderPanelController::class, 'index'])
-            ->name('orders');
-
+        Route::get('/orders', [OrderPanelController::class, 'index'])->name('orders');
     });
 
 Route::get('/orders/{order}', [OrderAdminController::class, 'orderModal'])->name('admin.orders.ajax.modal');
@@ -294,7 +291,7 @@ Route::get('/admin/panels/moderation', [ModerationPanelController::class, 'index
 
 Route::get('/admin/dashboard/moderation-panel', [AdminDashboardController::class, 'moderationPanelAjax'])->name('admin.dashboard.moderation.ajax');
 
-Route::delete('/admin/comments/{id}/ajax/moderate-delete', [TopicCommentController::class, 'moderateDeleteAjax'])
+Route::delete('topic-comments/{id}/ajax/moderate-delete', [TopicCommentController::class, 'moderateDeleteAjax'])
     ->middleware(['auth', 'is_admin'])
     ->name('topic-comments.ajax.moderateDelete');
 
@@ -305,6 +302,18 @@ Route::post('/topic-comments/ajax/block-user/{userId}', [TopicCommentController:
 Route::post('/topic-comments/{id}/ajax/allow', [TopicCommentController::class, 'allowAjax'])
     ->middleware(['auth', 'is_admin'])
     ->name('topic-comments.ajax.allow');
+
+Route::delete('/plant-comments/{id}/ajax/moderate-delete', [PlantCommentController::class, 'moderateDeleteAjax'])
+    ->middleware(['auth', 'is_admin'])
+    ->name('plant-comments.ajax.moderateDelete');
+
+Route::post('/plant-comments/ajax/block-user/{userId}', [PlantCommentController::class, 'blockUserAjax'])
+    ->middleware(['auth', 'is_admin'])
+    ->name('plant-comments.ajax.blockUser');
+
+Route::post('/plant-comments/{id}/ajax/allow', [PlantCommentController::class, 'allowAjax'])
+    ->middleware(['auth', 'is_admin'])
+    ->name('plant-comments.ajax.allow');
 
 // Rotas de avaliação do site
 
@@ -331,3 +340,20 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     // EXCLUIR (destroy)
     Route::delete('/admin/tags/{id}', [TagController::class, 'destroy'])->name('tags.destroy');
 });
+
+Route::prefix('admin/panels/tags')->middleware(['auth', 'is_admin'])->group(function () {
+
+    Route::get('/', [TagPanelController::class, 'index'])
+        ->name('admin.dashboard.panels.tags');
+
+    Route::post('/', [TagPanelController::class, 'store'])
+        ->name('admin.dashboard.panels.tags.store');
+
+    Route::put('/{id}', [TagPanelController::class, 'update'])
+        ->name('admin.dashboard.panels.tags.update');
+
+    Route::delete('/{id}', [TagPanelController::class, 'destroy'])
+        ->name('admin.dashboard.panels.tags.destroy');
+
+});
+

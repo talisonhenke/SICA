@@ -21,7 +21,7 @@
 
     }
     .btn-filter .badge {
-        font-size: 0.65rem;
+        font-size: 0.8rem;
     }
 
     .btn-filter-pending, .btn-filter-pending .badge {
