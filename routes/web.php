@@ -65,14 +65,36 @@ Route::get('/', function () {
 
     return view('welcome', compact('featuredTopics'));
 });
-Route::get('/plants_list', [PlantController::class, 'index'])->name('plants.index');
-Route::get('/plant/{id}/{slug}', [PlantController::class, 'show'])->name('plant.show');
-Route::get('/add_plant', [PlantController::class, 'create'])->name('plants.create');
-Route::post('/add', [PlantController::class, 'store'])->name('plants.store');
-Route::get('/edit_plant/{id}', [PlantController::class, 'edit'])->name('plants.edit');
-Route::put('/update/{id}', [PlantController::class, 'update'])->name('plants.update');
-Route::delete('/plant/{id}', [PlantController::class, 'destroy'])->name('plants.destroy');
-Route::get('/plants/search', [PlantController::class, 'search']); // busca de plantas na homepage
+
+// Lista de plantas
+Route::get('/plants_list', [PlantController::class, 'index'])
+    ->name('plants.index');
+
+// Detalhes da planta
+Route::get('/plant/{id}/{slug}', [PlantController::class, 'show'])
+    ->name('plant.show');
+
+// Busca de plantas (homepage)
+Route::get('/plants/search', [PlantController::class, 'search']);
+
+Route::middleware(['auth', 'is_admin'])->group(function () {
+
+    Route::get('/add_plant', [PlantController::class, 'create'])
+        ->name('plants.create');
+
+    Route::post('/add', [PlantController::class, 'store'])
+        ->name('plants.store');
+
+    Route::get('/edit_plant/{id}', [PlantController::class, 'edit'])
+        ->name('plants.edit');
+
+    Route::put('/update/{id}', [PlantController::class, 'update'])
+        ->name('plants.update');
+
+    Route::delete('/plant/{id}', [PlantController::class, 'destroy'])
+        ->name('plants.destroy');
+
+});
 
 //Login routes
 
@@ -94,8 +116,17 @@ Route::post('register', [RegisterController::class, 'register'])->name('register
 
 //User routes
 
-Route::get('/users_list', [UserController::class, 'index'])->name('users.index');
-Route::patch('/users/{user}/update-level', [UserController::class, 'updateLevel'])->name('users.updateLevel');
+Route::middleware(['auth', 'is_admin'])->group(function () {
+
+    // Listagem de usuários (painel administrativo)
+    Route::get('/users_list', [UserController::class, 'index'])
+        ->name('users.index');
+
+    // Atualizar nível / papel do usuário
+    Route::patch('/users/{user}/update-level', [UserController::class, 'updateLevel'])
+        ->name('users.updateLevel');
+
+});
 
 Route::prefix('admin/panels/users')
     ->middleware(['auth', 'is_admin'])
@@ -131,14 +162,24 @@ Route::middleware('auth')->group(function () {
 });
 
 //Topics routes
+
 Route::get('/topics', [TopicController::class, 'index'])->name('topics.index');
-Route::get('/topics/create', [TopicController::class, 'create'])->name('topics.create');
-Route::post('/topics', [TopicController::class, 'store'])->name('topics.store');
 Route::get('/topics/{topic}', [TopicController::class, 'show'])->name('topics.show');
-Route::get('/topics/{topic}/edit', [TopicController::class, 'edit'])->name('topics.edit');
-Route::put('/topics/{topic}', [TopicController::class, 'update'])->name('topics.update');
-Route::delete('/topics/{topic}', [TopicController::class, 'destroy'])->name('topics.destroy');
-Route::post('/topics/{topic}/toggle-featured', [TopicController::class, 'toggleFeatured'])->name('topics.toggleFeatured');
+
+Route::middleware(['auth', 'is_admin'])->group(function () {
+
+    Route::get('/topics/create', [TopicController::class, 'create'])->name('topics.create');
+    Route::post('/topics', [TopicController::class, 'store'])->name('topics.store');
+
+    Route::get('/topics/{topic}/edit', [TopicController::class, 'edit'])->name('topics.edit');
+    Route::put('/topics/{topic}', [TopicController::class, 'update'])->name('topics.update');
+    Route::delete('/topics/{topic}', [TopicController::class, 'destroy'])->name('topics.destroy');
+
+    Route::post('/topics/{topic}/toggle-featured', [TopicController::class, 'toggleFeatured'])
+        ->name('topics.toggleFeatured');
+
+});
+
 
 // Comentários de tópicos
 Route::middleware(['auth'])->group(function () {
@@ -162,8 +203,19 @@ Route::middleware(['auth'])->group(function () {
 
 // Products routes
 
-Route::resource('products', ProductController::class);
-Route::post('/products/{id}/toggle-status', [ProductController::class, 'toggleStatus'])->name('products.toggleStatus');
+Route::resource('products', ProductController::class)
+    ->only(['index', 'show']);
+
+Route::middleware(['auth', 'is_admin'])->group(function () {
+
+    Route::resource('products', ProductController::class)
+        ->except(['index', 'show']);
+
+    Route::post('/products/{id}/toggle-status', [ProductController::class, 'toggleStatus'])
+        ->name('products.toggleStatus');
+
+});
+
 
 // Comentários de plantas
 Route::middleware(['auth'])->group(function () {
@@ -202,13 +254,19 @@ Route::patch('/cart/update/{id}', [CartController::class, 'updateQuantity'])->na
 Route::get('/checkout/pix', [CheckoutController::class, 'pix'])->name('checkout.pix');
 
 // orders routes
-Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+Route::middleware('auth')->group(function () {
+    // Criar pedido
+    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
 
-Route::get('/orders/{order}/payment', [OrderController::class, 'paymentPage'])->name('orders.payment');
+    // Página de pagamento de um pedido específico
+    Route::get('/orders/{order}/payment', [OrderController::class, 'paymentPage'])->name('orders.payment');
 
-Route::get('/meus-pedidos', [OrderController::class, 'index'])->name('orders.index');
+    // Listar meus pedidos
+    Route::get('/meus-pedidos', [OrderController::class, 'index'])->name('orders.index');
 
-Route::get('/meus-pedidos/{id}', [OrderController::class, 'show'])->name('orders.show');
+    // Detalhes de um pedido específico
+    Route::get('/meus-pedidos/{id}', [OrderController::class, 'show'])->name('orders.show');
+});
 
 // addresses routes
 
@@ -316,33 +374,36 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 
 // Moderação ajax
 
-Route::get('/admin/panels/moderation', [ModerationPanelController::class, 'index'])->name('admin.panels.moderation');
+Route::middleware(['auth', 'is_admin'])->group(function () {
 
-Route::get('/admin/dashboard/moderation-panel', [AdminDashboardController::class, 'moderationPanelAjax'])->name('admin.dashboard.moderation.ajax');
+    // Painel de moderação
+    Route::get('/admin/panels/moderation', [ModerationPanelController::class, 'index'])
+        ->name('admin.panels.moderation');
 
-Route::delete('topic-comments/{id}/ajax/moderate-delete', [TopicCommentController::class, 'moderateDeleteAjax'])
-    ->middleware(['auth', 'is_admin'])
-    ->name('topic-comments.ajax.moderateDelete');
+    Route::get('/admin/dashboard/moderation-panel', [AdminDashboardController::class, 'moderationPanelAjax'])
+        ->name('admin.dashboard.moderation.ajax');
 
-Route::post('/topic-comments/ajax/block-user/{userId}', [TopicCommentController::class, 'blockUserAjax'])
-    ->middleware(['auth', 'is_admin'])
-    ->name('topic-comments.ajax.blockUser');
+    // Moderação de comentários de tópicos (AJAX)
+    Route::delete('/topic-comments/{id}/ajax/moderate-delete', [TopicCommentController::class, 'moderateDeleteAjax'])
+        ->name('topic-comments.ajax.moderateDelete');
 
-Route::post('/topic-comments/{id}/ajax/allow', [TopicCommentController::class, 'allowAjax'])
-    ->middleware(['auth', 'is_admin'])
-    ->name('topic-comments.ajax.allow');
+    Route::post('/topic-comments/ajax/block-user/{userId}', [TopicCommentController::class, 'blockUserAjax'])
+        ->name('topic-comments.ajax.blockUser');
 
-Route::delete('/plant-comments/{id}/ajax/moderate-delete', [PlantCommentController::class, 'moderateDeleteAjax'])
-    ->middleware(['auth', 'is_admin'])
-    ->name('plant-comments.ajax.moderateDelete');
+    Route::post('/topic-comments/{id}/ajax/allow', [TopicCommentController::class, 'allowAjax'])
+        ->name('topic-comments.ajax.allow');
 
-Route::post('/plant-comments/ajax/block-user/{userId}', [PlantCommentController::class, 'blockUserAjax'])
-    ->middleware(['auth', 'is_admin'])
-    ->name('plant-comments.ajax.blockUser');
+    // Moderação de comentários de plantas (AJAX)
+    Route::delete('/plant-comments/{id}/ajax/moderate-delete', [PlantCommentController::class, 'moderateDeleteAjax'])
+        ->name('plant-comments.ajax.moderateDelete');
 
-Route::post('/plant-comments/{id}/ajax/allow', [PlantCommentController::class, 'allowAjax'])
-    ->middleware(['auth', 'is_admin'])
-    ->name('plant-comments.ajax.allow');
+    Route::post('/plant-comments/ajax/block-user/{userId}', [PlantCommentController::class, 'blockUserAjax'])
+        ->name('plant-comments.ajax.blockUser');
+
+    Route::post('/plant-comments/{id}/ajax/allow', [PlantCommentController::class, 'allowAjax'])
+        ->name('plant-comments.ajax.allow');
+
+});
 
 // Rotas de avaliação do site
 
