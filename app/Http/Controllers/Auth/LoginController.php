@@ -7,28 +7,36 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-
-//Google Auth
 use Laravel\Socialite\Facades\Socialite;
 
 class LoginController extends Controller
 {
-    public function showLoginForm(){
+    public function showLoginForm()
+    {
         return view('auth/login');
     }
-    
-    // Método para login com email e senha
+
+    // Login com email e senha
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'email'    => 'required|email',
             'password' => 'required|min:6',
         ]);
 
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            return redirect()->intended('/'); // Redireciona para o HOMEPAGE
+
+            $user = Auth::user();
+
+            // Admin vai para o dashboard
+            if ($user->user_lvl === 'admin') {
+                return redirect()->intended('/admin/ajax/dashboard');
+            }
+
+            // Usuário comum vai para a homepage
+            return redirect()->intended('/');
         }
 
         return back()->withErrors([
@@ -36,48 +44,51 @@ class LoginController extends Controller
         ]);
     }
 
-    // Método de logout
+    // Logout
     public function logout()
     {
         Auth::logout();
         return redirect('/');
     }
 
-    // Redireciona o usuário para o Google
+    // Redireciona para o Google
     public function redirectToGoogle()
     {
-        return Socialite::driver('google')->redirect(); // Versão produção
+        return Socialite::driver('google')->redirect();
     }
 
-    // Lida com a resposta da autenticação do Google
+    // Callback do Google
     public function handleGoogleCallback()
     {
         try {
-            $user = Socialite::driver('google')->stateless()->user();// Versão proodução
+            $googleUser = Socialite::driver('google')->stateless()->user();
 
-            $findUser = User::where('email', $user->getEmail())->first();
+            $user = User::where('email', $googleUser->getEmail())->first();
 
-            if ($findUser) {
-                Auth::login($findUser);
-                return redirect()->intended('/');
-            } else {
-                $newUser = new User;
-                $newUser->name = $user->getName();
-                $newUser->email = $user->getEmail();
-                $newUser->user_lvl = 'member';
-                $newUser->permissions = 'user';
-                $user->is_owner = false;
-                $newUser->password = Hash::make(uniqid());
-                $newUser->save();
-
-                Auth::login($newUser);
-
-                return redirect()->intended('/');
+            if (!$user) {
+                $user = new User();
+                $user->name       = $googleUser->getName();
+                $user->email      = $googleUser->getEmail();
+                $user->user_lvl   = 'user';
+                $user->permissions = 'user';
+                $user->is_owner   = false;
+                $user->password   = Hash::make(uniqid());
+                $user->save();
             }
 
+            Auth::login($user);
+
+            // Redirecionamento por nível
+            if ($user->user_lvl === 'admin') {
+                return redirect()->intended('/admin/ajax/dashboard');
+            }
+
+            return redirect()->intended('/');
+
         } catch (\Exception $e) {
-           // Em caso de erro, redirecione para a página de login
-           return redirect('/login')->withErrors(['login' => 'Ocorreu um erro ao tentar fazer login com o Google.'.$e]);
+            return redirect('/login')->withErrors([
+                'login' => 'Ocorreu um erro ao tentar fazer login com o Google.'
+            ]);
         }
     }
 }
