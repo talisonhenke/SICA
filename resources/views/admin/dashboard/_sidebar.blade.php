@@ -26,7 +26,7 @@
 
     <h5 class="mb-4">Painel Administrativo</h5>
 
-    <button class="dashboard-link active" data-panel="orders">
+    <button class="dashboard-link" data-panel="orders">
         Pedidos
 
         @if ($orderStats['pending'] > 0)
@@ -52,6 +52,16 @@
 
     <button class="dashboard-link" data-panel="users">
         Usuários
+    </button>
+
+    <button class="dashboard-link" data-panel="reviews">
+        Avaliações
+
+        @if ($newReviewsCount > 0)
+            <span class="badge badge-alert">
+                {{ $newReviewsCount }}
+            </span>
+        @endif
     </button>
 
 </div>

@@ -10,9 +10,9 @@
 </style>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="fw-bold mb-0">Tags</h4>
+    <h4 class="fw-bold ms-3 my-3">Tags</h4>
 
-    <button class="btn btn-success"
+    <button class="btn btn-success me-3"
         data-bs-toggle="modal"
         data-bs-target="#createTagModal">
         + Nova Tag

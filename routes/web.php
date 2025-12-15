@@ -30,6 +30,7 @@ use App\Http\Controllers\ModerationPanelController;
 use App\Http\Controllers\OrderPanelController;
 use App\Http\Controllers\TagPanelController;
 use App\Http\Controllers\UserPanelController;
+use App\Http\Controllers\SiteReviewPanelController;
 
 // QR-Code
 
@@ -342,13 +343,22 @@ Route::post('/plant-comments/{id}/ajax/allow', [PlantCommentController::class, '
 
 // Rotas de avaliação do site
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::post('/review', [SiteReviewController::class, 'store'])->name('review.store');
     Route::post('/review/update', [SiteReviewController::class, 'update'])->name('review.update');
 });
 Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::get('/admin/reviews', [SiteReviewController::class, 'adminIndex'])->name('admin.reviews.index');
 });
+
+Route::prefix('admin/panels/reviews')
+    ->middleware(['auth', 'is_admin'])
+    ->group(function () {
+
+        Route::get('/', [SiteReviewPanelController::class, 'index'])
+            ->name('admin.dashboard.panels.reviews');
+
+    });
 
 // Tags routes
 

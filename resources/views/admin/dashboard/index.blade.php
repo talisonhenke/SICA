@@ -188,6 +188,47 @@
         </div>
     </div>
 
+    {{-- ESTILIZAÇÃO SIDEBAR  --}}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const links = document.querySelectorAll('.dashboard-link');
+
+            function setActive(panel) {
+                links.forEach(link => {
+                    link.classList.toggle(
+                        'active',
+                        link.dataset.panel === panel
+                    );
+                });
+            }
+
+            // Clique nos botões
+            links.forEach(button => {
+                button.addEventListener('click', () => {
+                    const panel = button.dataset.panel;
+                    if (!panel) return;
+
+                    setActive(panel);
+                    loadPanel(panel);
+
+                    // Lógica para remover badge de novas avaliações
+                    if (panel === 'reviews') {
+                        const badge = button.querySelector('.badge-alert');
+                        if (badge) badge.remove();
+                    }
+                });
+            });
+
+            // Painel inicial
+            setActive('orders');
+            loadPanel('orders');
+
+        });
+    </script>
+
+
     {{-- FILTRO DE PEDIDOS  --}}
 
     <script>
@@ -243,7 +284,7 @@
 
         });
     </script>
-    {{-- Carrega painel de pedidos ao iniciar o index do dashboard --}}
+    {{-- Carrega painel de pedidos ao iniciar o index do dashboard
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -261,7 +302,7 @@
             });
 
         });
-    </script>
+    </script> --}}
 
 
     {{-- Carregar paineis através do menu lateral  --}}
@@ -708,10 +749,10 @@
 
     <script>
         /*
-                |--------------------------------------------------------------------------
-                | CREATE TAG
-                |--------------------------------------------------------------------------
-                */
+                        |--------------------------------------------------------------------------
+                        | CREATE TAG
+                        |--------------------------------------------------------------------------
+                        */
         document.addEventListener('submit', function(e) {
 
             if (!e.target.classList.contains('js-create-tag')) return;
@@ -898,8 +939,8 @@
             });
 
             /* ============================
-       BLOQUEAR USUÁRIO (STRIKES = 3)
-    ============================ */
+               BLOQUEAR USUÁRIO (STRIKES = 3)
+            ============================ */
             document.addEventListener('click', function(e) {
 
                 const btn = e.target.closest('.js-toggle-comments');

@@ -97,8 +97,6 @@
             @endforeach
         </div>
 
-        {{ $reviews->links() }}
-
     </div>
 
 </div>

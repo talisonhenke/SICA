@@ -218,7 +218,7 @@
                 {{-- ========================= --}}
                 {{-- ADMIN – ITENS EXCLUSIVOS --}}
                 {{-- ========================= --}}
-                @if (Auth::check() && Auth::user()->user_lvl === 'admin')
+                {{-- @if (Auth::check() && Auth::user()->user_lvl === 'admin')
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('tags.index') }}">Tags</a>
                     </li>
@@ -226,7 +226,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('admin.reviews.index') }}">Avaliações</a>
                     </li>
-                @endif
+                @endif --}}
 
                 {{-- ========================= --}}
                 {{-- USUÁRIO LOGADO (NÃO ADMIN) --}}

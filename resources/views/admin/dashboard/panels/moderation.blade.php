@@ -1,4 +1,4 @@
-<h4 class="fw-bold ms-2 my-3">
+<h4 class="fw-bold ms-3 my-3">
     Moderação
 
     @if ($moderationCount > 0)
@@ -7,7 +7,7 @@
         </span>
     @endif
 </h4>
-<div class="mb-3 orders-filters">
+<div class="mb-3 mx-3 orders-filters">
     <select id="filterSelect" class="form-select form-select-sm" style="max-width: 260px;">
         <option value="all" {{ $filter === 'all' ? 'selected' : '' }}>Todos</option>
         <option value="reported" {{ $filter === 'reported' ? 'selected' : '' }}>Reportados</option>

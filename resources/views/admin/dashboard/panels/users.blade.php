@@ -2,7 +2,7 @@
 @include('includes.toast')
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4 class="fw-bold mb-0">Usuários</h4>
+    <h4 class="fw-bold ms-3 my-3">Usuários</h4>
 </div>
 
 <div class="card p-3">

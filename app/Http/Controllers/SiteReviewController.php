@@ -18,6 +18,7 @@ class SiteReviewController extends Controller
             'user_id' => auth()->id(),
             'rating' => $request->rating,
             'comment' => $request->comment,
+            'new_reviews' => 'unread',
         ]);
 
         return back()->with('success', 'Avaliação registrada!');
@@ -35,10 +36,12 @@ class SiteReviewController extends Controller
         $review->update([
             'rating' => $request->rating,
             'comment' => $request->comment,
+            'new_reviews' => 'unread',
         ]);
 
         return back()->with('success', 'Avaliação atualizada!');
     }
+
     public function adminIndex()
     {
         $reviews = SiteReview::with('user')->paginate(10);

@@ -12,6 +12,7 @@ use App\Models\TopicComment;
 use App\Models\PlantComment;
 use App\Models\Tag;
 use App\Models\User;
+use App\Models\SiteReview;
 class AdminDashboardController extends Controller
 {
     public function index(Request $request)
@@ -131,6 +132,10 @@ class AdminDashboardController extends Controller
     $usersCount = User::count();
     $recentUsers = User::orderBy('created_at', 'desc')->limit(5)->get();
 
+    // NOVAS AVALIAÇÕES 
+
+    $newReviewsCount = SiteReview::where('new_reviews', 'unread')->count();
+
     /*
     |--------------------------------------------------------------------------
     | NOTIFICAÇÕES (MENU)
@@ -151,7 +156,8 @@ class AdminDashboardController extends Controller
             'recentTags',
             'usersCount',
             'recentUsers',
-            'adminNotifications'
+            'adminNotifications',
+            'newReviewsCount'
         )
     );
 }

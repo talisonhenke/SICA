@@ -101,7 +101,7 @@
 </style>
 
 
-<h4 class="fw-bold ms-2 my-3">
+<h4 class="fw-bold ms-3 my-3">
     Pedidos
     @if ($orderStats['pending'] > 0)
         <span class="badge bg-danger ms-2" style="font-size: 0.7rem;">
