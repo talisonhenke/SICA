@@ -604,98 +604,145 @@
         });
     </script>
 
+    {{-- PAINEL USUÁRIOS  --}}
+
     <script>
-/*
-|--------------------------------------------------------------------------
-| CREATE TAG
-|--------------------------------------------------------------------------
-*/
-document.addEventListener('submit', function (e) {
+        document.addEventListener('change', async function(e) {
 
-    if (!e.target.classList.contains('js-create-tag')) return;
+            const select = e.target.closest('.js-user-level');
+            if (!select) return;
 
-    e.preventDefault();
+            const previousValue = select.dataset.previousValue ?? select.value;
+            const newValue = select.value;
 
-    const form = e.target;
-    const url  = form.dataset.url;
-    const data = new FormData(form);
+            const url = select.dataset.url;
+            const username = select.dataset.username;
 
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document
-                .querySelector('meta[name="csrf-token"]').content
-        },
-        body: data
-    })
-    .then(res => res.json())
-    .then(() => {
-        bootstrap.Modal.getInstance(
-            document.getElementById('createTagModal')
-        ).hide();
+            const actionText = newValue === 'admin' ?
+                `Deseja tornar ${username} administrador?` :
+                `Deseja remover privilégios de administrador de ${username}?`;
 
-        loadPanel('tags'); // 🔥 recarrega o painel
-    });
-});
-</script>
+            if (!confirm(actionText)) {
+                select.value = previousValue;
+                return;
+            }
 
-<script>
-document.addEventListener('submit', function (e) {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_lvl: newValue
+                })
+            });
 
-    if (!e.target.classList.contains('js-edit-tag')) return;
+            const data = await response.json();
 
-    e.preventDefault();
+            if (!data.success) {
+                alert(data.message || 'Erro ao atualizar nível.');
+                select.value = previousValue;
+                return;
+            }
 
-    const form = e.target;
-    const url  = form.dataset.url;
-    const data = new FormData(form);
-
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document
-                .querySelector('meta[name="csrf-token"]').content,
-            'X-HTTP-Method-Override': 'PUT'
-        },
-        body: data
-    })
-    .then(res => res.json())
-    .then(() => {
-        bootstrap.Modal.getInstance(
-            form.closest('.modal')
-        ).hide();
-
-        loadPanel('tags');
-    });
-});
-</script>
-
-<script>
-document.addEventListener('click', function (e) {
-
-    if (!e.target.classList.contains('js-delete-tag')) return;
-
-    const url = e.target.dataset.url;
-
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document
-                .querySelector('meta[name="csrf-token"]').content,
-            'X-HTTP-Method-Override': 'DELETE'
-        }
-    })
-    .then(res => res.json())
-    .then(() => {
-        bootstrap.Modal.getInstance(
-            e.target.closest('.modal')
-        ).hide();
-
-        loadPanel('tags');
-    });
-});
-</script>
+            // Atualiza o valor salvo
+            select.dataset.previousValue = newValue;
+        });
+    </script>
 
 
 
+    <script>
+        /*
+        |--------------------------------------------------------------------------
+        | CREATE TAG
+        |--------------------------------------------------------------------------
+        */
+        document.addEventListener('submit', function(e) {
+
+            if (!e.target.classList.contains('js-create-tag')) return;
+
+            e.preventDefault();
+
+            const form = e.target;
+            const url = form.dataset.url;
+            const data = new FormData(form);
+
+            fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document
+                            .querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: data
+                })
+                .then(res => res.json())
+                .then(() => {
+                    bootstrap.Modal.getInstance(
+                        document.getElementById('createTagModal')
+                    ).hide();
+
+                    loadPanel('tags'); // 🔥 recarrega o painel
+                });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('submit', function(e) {
+
+            if (!e.target.classList.contains('js-edit-tag')) return;
+
+            e.preventDefault();
+
+            const form = e.target;
+            const url = form.dataset.url;
+            const data = new FormData(form);
+
+            fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document
+                            .querySelector('meta[name="csrf-token"]').content,
+                        'X-HTTP-Method-Override': 'PUT'
+                    },
+                    body: data
+                })
+                .then(res => res.json())
+                .then(() => {
+                    bootstrap.Modal.getInstance(
+                        form.closest('.modal')
+                    ).hide();
+
+                    loadPanel('tags');
+                });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('click', function(e) {
+
+            if (!e.target.classList.contains('js-delete-tag')) return;
+
+            const url = e.target.dataset.url;
+
+            fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document
+                            .querySelector('meta[name="csrf-token"]').content,
+                        'X-HTTP-Method-Override': 'DELETE'
+                    }
+                })
+                .then(res => res.json())
+                .then(() => {
+                    bootstrap.Modal.getInstance(
+                        e.target.closest('.modal')
+                    ).hide();
+
+                    loadPanel('tags');
+                });
+        });
+    </script>
 @endsection

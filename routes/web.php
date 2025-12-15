@@ -29,6 +29,7 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\ModerationPanelController;
 use App\Http\Controllers\OrderPanelController;
 use App\Http\Controllers\TagPanelController;
+use App\Http\Controllers\UserPanelController;
 
 // QR-Code
 
@@ -94,6 +95,15 @@ Route::post('register', [RegisterController::class, 'register'])->name('register
 
 Route::get('/users_list', [UserController::class, 'index'])->name('users.index');
 Route::patch('/users/{user}/update-level', [UserController::class, 'updateLevel'])->name('users.updateLevel');
+
+Route::prefix('admin/panels/users')->middleware(['auth', 'is_admin'])->group(function () {
+    Route::get('/', [UserPanelController::class, 'index'])
+        ->name('admin.dashboard.panels.users');
+
+    Route::post('/{user}/level', [UserPanelController::class, 'updateLevel'])
+        ->name('admin.dashboard.panels.users.updateLevel');
+});
+
 
 // Rotas de edição de perfil
 
