@@ -54,16 +54,16 @@ use App\Models\Topic;
 |
 */
 
-// TESTE DE ENVIO DE EMAIL 
+// // TESTE DE ENVIO DE EMAIL 
 
-Route::get('/test-email', function () {
-    \Mail::raw('Teste SMTP Hostinger', function ($message) {
-        $message->to('talisonhenke.pl318@academico.ifsul.edu.br')
-                ->subject('Teste SMTP');
-    });
+// Route::get('/test-email', function () {
+//     \Mail::raw('Teste SMTP Hostinger', function ($message) {
+//         $message->to('talisonhenke.pl318@academico.ifsul.edu.br')
+//                 ->subject('Teste SMTP');
+//     });
 
-    return 'Email enviado (ou tentou)';
-});
+//     return 'Email enviado (ou tentou)';
+// });
 
 // ROTAS DE VEIFICAÇÃO 
 
