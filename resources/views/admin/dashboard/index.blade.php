@@ -136,6 +136,58 @@
         </div>
     </div>
 
+    {{-- MODAL GERENCIAR USUÁRIO --}}
+    <div class="modal fade" id="manageUserModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Gerenciar Usuário</h5>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    {{-- INFO --}}
+                    <div class="mb-3">
+                        <p><strong>ID:</strong> <span id="mu-id"></span></p>
+                        <p><strong>Nome:</strong> <span id="mu-name"></span></p>
+                        <p><strong>Email:</strong> <span id="mu-email"></span></p>
+                        <p><strong>Nível atual:</strong> <span id="mu-level"></span></p>
+                        <p><strong>Strikes:</strong> <span id="mu-strikes"></span></p>
+                    </div>
+
+                    <hr>
+
+                    {{-- AÇÕES --}}
+                    <div class="d-grid gap-2">
+
+                        <button class="btn btn-warning js-toggle-admin">
+                            Promover / Remover administrador
+                        </button>
+
+                        <button class="btn btn-secondary js-toggle-comments">
+                            Bloquear comentários
+                        </button>
+
+                        <button class="btn btn-danger js-reset-strikes">
+                            Zerar strikes
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">
+                        Fechar
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     {{-- FILTRO DE PEDIDOS  --}}
 
     <script>
@@ -656,10 +708,10 @@
 
     <script>
         /*
-        |--------------------------------------------------------------------------
-        | CREATE TAG
-        |--------------------------------------------------------------------------
-        */
+                |--------------------------------------------------------------------------
+                | CREATE TAG
+                |--------------------------------------------------------------------------
+                */
         document.addEventListener('submit', function(e) {
 
             if (!e.target.classList.contains('js-create-tag')) return;
@@ -743,6 +795,222 @@
 
                     loadPanel('tags');
                 });
+        });
+    </script>
+
+    {{-- GERENCIAR USUÁRIOS  --}}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const modalEl = document.getElementById('manageUserModal');
+
+            /* ============================
+               ABRIR MODAL E PREENCHER DADOS
+            ============================ */
+            document.addEventListener('click', function(e) {
+
+                const btn = e.target.closest('.js-manage-user');
+                if (!btn) return;
+
+                const modal = new bootstrap.Modal(modalEl);
+
+                const userId = btn.dataset.id;
+                const name = btn.dataset.name;
+                const email = btn.dataset.email;
+                const level = btn.dataset.level;
+                const strikes = parseInt(btn.dataset.strikes ?? 0, 10);
+
+                modalEl.querySelector('#mu-id').textContent = userId;
+                modalEl.querySelector('#mu-name').textContent = name;
+                modalEl.querySelector('#mu-email').textContent = email;
+                modalEl.querySelector('#mu-level').textContent =
+                    level === 'admin' ? 'Administrador' : 'Usuário';
+                modalEl.querySelector('#mu-strikes').textContent = strikes;
+
+                modalEl.dataset.userId = userId;
+                modalEl.dataset.level = level;
+                modalEl.dataset.strikes = strikes;
+
+                const btnAdmin = modalEl.querySelector('.js-toggle-admin');
+                btnAdmin.textContent =
+                    level === 'admin' ?
+                    'Remover privilégios de administrador' :
+                    'Promover a administrador';
+
+                const btnBlock = modalEl.querySelector('.js-toggle-comments');
+                btnBlock.textContent =
+                    strikes >= 3 ?
+                    'Usuário já está bloqueado' :
+                    'Bloquear comentários';
+                btnBlock.disabled = strikes >= 3;
+
+                modal.show();
+            });
+
+
+            /* ============================
+               ZERAR STRIKES
+            ============================ */
+            document.addEventListener('click', function(e) {
+
+                const btn = e.target.closest('.js-reset-strikes');
+                if (!btn) return;
+
+                const userId = modalEl.dataset.userId;
+                if (!userId) return;
+
+                if (!confirm('Tem certeza que deseja zerar os strikes deste usuário?')) {
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.textContent = 'Processando...';
+
+                fetch(`/admin/panels/users/${userId}/reset-strikes`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json',
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+
+                        if (!data.success) {
+                            throw new Error(data.message || 'Erro ao zerar strikes');
+                        }
+
+                        modalEl.dataset.strikes = 0;
+                        modalEl.querySelector('#mu-strikes').textContent = 0;
+
+                        const btnBlock = modalEl.querySelector('.js-toggle-comments');
+                        btnBlock.disabled = false;
+                        btnBlock.textContent = 'Bloquear comentários';
+
+                        alert('Strikes zerados com sucesso.');
+                    })
+                    .catch(err => alert(err.message))
+                    .finally(() => {
+                        btn.disabled = false;
+                        btn.textContent = 'Zerar strikes';
+                    });
+            });
+
+            /* ============================
+       BLOQUEAR USUÁRIO (STRIKES = 3)
+    ============================ */
+            document.addEventListener('click', function(e) {
+
+                const btn = e.target.closest('.js-toggle-comments');
+                if (!btn) return;
+
+                const userId = modalEl.dataset.userId;
+                if (!userId) return;
+
+                if (!confirm('Tem certeza que deseja bloquear este usuário para comentários?')) {
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.textContent = 'Processando...';
+
+                fetch(`/admin/panels/users/${userId}/block`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json',
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+
+                        if (!data.success) {
+                            throw new Error(data.message || 'Erro ao bloquear usuário');
+                        }
+
+                        // Atualiza estado
+                        modalEl.dataset.strikes = 3;
+                        modalEl.querySelector('#mu-strikes').textContent = 3;
+
+                        // Atualiza botão
+                        btn.disabled = true;
+                        btn.textContent = 'Usuário já está bloqueado';
+
+                        alert('Usuário bloqueado para comentários.');
+                    })
+                    .catch(err => {
+                        alert(err.message);
+                        btn.disabled = false;
+                        btn.textContent = 'Bloquear comentários';
+                    });
+
+            });
+
+            /* ============================
+               PROMOVER / REMOVER ADMIN
+            ============================ */
+            document.addEventListener('click', function(e) {
+
+                const btn = e.target.closest('.js-toggle-admin');
+                if (!btn) return;
+
+                const userId = modalEl.dataset.userId;
+                const currentLevel = modalEl.dataset.level;
+
+                if (!userId) return;
+
+                const actionText =
+                    currentLevel === 'admin' ?
+                    'Tem certeza que deseja remover os privilégios de administrador deste usuário?' :
+                    'Tem certeza que deseja promover este usuário a administrador?';
+
+                if (!confirm(actionText)) {
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.textContent = 'Processando...';
+
+                fetch(`/admin/panels/users/${userId}/toggle-admin`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json',
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+
+                        if (!data.success) {
+                            throw new Error(data.message || 'Erro ao atualizar nível');
+                        }
+
+                        const newLevel = data.user_lvl;
+
+                        // Atualiza estado
+                        modalEl.dataset.level = newLevel;
+                        modalEl.querySelector('#mu-level').textContent =
+                            newLevel === 'admin' ? 'Administrador' : 'Usuário';
+
+                        // Atualiza texto do botão
+                        btn.textContent =
+                            newLevel === 'admin' ?
+                            'Remover privilégios de administrador' :
+                            'Promover a administrador';
+
+                        alert('Nível do usuário atualizado com sucesso.');
+                        loadPanel('users');
+                    })
+                    .catch(err => {
+                        alert(err.message);
+                    })
+                    .finally(() => {
+                        btn.disabled = false;
+                    });
+
+            });
+
         });
     </script>
 @endsection

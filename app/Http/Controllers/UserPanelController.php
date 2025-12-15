@@ -19,13 +19,11 @@ class UserPanelController extends Controller
             abort(403);
         }
 
-        $users = User::where('is_owner', false)
-            ->orderBy('name')
-            ->get();
+        $users = User::where('is_owner', false)->orderBy('name')->get();
 
         // NOVOS NÍVEIS
         $levels = [
-            'user'  => 'Usuário',
+            'user' => 'Usuário',
             'admin' => 'Administrador',
         ];
 
@@ -35,38 +33,105 @@ class UserPanelController extends Controller
     /**
      * Atualizar nível do usuário (AJAX)
      */
-    public function updateLevel(Request $request, User $user)
+    public function toggleAdminAjax($userId)
     {
-        if (!Auth::check() || Auth::user()->user_lvl !== 'admin') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Permissão negada.'
-            ], 403);
+        if (!auth()->check() || auth()->user()->user_lvl !== 'admin') {
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Apenas administradores podem executar esta ação.',
+                ],
+                403,
+            );
         }
 
-        $request->validate([
-            'user_lvl' => 'required|in:user,admin',
+        $user = User::where('is_owner', false)->find($userId);
+
+        if (!$user) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Usuário não encontrado ou protegido.',
+                ],
+                404,
+            );
+        }
+
+        $user->user_lvl = $user->user_lvl === 'admin' ? 'user' : 'admin';
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Nível do usuário atualizado.',
+            'user_lvl' => $user->user_lvl,
         ]);
+    }
 
-        try {
-            DB::beginTransaction();
-
-            $user->user_lvl = $request->user_lvl;
-            $user->save();
-
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Nível do usuário atualizado com sucesso!'
-            ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Erro ao atualizar nível do usuário.'
-            ], 500);
+    public function blockUserAjax($userId)
+    {
+        if (!auth()->check() || auth()->user()->user_lvl !== 'admin') {
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Apenas administradores podem executar esta ação.',
+                ],
+                403,
+            );
         }
+
+        $user = User::find($userId);
+
+        if (!$user) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Usuário não encontrado.',
+                ],
+                404,
+            );
+        }
+
+        $user->comment_strikes = 3;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuário bloqueado para comentar.',
+            'strikes' => $user->comment_strikes,
+        ]);
+    }
+
+    public function resetStrikesAjax($userId)
+    {
+        if (!auth()->check() || auth()->user()->user_lvl !== 'admin') {
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Apenas administradores podem executar esta ação.',
+                ],
+                403,
+            );
+        }
+
+        $user = User::find($userId);
+
+        if (!$user) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Usuário não encontrado.',
+                ],
+                404,
+            );
+        }
+
+        $user->comment_strikes = 0;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Strikes zerados com sucesso.',
+            'strikes' => 0,
+        ]);
     }
 }

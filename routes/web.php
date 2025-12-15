@@ -96,13 +96,28 @@ Route::post('register', [RegisterController::class, 'register'])->name('register
 Route::get('/users_list', [UserController::class, 'index'])->name('users.index');
 Route::patch('/users/{user}/update-level', [UserController::class, 'updateLevel'])->name('users.updateLevel');
 
-Route::prefix('admin/panels/users')->middleware(['auth', 'is_admin'])->group(function () {
-    Route::get('/', [UserPanelController::class, 'index'])
-        ->name('admin.dashboard.panels.users');
+Route::prefix('admin/panels/users')
+    ->middleware(['auth', 'is_admin'])
+    ->group(function () {
 
-    Route::post('/{user}/level', [UserPanelController::class, 'updateLevel'])
-        ->name('admin.dashboard.panels.users.updateLevel');
-});
+        // LISTAGEM
+        Route::get('/', [UserPanelController::class, 'index'])
+            ->name('admin.dashboard.panels.users');
+
+        // PROMOVER / REMOVER ADMIN
+        Route::post('/{user}/toggle-admin', [UserPanelController::class, 'toggleAdminAjax'])
+            ->name('admin.dashboard.panels.users.toggleAdmin');
+
+        // BLOQUEAR USUÁRIO (strikes = 3)
+        Route::post('/{user}/block', [UserPanelController::class, 'blockUserAjax'])
+            ->name('admin.dashboard.panels.users.block');
+
+        // ZERAR STRIKES
+        Route::post('/{user}/reset-strikes', [UserPanelController::class, 'resetStrikesAjax'])
+            ->name('admin.dashboard.panels.users.resetStrikes');
+
+    });
+
 
 
 // Rotas de edição de perfil

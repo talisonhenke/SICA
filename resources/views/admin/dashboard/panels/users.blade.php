@@ -1,5 +1,4 @@
-{{-- PAINEL: USUÁRIOS --}}
-
+{{-- PAINEL USUÁRIOS --}}
 @include('includes.toast')
 
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -17,7 +16,7 @@
                     <th>Nome</th>
                     <th>Email</th>
                     <th>Nível</th>
-                    <th style="width: 220px;">Ações</th>
+                    <th style="width: 160px;">Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -26,20 +25,13 @@
                         <td>{{ $user->id }}</td>
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
-                        <td>
-                            {{ $levels[$user->user_lvl] ?? $user->user_lvl }}
-                        </td>
-                        <td>
-                            <select class="form-select form-select-sm js-user-level"
-                                data-url="{{ route('admin.dashboard.panels.users.updateLevel', $user->id) }}"
-                                data-username="{{ $user->name }}" data-previous-value="{{ $user->user_lvl }}">
-                                <option value="user" {{ $user->user_lvl === 'user' ? 'selected' : '' }}>
-                                    Usuário
-                                </option>
-                                <option value="admin" {{ $user->user_lvl === 'admin' ? 'selected' : '' }}>
-                                    Administrador
-                                </option>
-                            </select>
+                        <td>{{ $levels[$user->user_lvl] ?? $user->user_lvl }}</td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-primary js-manage-user" data-id="{{ $user->id }}"
+                                data-name="{{ $user->name }}" data-email="{{ $user->email }}"
+                                data-level="{{ $user->user_lvl }}" data-strikes="{{ $user->comment_strikes ?? 0 }}">
+                                Gerenciar
+                            </button>
 
                         </td>
                     </tr>
@@ -55,21 +47,14 @@
                 <div><strong>ID:</strong> {{ $user->id }}</div>
                 <div><strong>Nome:</strong> {{ $user->name }}</div>
                 <div><strong>Email:</strong> {{ $user->email }}</div>
+                <div><strong>Nível:</strong> {{ $levels[$user->user_lvl] ?? $user->user_lvl }}</div>
 
-                {{-- TODO: trocar ações por botão e modal  --}}
-                <div class="mt-3">
-                    <label class="form-label fw-bold">Nível</label>
-                    <select class="form-select form-select-sm js-user-level"
-                        data-url="{{ route('admin.dashboard.panels.users.updateLevel', $user->id) }}"
-                        data-username="{{ $user->name }}" data-previous-value="{{ $user->user_lvl }}">
-
-                        @foreach ($levels as $value => $label)
-                            <option value="{{ $value }}" @selected($user->user_lvl === $value)>
-                                {{ $label }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+                <button class="btn btn-primary btn-sm w-100 mt-3 js-manage-user" data-bs-toggle="modal"
+                    data-bs-target="#manageUserModal" data-id="{{ $user->id }}" data-name="{{ $user->name }}"
+                    data-email="{{ $user->email }}" data-level="{{ $user->user_lvl }}"
+                    data-strikes="{{ $user->comment_strikes ?? 0 }}">
+                    Gerenciar
+                </button>
             </div>
         @endforeach
     </div>
