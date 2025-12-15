@@ -65,6 +65,12 @@ use App\Models\Topic;
 //     return 'Email enviado (ou tentou)';
 // });
 
+// 🔎 PREVIEW DA TELA DE VERIFICAÇÃO (APENAS PARA DESENVOLVIMENTO)
+Route::get('/preview/verify-email', function () {
+    return view('auth.verify');
+});
+
+
 // ROTAS DE VEIFICAÇÃO 
 
 Auth::routes(['verify' => true]);
@@ -183,7 +189,7 @@ Route::prefix('admin/panels/users')
 
 // Rotas de edição de perfil
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/edit_profile', [App\Http\Controllers\ProfileController::class, 'editProfile'])->name('profile.edit');
     Route::patch('/profile/update-name', [App\Http\Controllers\ProfileController::class, 'updateName'])->name('profile.updateName');
     Route::patch('/profile/update-password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.updatePassword');
@@ -211,7 +217,7 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 
 
 // Comentários de tópicos
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/topics/{topic}/comments', [TopicCommentController::class, 'store'])->name('topics.comments.store');
 
     Route::put('/topic-comments/{comment}', [TopicCommentController::class, 'update'])->name('topic-comments.update');
@@ -247,7 +253,7 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 
 
 // Comentários de plantas
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     // Criar novo comentário em uma planta
     Route::post('/plants/{plant}/comments', [PlantCommentController::class, 'store'])->name('plant-comments.store');
 
@@ -283,7 +289,7 @@ Route::patch('/cart/update/{id}', [CartController::class, 'updateQuantity'])->na
 Route::get('/checkout/pix', [CheckoutController::class, 'pix'])->name('checkout.pix');
 
 // orders routes
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     // Criar pedido
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
 
@@ -299,7 +305,7 @@ Route::middleware('auth')->group(function () {
 
 // addresses routes
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     // Lista endereços
     Route::get('/addresses', [AddressesController::class, 'index'])->name('addresses.index');
 
