@@ -27,6 +27,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SiteReviewController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\ModerationPanelController;
+use App\Http\Controllers\OrderPanelController;
+
 
 // QR-Code
 
@@ -255,6 +257,17 @@ Route::middleware(['auth', 'is_admin'])
         // // USUÁRIOS
         // Route::get('/users', [AdminUserController::class, 'index'])
         //     ->name('users.index');
+    });
+
+    // PEDIDOS ajax 
+    Route::middleware(['auth', 'is_admin'])
+    ->prefix('admin/panels')
+    ->name('admin.panels.')
+    ->group(function () {
+
+        Route::get('/orders', [OrderPanelController::class, 'index'])
+            ->name('orders');
+
     });
 
 Route::get('/orders/{order}', [OrderAdminController::class, 'orderModal'])->name('admin.orders.ajax.modal');

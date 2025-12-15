@@ -126,13 +126,17 @@
 <div class="mb-4 orders-filters">
     <div class="btn-group flex-wrap">
         @foreach ($filters as $value => $data)
-            <a href="{{ route('admin.ajax.dashboard', ['status' => $value]) }}"
-               class="btn btn-sm {{ $data['btn_class'] }} @if ($currentStatus === $value) active @endif">
-                {{ $data['label'] }}
-                <span class="badge ms-2">
-                    {{ $orderStats[$value] ?? 0 }}
-                </span>
-            </a>
+            <button
+    type="button"
+    class="btn btn-sm btn-filter {{ $data['btn_class'] }} {{ $currentStatus === $value ? 'active' : '' }}"
+    data-status="{{ $value }}"
+>
+    {{ $data['label'] }}
+    <span class="badge ms-2">
+        {{ $orderStats[$value] ?? 0 }}
+    </span>
+</button>
+
         @endforeach
     </div>
 </div>
@@ -200,3 +204,5 @@
         </div>
     </div>
 </div>
+
+

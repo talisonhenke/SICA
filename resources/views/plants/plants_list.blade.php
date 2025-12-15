@@ -165,10 +165,10 @@
         }
 
         /* /TODO: Mostrar descrição da tag ao passar mouse
-        .tag-tooltip:hover .tooltip-box {
-            display: block;
-            z-index: 99;
-        }*/
+            .tag-tooltip:hover .tooltip-box {
+                display: block;
+                z-index: 99;
+            }*/
     </style>
 
     <div class="plants-container col-sm-12 col-md-10 col-lg-8">
@@ -233,6 +233,24 @@
                         <div>
                             <strong>{{ $plant->popular_name }}</strong>
                             <small>({{ $plant->scientific_name }})</small>
+
+                            {{-- Tags --}}
+                            @if ($plant->tags->count())
+                                <div class="plant-tags mt-1">
+                                    @foreach ($plant->tags as $tag)
+                                        <span class="tag-tooltip me-1 mb-1">
+                                            <span class="badge bg-secondary">
+                                                {{ $tag->name }}
+                                            </span>
+
+                                            <span class="tooltip-box">
+                                                <strong>{{ $tag->name }}</strong><br>
+                                                {{ $tag->description }}
+                                            </span>
+                                        </span>
+                                    @endforeach
+                                </div>
+                            @endif
                         </div>
                     </a>
                 @endif

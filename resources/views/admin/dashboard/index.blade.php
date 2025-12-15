@@ -154,6 +154,30 @@
         </div>
     </div>
 
+    {{-- FILTRO DE PEDIDOS  --}}
+
+    <script>
+document.addEventListener('click', function (e) {
+
+    const filterButton = e.target.closest('.btn-filter');
+    if (!filterButton) return;
+
+    const status = filterButton.dataset.status;
+
+    // Remove active de todos
+    document.querySelectorAll('.btn-filter').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Marca o atual
+    filterButton.classList.add('active');
+
+    // Carrega painel com filtro
+    loadPanel('orders', 'status=' + status);
+
+});
+</script>
+
     {{-- admin/dashboard/index.blade.php --}}
     <script>
         function loadPanel(panel, query = '') {
