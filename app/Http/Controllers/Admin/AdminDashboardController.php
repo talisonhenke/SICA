@@ -67,57 +67,6 @@ class AdminDashboardController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | MODERAÇÃO (LISTA – SEM PAGINAÇÃO)
-    |--------------------------------------------------------------------------
-    */
-    // $filter = $request->input('filter', 'all');
-
-    // $topicQuery = TopicComment::with('user', 'topic')
-    //     ->where('moderated', 0)
-    //     ->where(fn ($q) => $q->where('toxicity_level', '>=', 0.1)->orWhere('reported', 1));
-
-    // $plantQuery = PlantComment::with('user', 'plant')
-    //     ->where('moderated', 0)
-    //     ->where(fn ($q) => $q->where('toxicity_level', '>=', 0.1)->orWhere('reported', 1));
-
-    // switch ($filter) {
-    //     case 'suspect':
-    //         $topicQuery->where('toxicity_level', '>=', 0.1);
-    //         $plantQuery->where('toxicity_level', '>=', 0.1);
-    //         break;
-
-    //     case 'high':
-    //         $topicQuery->where('toxicity_level', '>=', 0.7);
-    //         $plantQuery->where('toxicity_level', '>=', 0.7);
-    //         break;
-
-    //     case 'reported':
-    //         $topicQuery->where('reported', 1);
-    //         $plantQuery->where('reported', 1);
-    //         break;
-
-    //     default:
-    //         // all
-    //         break;
-    // }
-
-    // $topicComments = $topicQuery->get()->map(function ($c) {
-    //     $c->comment_type = 'topic';
-    //     return $c;
-    // });
-
-    // $plantComments = $plantQuery->get()->map(function ($c) {
-    //     $c->comment_type = 'plant';
-    //     return $c;
-    // });
-
-    // $comments = $topicComments
-    //     ->merge($plantComments)
-    //     ->sortByDesc('created_at')
-    //     ->values();
-
-    /*
-    |--------------------------------------------------------------------------
     | TAGS
     |--------------------------------------------------------------------------
     */
@@ -207,4 +156,28 @@ class AdminDashboardController extends Controller
 
     return view('admin.dashboard.panels.moderation-table', compact('comments', 'filter'));
 }
+
+public function notifications()
+{
+    $orderPending = Order::where('status', 'pending')->count();
+
+    $topicCount = TopicComment::where('moderated', 0)
+        ->where(fn ($q) => $q->where('toxicity_level', '>=', 0.1)->orWhere('reported', 1))
+        ->count();
+
+    $plantCount = PlantComment::where('moderated', 0)
+        ->where(fn ($q) => $q->where('toxicity_level', '>=', 0.1)->orWhere('reported', 1))
+        ->count();
+
+    $moderationCount = $topicCount + $plantCount;
+
+    $newReviewsCount = SiteReview::where('new_reviews', 'unread')->count();
+
+    $totalNotifications = $orderPending + $moderationCount + $newReviewsCount;
+
+    return response()->json([
+        'total' => $totalNotifications
+    ]);
+}
+
 }

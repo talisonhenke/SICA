@@ -285,6 +285,9 @@ Route::middleware(['auth', 'is_admin'])
         //     ->name('users.index');
     });
 
+    Route::middleware(['auth', 'is_admin'])->get('/admin/notifications', [AdminDashboardController::class, 'notifications'])->name('admin.notifications');
+
+
 // PEDIDOS ajax
 Route::middleware(['auth', 'is_admin'])
     ->prefix('admin/panels')

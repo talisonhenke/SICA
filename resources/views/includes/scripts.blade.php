@@ -278,8 +278,8 @@
     }
 </script>
 
-{{-- Verificação de novos comentários e pedidos Menu principal --}}
-<script>
+{{-- Verificação de novos comentários e pedidos Menu principal versão antiga--}}
+{{-- <script>
     function checkModerationUpdates() {
         //console.log('[MODERAÇÃO] Executando checkModerationUpdates()...');
 
@@ -348,4 +348,4 @@
         checkModerationUpdates();
         checkOrderUpdates();
     }, 15000); // 6 segundos para testar
-</script>
+</script> --}}

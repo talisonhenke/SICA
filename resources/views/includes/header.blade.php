@@ -160,6 +160,33 @@
         .nav-link.dropdown-toggle.bg-white:hover {
             background-color: var(--color-herb-light) !important;
         }
+
+        /* Link do painel do administrador */
+        .admin-panel-link {
+            position: relative;
+            display: flex;
+            align-items: center;
+            /* garante que o badge fique alinhado verticalmente */
+            gap: 0.4rem;
+            /* espaço entre texto e badge */
+        }
+
+        /* Badge exclusivo do menu do administrador */
+        .admin-badge {
+            background-color: #dc3545;
+            /* vermelho, como outros badges de alerta */
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 700;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            padding: 0 6px;
+        }
     </style>
 
     <nav class="navbar navbar-expand-lg px-3">
@@ -185,11 +212,14 @@
                 {{-- ========================= --}}
                 @if (Auth::check() && Auth::user()->user_lvl === 'admin')
                     <li class="nav-item">
-                        <a href="{{ route('admin.ajax.dashboard') }}" class="nav-link">
+                        <a href="{{ route('admin.ajax.dashboard') }}" class="nav-link admin-panel-link">
                             Painel do Administrador
+                            <span id="admin-notification-badge" class="admin-badge" style="display: none;">0</span>
                         </a>
                     </li>
                 @endif
+
+
 
                 {{-- ========================= --}}
                 {{-- PÁGINA INICIAL (NÃO ADMIN) --}}
