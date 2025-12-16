@@ -202,7 +202,7 @@
             const toast = document.createElement('div');
 
             toast.className = `alert ${error ? 'alert-danger' : 'alert-success'} position-fixed`;
-            toast.style.top = '20px';
+            toast.style.bottom = '0px';
             toast.style.right = '20px';
             toast.style.zIndex = 9999;
             toast.innerText = message;

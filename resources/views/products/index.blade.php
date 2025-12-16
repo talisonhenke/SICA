@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 // Mostra uma notificação de sucesso
                 const alertBox = document.createElement('div');
-                alertBox.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 end-0 m-3';
+                alertBox.className = 'alert alert-success alert-dismissible fade show position-fixed bottom-0 end-0 m-3';
                 alertBox.style.zIndex = '1050';
                 alertBox.innerHTML = `
                     <strong>✔</strong> ${data.message || 'Produto adicionado ao carrinho!'}

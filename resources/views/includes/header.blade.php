@@ -271,7 +271,7 @@
                 {{-- ========================= --}}
                 {{-- CARRINHO (NÃO ADMIN) --}}
                 {{-- ========================= --}}
-                @if (!Auth::check() || Auth::user()->user_lvl !== 'admin')
+                @if (Auth::check() && Auth::user()->user_lvl === 'user')
                     <li class="nav-item d-none d-lg-block">
                         <a class="nav-link position-relative d-flex align-items-center gap-1"
                             href="{{ route('cart.index') }}">
@@ -289,7 +289,7 @@
                 @endif
 
                 {{-- Carrinho mobile  --}}
-                @if (!Auth::check() || Auth::user()->user_lvl !== 'admin')
+                @if (Auth::check() && Auth::user()->user_lvl === 'user')
                     <li class="nav-item d-lg-none">
                         <a class="nav-link d-flex align-items-center justify-content-between"
                             href="{{ route('cart.index') }}">
