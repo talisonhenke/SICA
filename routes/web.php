@@ -57,7 +57,8 @@ use App\Models\Topic;
 
 // ROTAS DE VEIFICAÇÃO
 
-Auth::routes(['verify' => true]);
+// Auth::routes(['verify' => true]);
+Auth::routes();
 
 Route::get('/email/verify', function () {
     return view('auth.verify');
@@ -213,13 +214,37 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // Products routes
 
-Route::resource('products', ProductController::class)->only(['index', 'show']);
+// ROTAS PÚBLICAS
+Route::get('/products', [ProductController::class, 'index'])
+    ->name('products.index');
 
+// ROTAS PROTEGIDAS
 Route::middleware(['auth', 'is_admin'])->group(function () {
-    Route::resource('products', ProductController::class)->except(['index', 'show']);
 
-    Route::post('/products/{id}/toggle-status', [ProductController::class, 'toggleStatus'])->name('products.toggleStatus');
+    // CREATE TEM QUE VIR ANTES DO {product}
+    Route::get('/products/create', [ProductController::class, 'create'])
+        ->name('products.create');
+
+    Route::post('/products', [ProductController::class, 'store'])
+        ->name('products.store');
+
+    Route::get('/products/{product}/edit', [ProductController::class, 'edit'])
+        ->name('products.edit');
+
+    Route::put('/products/{product}', [ProductController::class, 'update'])
+        ->name('products.update');
+
+    Route::delete('/products/{product}', [ProductController::class, 'destroy'])
+        ->name('products.destroy');
+
+    Route::post('/products/{product}/toggle-status', [ProductController::class, 'toggleStatus'])
+        ->name('products.toggleStatus');
 });
+
+// SHOW SEMPRE POR ÚLTIMO
+Route::get('/products/{product}', [ProductController::class, 'show'])
+    ->name('products.show');
+
 
 // Comentários de plantas
 Route::middleware(['auth', 'verified'])->group(function () {
