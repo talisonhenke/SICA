@@ -29,7 +29,8 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $plants = Plant::all();
+        $plants = Plant::orderBy('popular_name', 'asc')->get();
+
         return view('products.create', compact('plants'));
     }
 
@@ -102,7 +103,8 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $plants = Plant::all();
+        $plants = Plant::orderBy('popular_name', 'asc')->get();
+
         return view('products.edit', compact('product', 'plants'));
     }
 
