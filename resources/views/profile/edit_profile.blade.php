@@ -13,7 +13,7 @@
             --bg-card: #ffffff;
             --text-dark: #2f2f2f;
             --text-muted: #6c757d;
-            --border-color: #e0e0e0;
+            /* --border-color: #e0e0e0; */
         }
 
         body {
@@ -75,12 +75,54 @@
             background: #e8f5e9;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.07);
         }
+
+        /* Ajustes para mobile - cabeçalho do perfil */
+        @media (max-width: 576px) {
+            .profile-header-card {
+                flex-direction: column;
+                /* empilha os elementos */
+                align-items: center;
+                /* centraliza horizontalmente */
+                gap: 1rem;
+                /* espaço entre foto e botão */
+                text-align: center;
+                /* centraliza o texto */
+            }
+
+            .profile-header-card .d-flex.align-items-center.gap-3 {
+                flex-direction: column;
+                /* empilha a foto e info */
+                gap: 0.5rem;
+            }
+
+            .profile-photo {
+                width: 90px;
+                /* mantém tamanho circular */
+                height: 90px;
+                border-radius: 50%;
+                flex-shrink: 0;
+                margin: 0;
+            }
+
+            .profile-info h3,
+            .profile-info p,
+            .profile-info .badge-level {
+                margin: 0.2rem 0;
+                /* espaçamento pequeno entre linhas */
+            }
+
+            /* Botão fica abaixo do conteúdo */
+            .profile-header-card>div:last-child {
+                margin-top: 1rem;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+            }
+        }
     </style>
 
     <div class="container py-4">
         <div class="profile-wrapper">
-
-            <!-- HEADER -->
             <!-- HEADER -->
             <div class="profile-header-card d-flex align-items-center justify-content-between">
 
@@ -104,9 +146,12 @@
                             <p class="text-muted mb-0">Telefone não informado</p>
                         @endif
 
-                        <span class="badge-level mt-1 d-inline-block">
-                            {{ $levels[$user->user_lvl] ?? $user->user_lvl }}
-                        </span>
+                        @if ($user->user_lvl !== 'user')
+                            <span class="badge-level mt-1 d-inline-block">
+                                {{ $levels[$user->user_lvl] ?? $user->user_lvl }}
+                            </span>
+                        @endif
+
                     </div>
 
                 </div>
@@ -212,7 +257,8 @@
                                     data-zip_code="{{ $address->zip_code }}" data-street="{{ $address->street }}"
                                     data-complement="{{ $address->complement }}" data-number="{{ $address->number }}"
                                     data-district="{{ $address->district }}" data-city="{{ $address->city }}"
-                                    data-state="{{ $address->state }}" data-country="{{ $address->country }}" data-latitude="{{ $address->latitude }}" data-longitude="{{ $address->longitude }}">
+                                    data-state="{{ $address->state }}" data-country="{{ $address->country }}"
+                                    data-latitude="{{ $address->latitude }}" data-longitude="{{ $address->longitude }}">
                                     Editar
                                 </button>
 

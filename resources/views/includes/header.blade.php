@@ -205,11 +205,14 @@
         </a>
 
         {{-- Botão do menu mobile --}}
-        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
-            data-bs-target="#navbarSupportedContent">
-            {{-- <span class="navbar-toggler-icon"></span> --}}
-            <i class="bi bi-list menu-icon"></i>
-        </button>
+        @if (Auth::check() && Auth::user()->user_lvl !== 'user')
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent">
+                {{-- <span class="navbar-toggler-icon"></span> --}}
+                <i class="bi bi-list menu-icon"></i>
+            </button>
+        @endif
+
 
         {{-- Menu --}}
         <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
