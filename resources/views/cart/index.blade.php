@@ -71,6 +71,69 @@
             padding: 0.6rem 1.4rem;
             font-weight: 500;
         }
+
+        /* ===== Ajustes para mobile ===== */
+    @media (max-width: 768px) {
+
+        .cart-table table,
+        .cart-table thead,
+        .cart-table tbody,
+        .cart-table th,
+        .cart-table td,
+        .cart-table tr {
+            display: block;
+            width: 100%;
+        }
+
+        .btn-outline-danger {
+            margin-bottom: 15px;
+        }
+        .cart-table thead {
+            display: none; /* esconde cabeçalho */
+        }
+
+        .cart-table tr {
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 1rem;
+        }
+
+        .cart-table td {
+            text-align: left;
+            padding: 0.5rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-table td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            flex-basis: 50%;
+            color: #6c757d;
+        }
+
+        .cart-item-image {
+            width: 60px;
+            height: 60px;
+        }
+
+        .cart-summary {
+            flex-direction: column;
+            align-items: stretch;
+            text-align: center;
+        }
+
+        .cart-summary h4 {
+            margin-bottom: 1rem;
+        }
+
+        .cart-summary div {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+    }
     </style>
 
     <div class="container my-5">
@@ -99,56 +162,52 @@
                                 <th>Ações</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @foreach ($cart as $id => $item)
-                                <tr>
-                                    <td class="fw-semibold">{{ $item['name'] }}</td>
-                                    <td>
-                                        <img src="{{ asset('images/products/' . $id . '/' . basename($item['image'])) }}"
-                                            class="cart-item-image" alt="{{ $item['name'] }}">
-                                    </td>
-                                    <td class="text-success fw-semibold">
-                                        R$ {{ number_format($item['price'], 2, ',', '.') }}
-                                    </td>
-                                    <td>
-                                        <div class="d-flex justify-content-center align-items-center">
+                        {{-- Ajuste nas colunas para mobile --}}
+<tbody>
+@foreach ($cart as $id => $item)
+    <tr>
+        <td data-label="Produto" class="fw-semibold">{{ $item['name'] }}</td>
+        <td data-label="Imagem">
+            <img src="{{ asset('images/products/' . $id . '/' . basename($item['image'])) }}"
+                class="cart-item-image" alt="{{ $item['name'] }}">
+        </td>
+        <td data-label="Preço" class="text-success fw-semibold">
+            R$ {{ number_format($item['price'], 2, ',', '.') }}
+        </td>
+        <td data-label="Quantidade">
+            <div class="d-flex justify-content-center align-items-center">
+                <form action="{{ route('cart.update', $id) }}" method="POST" class="me-2">
+                    @csrf
+                    @method('PATCH')
+                    <input type="hidden" name="action" value="decrement">
+                    <button class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-dash-lg"></i>
+                    </button>
+                </form>
 
-                                            {{-- Botão de diminuir --}}
-                                            <form action="{{ route('cart.update', $id) }}" method="POST" class="me-2">
-                                                @csrf
-                                                @method('PATCH')
-                                                <input type="hidden" name="action" value="decrement">
-                                                <button class="btn btn-outline-secondary btn-sm">
-                                                    <i class="bi bi-dash-lg"></i>
-                                                </button>
-                                            </form>
+                <span class="px-2 fw-bold">{{ $item['quantity'] }}</span>
 
-                                            <span class="px-2 fw-bold">{{ $item['quantity'] }}</span>
-
-                                            {{-- Botão de aumentar --}}
-                                            <form action="{{ route('cart.update', $id) }}" method="POST" class="ms-2">
-                                                @csrf
-                                                @method('PATCH')
-                                                <input type="hidden" name="action" value="increment">
-                                                <button class="btn btn-outline-secondary btn-sm">
-                                                    <i class="bi bi-plus-lg"></i>
-                                                </button>
-                                            </form>
-
-                                        </div>
-                                    </td>
-
-                                    <td class="fw-semibold text-primary">
-                                        R$ {{ number_format($item['price'] * $item['quantity'], 2, ',', '.') }}
-                                    </td>
-                                    <td>
-                                        <a href="{{ route('cart.remove', $id) }}" class="btn btn-outline-danger btn-sm">
-                                            <i class="bi bi-trash"></i> Remover
-                                        </a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
+                <form action="{{ route('cart.update', $id) }}" method="POST" class="ms-2">
+                    @csrf
+                    @method('PATCH')
+                    <input type="hidden" name="action" value="increment">
+                    <button class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-plus-lg"></i>
+                    </button>
+                </form>
+            </div>
+        </td>
+        <td data-label="Total" class="fw-semibold text-primary">
+            R$ {{ number_format($item['price'] * $item['quantity'], 2, ',', '.') }}
+        </td>
+        <td data-label="Ações">
+            <a href="{{ route('cart.remove', $id) }}" class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-trash"></i> Remover
+            </a>
+        </td>
+    </tr>
+@endforeach
+</tbody>
                     </table>
                 </div>
 

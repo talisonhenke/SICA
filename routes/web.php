@@ -55,33 +55,6 @@ use App\Models\Topic;
 |
 */
 
-// // TESTE DE ENVIO DE EMAIL
-
-// Route::get('/test-email', function () {
-//     \Mail::raw('Teste SMTP Hostinger', function ($message) {
-//         $message->to('talisonhenke.pl318@academico.ifsul.edu.br')
-//                 ->subject('Teste SMTP');
-//     });
-
-//     return 'Email enviado (ou tentou)';
-// });
-
-// 🔎 PREVIEW DA TELA DE VERIFICAÇÃO (APENAS PARA DESENVOLVIMENTO)
-Route::get('/preview/verify-email', function () {
-    return view('auth.verify');
-});
-
-// visual - esqueceu senha (formulário)
-Route::get('/password/forgot/view', function () {
-    return view('auth.passwords.email');
-})->name('password.forgot.view');
-
-// visual - aviso após envio do e-mail
-Route::get('/password/forgot/sent', function () {
-    
-})->name('password.forgot.view');
-
-
 // ROTAS DE VEIFICAÇÃO
 
 Auth::routes(['verify' => true]);
