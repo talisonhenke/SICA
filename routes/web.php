@@ -179,7 +179,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 //Topics routes
 
 Route::get('/topics', [TopicController::class, 'index'])->name('topics.index');
-Route::get('/topics/{topic}', [TopicController::class, 'show'])->name('topics.show');
 
 Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::get('/topics/create', [TopicController::class, 'create'])->name('topics.create');
@@ -191,6 +190,8 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 
     Route::post('/topics/{topic}/toggle-featured', [TopicController::class, 'toggleFeatured'])->name('topics.toggleFeatured');
 });
+
+Route::get('/topics/{topic}', [TopicController::class, 'show'])->name('topics.show');
 
 // Comentários de tópicos
 Route::middleware(['auth', 'verified'])->group(function () {
