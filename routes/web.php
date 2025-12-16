@@ -428,7 +428,7 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 
 // Rotas de avaliação do site
 
-Route::middleware(['auth', 'is_admin'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/review', [SiteReviewController::class, 'store'])->name('review.store');
     Route::post('/review/update', [SiteReviewController::class, 'update'])->name('review.update');
 });
