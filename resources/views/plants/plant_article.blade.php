@@ -581,9 +581,10 @@
 
                 @guest
                     <textarea class="form-control mb-2" rows="3" placeholder="Faça login para comentar..." disabled></textarea>
-                    <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#loginModal">
+
+                    <a href="{{ route('login') }}" class="btn btn-primary w-100">
                         Entrar para comentar
-                    </button>
+                    </a>
                 @else
                     {{-- Verificação de STRIKES --}}
                     @if (auth()->user()->comment_strikes >= 3)

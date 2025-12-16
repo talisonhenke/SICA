@@ -5,8 +5,9 @@ use Illuminate\Support\Facades\Route;
 // Auth Classes
 
 use App\Http\Controllers\Auth\RegisterController;
-
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -54,7 +55,7 @@ use App\Models\Topic;
 |
 */
 
-// // TESTE DE ENVIO DE EMAIL 
+// // TESTE DE ENVIO DE EMAIL
 
 // Route::get('/test-email', function () {
 //     \Mail::raw('Teste SMTP Hostinger', function ($message) {
@@ -70,24 +71,29 @@ Route::get('/preview/verify-email', function () {
     return view('auth.verify');
 });
 
-
-// ROTAS DE VEIFICAÇÃO 
+// ROTAS DE VEIFICAÇÃO
 
 Auth::routes(['verify' => true]);
 
 Route::get('/email/verify', function () {
     return view('auth.verify');
-})->middleware('auth')->name('verification.notice');
+})
+    ->middleware('auth')
+    ->name('verification.notice');
 
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
     return redirect('/');
-})->middleware(['auth', 'signed'])->name('verification.verify');
+})
+    ->middleware(['auth', 'signed'])
+    ->name('verification.verify');
 
 Route::post('/email/verification-notification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
     return back()->with('message', 'Link de verificação reenviado!');
-})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+})
+    ->middleware(['auth', 'throttle:6,1'])
+    ->name('verification.send');
 
 Route::get('/', function () {
     // Pega até 2 tópicos em destaque
@@ -102,33 +108,24 @@ Route::get('/', function () {
 });
 
 // Lista de plantas
-Route::get('/plants_list', [PlantController::class, 'index'])
-    ->name('plants.index');
+Route::get('/plants_list', [PlantController::class, 'index'])->name('plants.index');
 
 // Detalhes da planta
-Route::get('/plant/{id}/{slug}', [PlantController::class, 'show'])
-    ->name('plant.show');
+Route::get('/plant/{id}/{slug}', [PlantController::class, 'show'])->name('plant.show');
 
 // Busca de plantas (homepage)
 Route::get('/plants/search', [PlantController::class, 'search']);
 
 Route::middleware(['auth', 'is_admin'])->group(function () {
+    Route::get('/add_plant', [PlantController::class, 'create'])->name('plants.create');
 
-    Route::get('/add_plant', [PlantController::class, 'create'])
-        ->name('plants.create');
+    Route::post('/add', [PlantController::class, 'store'])->name('plants.store');
 
-    Route::post('/add', [PlantController::class, 'store'])
-        ->name('plants.store');
+    Route::get('/edit_plant/{id}', [PlantController::class, 'edit'])->name('plants.edit');
 
-    Route::get('/edit_plant/{id}', [PlantController::class, 'edit'])
-        ->name('plants.edit');
+    Route::put('/update/{id}', [PlantController::class, 'update'])->name('plants.update');
 
-    Route::put('/update/{id}', [PlantController::class, 'update'])
-        ->name('plants.update');
-
-    Route::delete('/plant/{id}', [PlantController::class, 'destroy'])
-        ->name('plants.destroy');
-
+    Route::delete('/plant/{id}', [PlantController::class, 'destroy'])->name('plants.destroy');
 });
 
 //Login routes
@@ -149,43 +146,41 @@ Route::get('register', function () {
 // Rota para processar o cadastro
 Route::post('register', [RegisterController::class, 'register'])->name('register.post');
 
+// recuperação de senha
+
+Route::get('/password/forgot', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+
+Route::post('/password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+
+Route::get('/password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+
+Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+
 //User routes
 
 Route::middleware(['auth', 'is_admin'])->group(function () {
-
     // Listagem de usuários (painel administrativo)
-    Route::get('/users_list', [UserController::class, 'index'])
-        ->name('users.index');
+    Route::get('/users_list', [UserController::class, 'index'])->name('users.index');
 
     // Atualizar nível / papel do usuário
-    Route::patch('/users/{user}/update-level', [UserController::class, 'updateLevel'])
-        ->name('users.updateLevel');
-
+    Route::patch('/users/{user}/update-level', [UserController::class, 'updateLevel'])->name('users.updateLevel');
 });
 
 Route::prefix('admin/panels/users')
     ->middleware(['auth', 'is_admin'])
     ->group(function () {
-
         // LISTAGEM
-        Route::get('/', [UserPanelController::class, 'index'])
-            ->name('admin.dashboard.panels.users');
+        Route::get('/', [UserPanelController::class, 'index'])->name('admin.dashboard.panels.users');
 
         // PROMOVER / REMOVER ADMIN
-        Route::post('/{user}/toggle-admin', [UserPanelController::class, 'toggleAdminAjax'])
-            ->name('admin.dashboard.panels.users.toggleAdmin');
+        Route::post('/{user}/toggle-admin', [UserPanelController::class, 'toggleAdminAjax'])->name('admin.dashboard.panels.users.toggleAdmin');
 
         // BLOQUEAR USUÁRIO (strikes = 3)
-        Route::post('/{user}/block', [UserPanelController::class, 'blockUserAjax'])
-            ->name('admin.dashboard.panels.users.block');
+        Route::post('/{user}/block', [UserPanelController::class, 'blockUserAjax'])->name('admin.dashboard.panels.users.block');
 
         // ZERAR STRIKES
-        Route::post('/{user}/reset-strikes', [UserPanelController::class, 'resetStrikesAjax'])
-            ->name('admin.dashboard.panels.users.resetStrikes');
-
+        Route::post('/{user}/reset-strikes', [UserPanelController::class, 'resetStrikesAjax'])->name('admin.dashboard.panels.users.resetStrikes');
     });
-
-
 
 // Rotas de edição de perfil
 
@@ -202,7 +197,6 @@ Route::get('/topics', [TopicController::class, 'index'])->name('topics.index');
 Route::get('/topics/{topic}', [TopicController::class, 'show'])->name('topics.show');
 
 Route::middleware(['auth', 'is_admin'])->group(function () {
-
     Route::get('/topics/create', [TopicController::class, 'create'])->name('topics.create');
     Route::post('/topics', [TopicController::class, 'store'])->name('topics.store');
 
@@ -210,11 +204,8 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::put('/topics/{topic}', [TopicController::class, 'update'])->name('topics.update');
     Route::delete('/topics/{topic}', [TopicController::class, 'destroy'])->name('topics.destroy');
 
-    Route::post('/topics/{topic}/toggle-featured', [TopicController::class, 'toggleFeatured'])
-        ->name('topics.toggleFeatured');
-
+    Route::post('/topics/{topic}/toggle-featured', [TopicController::class, 'toggleFeatured'])->name('topics.toggleFeatured');
 });
-
 
 // Comentários de tópicos
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -238,19 +229,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // Products routes
 
-Route::resource('products', ProductController::class)
-    ->only(['index', 'show']);
+Route::resource('products', ProductController::class)->only(['index', 'show']);
 
 Route::middleware(['auth', 'is_admin'])->group(function () {
+    Route::resource('products', ProductController::class)->except(['index', 'show']);
 
-    Route::resource('products', ProductController::class)
-        ->except(['index', 'show']);
-
-    Route::post('/products/{id}/toggle-status', [ProductController::class, 'toggleStatus'])
-        ->name('products.toggleStatus');
-
+    Route::post('/products/{id}/toggle-status', [ProductController::class, 'toggleStatus'])->name('products.toggleStatus');
 });
-
 
 // Comentários de plantas
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -378,8 +363,9 @@ Route::middleware(['auth', 'is_admin'])
         //     ->name('users.index');
     });
 
-    Route::middleware(['auth', 'is_admin'])->get('/admin/notifications', [AdminDashboardController::class, 'notifications'])->name('admin.notifications');
-
+Route::middleware(['auth', 'is_admin'])
+    ->get('/admin/notifications', [AdminDashboardController::class, 'notifications'])
+    ->name('admin.notifications');
 
 // PEDIDOS ajax
 Route::middleware(['auth', 'is_admin'])
@@ -410,34 +396,24 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 // Moderação ajax
 
 Route::middleware(['auth', 'is_admin'])->group(function () {
-
     // Painel de moderação
-    Route::get('/admin/panels/moderation', [ModerationPanelController::class, 'index'])
-        ->name('admin.panels.moderation');
+    Route::get('/admin/panels/moderation', [ModerationPanelController::class, 'index'])->name('admin.panels.moderation');
 
-    Route::get('/admin/dashboard/moderation-panel', [AdminDashboardController::class, 'moderationPanelAjax'])
-        ->name('admin.dashboard.moderation.ajax');
+    Route::get('/admin/dashboard/moderation-panel', [AdminDashboardController::class, 'moderationPanelAjax'])->name('admin.dashboard.moderation.ajax');
 
     // Moderação de comentários de tópicos (AJAX)
-    Route::delete('/topic-comments/{id}/ajax/moderate-delete', [TopicCommentController::class, 'moderateDeleteAjax'])
-        ->name('topic-comments.ajax.moderateDelete');
+    Route::delete('/topic-comments/{id}/ajax/moderate-delete', [TopicCommentController::class, 'moderateDeleteAjax'])->name('topic-comments.ajax.moderateDelete');
 
-    Route::post('/topic-comments/ajax/block-user/{userId}', [TopicCommentController::class, 'blockUserAjax'])
-        ->name('topic-comments.ajax.blockUser');
+    Route::post('/topic-comments/ajax/block-user/{userId}', [TopicCommentController::class, 'blockUserAjax'])->name('topic-comments.ajax.blockUser');
 
-    Route::post('/topic-comments/{id}/ajax/allow', [TopicCommentController::class, 'allowAjax'])
-        ->name('topic-comments.ajax.allow');
+    Route::post('/topic-comments/{id}/ajax/allow', [TopicCommentController::class, 'allowAjax'])->name('topic-comments.ajax.allow');
 
     // Moderação de comentários de plantas (AJAX)
-    Route::delete('/plant-comments/{id}/ajax/moderate-delete', [PlantCommentController::class, 'moderateDeleteAjax'])
-        ->name('plant-comments.ajax.moderateDelete');
+    Route::delete('/plant-comments/{id}/ajax/moderate-delete', [PlantCommentController::class, 'moderateDeleteAjax'])->name('plant-comments.ajax.moderateDelete');
 
-    Route::post('/plant-comments/ajax/block-user/{userId}', [PlantCommentController::class, 'blockUserAjax'])
-        ->name('plant-comments.ajax.blockUser');
+    Route::post('/plant-comments/ajax/block-user/{userId}', [PlantCommentController::class, 'blockUserAjax'])->name('plant-comments.ajax.blockUser');
 
-    Route::post('/plant-comments/{id}/ajax/allow', [PlantCommentController::class, 'allowAjax'])
-        ->name('plant-comments.ajax.allow');
-
+    Route::post('/plant-comments/{id}/ajax/allow', [PlantCommentController::class, 'allowAjax'])->name('plant-comments.ajax.allow');
 });
 
 // Rotas de avaliação do site
@@ -453,10 +429,7 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 Route::prefix('admin/panels/reviews')
     ->middleware(['auth', 'is_admin'])
     ->group(function () {
-
-        Route::get('/', [SiteReviewPanelController::class, 'index'])
-            ->name('admin.dashboard.panels.reviews');
-
+        Route::get('/', [SiteReviewPanelController::class, 'index'])->name('admin.dashboard.panels.reviews');
     });
 
 // Tags routes
@@ -475,19 +448,14 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::delete('/admin/tags/{id}', [TagController::class, 'destroy'])->name('tags.destroy');
 });
 
-Route::prefix('admin/panels/tags')->middleware(['auth', 'is_admin'])->group(function () {
+Route::prefix('admin/panels/tags')
+    ->middleware(['auth', 'is_admin'])
+    ->group(function () {
+        Route::get('/', [TagPanelController::class, 'index'])->name('admin.dashboard.panels.tags');
 
-    Route::get('/', [TagPanelController::class, 'index'])
-        ->name('admin.dashboard.panels.tags');
+        Route::post('/', [TagPanelController::class, 'store'])->name('admin.dashboard.panels.tags.store');
 
-    Route::post('/', [TagPanelController::class, 'store'])
-        ->name('admin.dashboard.panels.tags.store');
+        Route::put('/{id}', [TagPanelController::class, 'update'])->name('admin.dashboard.panels.tags.update');
 
-    Route::put('/{id}', [TagPanelController::class, 'update'])
-        ->name('admin.dashboard.panels.tags.update');
-
-    Route::delete('/{id}', [TagPanelController::class, 'destroy'])
-        ->name('admin.dashboard.panels.tags.destroy');
-
-});
-
+        Route::delete('/{id}', [TagPanelController::class, 'destroy'])->name('admin.dashboard.panels.tags.destroy');
+    });

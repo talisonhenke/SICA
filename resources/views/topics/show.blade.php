@@ -183,9 +183,10 @@
 
                 @guest
                     <textarea class="form-control mb-2" rows="3" placeholder="Faça login para comentar..." disabled></textarea>
-                    <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#loginModal">
+
+                    <a href="{{ route('login') }}" class="btn btn-primary w-100">
                         Entrar para comentar
-                    </button>
+                    </a>
                 @else
                     {{-- Verificação de STRIKES --}}
                     @if (auth()->user()->comment_strikes >= 3)
@@ -218,32 +219,30 @@
                     <div class="comment-content flex-grow-1">
 
                         {{-- Cabeçalho do comentário --}}
-<div class="d-flex justify-content-between align-items-center mb-1">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
 
-    {{-- Nome e data --}}
-    <div>
-        <strong>{{ $comment->user->name }}</strong>
-        <small class="text-muted d-block">
-            {{ $comment->created_at->timezone('America/Sao_Paulo')->format('d/m/Y H:i') }}
-        </small>
-    </div>
+                            {{-- Nome e data --}}
+                            <div>
+                                <strong>{{ $comment->user->name }}</strong>
+                                <small class="text-muted d-block">
+                                    {{ $comment->created_at->timezone('America/Sao_Paulo')->format('d/m/Y H:i') }}
+                                </small>
+                            </div>
 
-    {{-- Botão Denunciar – para qualquer logado que não seja o dono --}}
-    @if (Auth::check() && Auth::id() !== $comment->user_id)
-        <form action="{{ route('topic-comments.report', $comment->id) }}"
-              method="POST"
-              class="m-0 p-0"
-              onsubmit="return confirm('Deseja denunciar este comentário?');">
+                            {{-- Botão Denunciar – para qualquer logado que não seja o dono --}}
+                            @if (Auth::check() && Auth::id() !== $comment->user_id)
+                                <form action="{{ route('topic-comments.report', $comment->id) }}" method="POST"
+                                    class="m-0 p-0" onsubmit="return confirm('Deseja denunciar este comentário?');">
 
-            @csrf
-            <button class="btn btn-sm btn-light border-0 d-flex align-items-center"
-                    style="font-size: 0.85rem; padding: 2px 6px;">
-                <i class="bi bi-flag-fill text-danger me-1"></i>
-                Denunciar
-            </button>
-        </form>
-    @endif
-</div>
+                                    @csrf
+                                    <button class="btn btn-sm btn-light border-0 d-flex align-items-center"
+                                        style="font-size: 0.85rem; padding: 2px 6px;">
+                                        <i class="bi bi-flag-fill text-danger me-1"></i>
+                                        Denunciar
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
 
 
                         <p class="mt-2">{{ $comment->comment }}</p>

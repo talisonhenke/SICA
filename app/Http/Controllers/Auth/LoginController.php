@@ -19,34 +19,54 @@ class LoginController extends Controller
     // Login com email e senha
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|min:6',
-        ]);
+        // ✅ Validação clássica com mensagens traduzidas
+        $validated = $request->validate(
+            [
+                'email' => 'required|email',
+                'password' => 'required|min:6',
+            ],
+            [
+                'email.required' => 'O email é obrigatório.',
+                'email.email' => 'Informe um email válido.',
+                'password.required' => 'A senha é obrigatória.',
+                'password.min' => 'A senha deve ter no mínimo 6 caracteres.',
+            ],
+        );
 
-        $credentials = $request->only('email', 'password');
+        // Usa apenas dados validados
+        $credentials = [
+            'email' => $validated['email'],
+            'password' => $validated['password'],
+        ];
 
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-
-            if (!$user->hasVerifiedEmail()) {
-                Auth::logout();
-
-                return back()->withErrors([
-                    'email' => 'Você precisa verificar seu e-mail antes de fazer login.',
-                ]);
-            }
-
-            if ($user->user_lvl === 'admin') {
-                return redirect()->intended('/admin/ajax/dashboard');
-            }
-
-            return redirect()->intended('/');
+        // ❌ Credenciais inválidas
+        if (!Auth::attempt($credentials)) {
+            return back()
+                ->withErrors([
+                    'email' => 'Email ou senha incorretos.',
+                ])
+                ->withInput($request->only('email'));
         }
 
-        return back()->withErrors([
-            'email' => 'As credenciais fornecidas estão incorretas.',
-        ]);
+        $user = Auth::user();
+
+        // ❌ Email não verificado
+        if (!$user->hasVerifiedEmail()) {
+            Auth::logout();
+
+            return back()
+                ->withErrors([
+                    'email' => 'Você precisa verificar seu e-mail antes de fazer login.',
+                ])
+                ->withInput($request->only('email'));
+        }
+
+        // ✅ Redirecionamento por nível
+        if ($user->user_lvl === 'admin') {
+            return redirect()->intended('/admin/ajax/dashboard');
+        }
+
+        return redirect()->intended('/');
     }
 
     // Logout
@@ -74,11 +94,18 @@ class LoginController extends Controller
                 $user = new User();
                 $user->name = $googleUser->getName();
                 $user->email = $googleUser->getEmail();
+                $user->email_verified_at = now(); // ✅ VERIFICADO AUTOMATICAMENTE
                 $user->user_lvl = 'user';
                 $user->permissions = 'user';
                 $user->is_owner = false;
                 $user->password = Hash::make(uniqid());
                 $user->save();
+            } else {
+                // Caso o usuário já exista mas não esteja verificado
+                if (!$user->hasVerifiedEmail()) {
+                    $user->email_verified_at = now();
+                    $user->save();
+                }
             }
 
             Auth::login($user);
