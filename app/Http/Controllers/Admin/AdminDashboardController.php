@@ -162,11 +162,11 @@ public function notifications()
     $orderPending = Order::where('status', 'pending')->count();
 
     $topicCount = TopicComment::where('moderated', 0)
-        ->where(fn ($q) => $q->where('toxicity_level', '>=', 0.1)->orWhere('reported', 1))
+        ->where(fn ($q) => $q->where('toxicity_level', '>=', 0.4)->orWhere('reported', 1))
         ->count();
 
     $plantCount = PlantComment::where('moderated', 0)
-        ->where(fn ($q) => $q->where('toxicity_level', '>=', 0.1)->orWhere('reported', 1))
+        ->where(fn ($q) => $q->where('toxicity_level', '>=', 0.4)->orWhere('reported', 1))
         ->count();
 
     $moderationCount = $topicCount + $plantCount;
